@@ -1,0 +1,73 @@
+# Base configuration. site/collect.py writes site/.generated/mkdocs.yml, which
+# inherits from this file and adds the navigation, so build with:
+#   python site/collect.py && mkdocs build -f site/.generated/mkdocs.yml
+site_name: DSA and system design patterns in Java
+site_description: Data structures, algorithms, design patterns and distributed system patterns, built from scratch in Java and compared with production source code.
+site_author: Michael Wright
+site_url: https://wrightm.github.io/dsa-and-system-design-patterns/
+repo_url: https://github.com/wrightm/dsa-and-system-design-patterns
+repo_name: wrightm/dsa-and-system-design-patterns
+edit_uri: ""
+copyright: Code and text under the MIT licence.
+
+theme:
+  name: material
+  language: en
+  icon:
+    logo: material/graph-outline
+    repo: fontawesome/brands/github
+  palette:
+    - media: "(prefers-color-scheme: light)"
+      scheme: default
+      primary: indigo
+      accent: indigo
+      toggle:
+        icon: material/weather-night
+        name: Switch to dark mode
+    - media: "(prefers-color-scheme: dark)"
+      scheme: slate
+      primary: indigo
+      accent: indigo
+      toggle:
+        icon: material/weather-sunny
+        name: Switch to light mode
+  features:
+    - navigation.tabs
+    - navigation.sections
+    - navigation.indexes
+    - navigation.top
+    - navigation.footer
+    - toc.follow
+    - search.suggest
+    - search.highlight
+    - content.code.copy
+
+plugins:
+  - search
+  - tags
+  - social:
+      enabled: !ENV [CI, false]
+
+markdown_extensions:
+  - admonition
+  - attr_list
+  - footnotes
+  - tables
+  - toc:
+      permalink: true
+  - pymdownx.highlight:
+      anchor_linenums: true
+  - pymdownx.inlinehilite
+  - pymdownx.details
+  - pymdownx.tasklist:
+      custom_checkbox: true
+  - pymdownx.superfences:
+      custom_fences:
+        - name: mermaid
+          class: mermaid
+          format: !!python/name:pymdownx.superfences.fence_code_format
+
+extra:
+  social:
+    - icon: fontawesome/brands/github
+      link: https://github.com/wrightm/dsa-and-system-design-patterns
