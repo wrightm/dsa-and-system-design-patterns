@@ -38,6 +38,10 @@ tasks.withType<JavaCompile>().configureEach {
 
 tasks.withType<Test>().configureEach {
     useJUnitPlatform()
+    // `-Ptraces.update` (no value) asks trace tests to rewrite their committed files.
+    if (project.hasProperty("traces.update")) {
+        systemProperty("learn.traces.update", "true")
+    }
     testLogging {
         events("failed", "skipped")
         showStandardStreams = false
