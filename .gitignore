@@ -26,6 +26,10 @@ site/out/
 site/.source/
 site/content/
 site/public/generated/
+site/next-env.d.ts
+site/tsconfig.tsbuildinfo
+site/test-results/
+site/playwright-report/
 
 # jqwik
 .jqwik-database

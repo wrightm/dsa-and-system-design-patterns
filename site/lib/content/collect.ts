@@ -150,6 +150,10 @@ export function collect({ repoRoot, siteDir }: CollectOptions): Article[] {
   writeDoc("index.md", home.replace("<!-- LATEST -->", () => items || "Nothing published yet."));
   writeDoc("about.md", fs.readFileSync(path.join(siteDir, "content-src", "about.md"), "utf8"));
 
+  // Page tree order for Fumadocs: home, series, the domains in MODULES order, catalogue, about.
+  const order = ["index", "series", "---Domains---", ...Object.keys(MODULES), "catalogue", "about"];
+  writeDoc("meta.json", JSON.stringify({ pages: order }, null, 2) + "\n");
+
   // Catalogue.
   const topics = path.join(repoRoot, "topics");
   if (!fs.existsSync(path.join(topics, "README.md"))) throw new Error("topics/README.md is missing");

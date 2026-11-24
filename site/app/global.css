@@ -1,0 +1,22 @@
+@import "tailwindcss";
+@import "fumadocs-ui/css/neutral.css";
+@import "fumadocs-ui/css/preset.css";
+
+/* Indigo accent, as on the MkDocs Material site (primary and accent: indigo). */
+:root {
+  --color-fd-primary: #3f51b5;
+  --color-fd-primary-foreground: #ffffff;
+  --color-fd-ring: #3f51b5;
+}
+
+.dark {
+  --color-fd-primary: #8c9eff;
+  --color-fd-primary-foreground: #1a1b2e;
+  --color-fd-ring: #8c9eff;
+}
+
+.mermaid-diagram {
+  display: flex;
+  justify-content: center;
+  margin: 1.5rem 0;
+}

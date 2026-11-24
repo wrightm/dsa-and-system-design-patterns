@@ -48,6 +48,33 @@ describe("collect", () => {
     expect(read("content/docs/catalogue/data-structures.md")).toMatch(/^---\ntitle: Data structures\n---\n/);
   });
 
+  it("orders the page tree: home, series, the domains in MODULES order, catalogue, about", () => {
+    expect(JSON.parse(read("content/docs/meta.json"))).toEqual({
+      pages: [
+        "index",
+        "series",
+        "---Domains---",
+        "data-structures",
+        "algorithms",
+        "concurrency",
+        "oo-design",
+        "design-patterns",
+        "enterprise-integration-patterns",
+        "distributed-systems",
+        "microservices-patterns",
+        "system-design",
+        "library-studies",
+        "challenges",
+        "catalogue",
+        "about",
+      ],
+    });
+  });
+
+  it("writes a home page without MkDocs-only front matter", () => {
+    expect(read("content/docs/index.md")).toMatch(/^---\ntitle: Home\ndescription: [^\n]+\n---\n/);
+  });
+
   it("writes the trace, the source it names and the still", () => {
     expect(JSON.parse(read("content/traces/data-structures/hashmap/put.json")).id).toBe("put");
     expect(read("content/sources/data-structures/hashmap/ChainedHashMap.java")).toContain("ChainedHashMap");

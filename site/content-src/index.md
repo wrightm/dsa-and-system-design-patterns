@@ -1,8 +1,6 @@
 ---
 title: Home
 description: Data structures, algorithms, design patterns and distributed system patterns, built from scratch in Java and compared with production source code.
-hide:
-  - navigation
 ---
 
 # DSA and system design patterns in Java
