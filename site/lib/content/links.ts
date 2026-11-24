@@ -18,6 +18,21 @@ export function buildPages(articles: Article[], repoRoot: string): Map<string, s
   return pages;
 }
 
+/** Names (without extension) of `![](animations/<name>.svg)` images outside fenced code. */
+export function animationImages(markdown: string): string[] {
+  const names: string[] = [];
+  let inFence = false;
+  for (const line of markdown.split("\n")) {
+    if (FENCE.test(line.trimStart())) inFence = !inFence;
+    if (inFence) continue;
+    for (const match of line.matchAll(LINK)) {
+      const found = /^(?:.*\/)?animations\/([^/#]+)\.svg(?:#.*)?$/.exec(match[2]!);
+      if (match[1]!.startsWith("!") && found) names.push(found[1]!);
+    }
+  }
+  return names;
+}
+
 function posix(p: string): string {
   return p.split(path.sep).join("/");
 }

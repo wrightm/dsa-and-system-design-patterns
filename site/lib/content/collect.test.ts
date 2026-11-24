@@ -1,7 +1,7 @@
 import fs from "node:fs";
 import os from "node:os";
 import path from "node:path";
-import { beforeAll, describe, expect, it } from "vitest";
+import { afterAll, beforeAll, describe, expect, it } from "vitest";
 import { collect } from "./collect";
 
 const fixtures = path.resolve(import.meta.dirname, "../../test/fixtures");
@@ -9,6 +9,10 @@ const repoRoot = path.join(fixtures, "repo");
 const siteDir = fs.mkdtempSync(path.join(os.tmpdir(), "collect-test-"));
 fs.cpSync(path.resolve(import.meta.dirname, "../../content-src"), path.join(siteDir, "content-src"), {
   recursive: true,
+});
+const tempDirs = [siteDir];
+afterAll(() => {
+  for (const dir of tempDirs) fs.rmSync(dir, { recursive: true, force: true });
 });
 const read = (...p: string[]) => fs.readFileSync(path.join(siteDir, ...p), "utf8");
 const exists = (...p: string[]) => fs.existsSync(path.join(siteDir, ...p));
@@ -50,10 +54,41 @@ describe("collect", () => {
     expect(exists("public/generated/animations/data-structures/hashmap/put.svg")).toBe(true);
   });
 
-  it("skips a missing still silently and fails on a malformed trace", () => {
+  function tempRepo() {
     const repo = fs.mkdtempSync(path.join(os.tmpdir(), "collect-repo-"));
+    tempDirs.push(repo);
     fs.cpSync(repoRoot, repo, { recursive: true });
-    const animations = path.join(repo, "data-structures/src/main/java/learn/ds/hashmap/animations");
+    return { repo, dir: path.join(repo, "data-structures/src/main/java/learn/ds/hashmap") };
+  }
+
+  it("fails when an article image has no trace, naming the article", () => {
+    const { repo, dir } = tempRepo();
+    fs.appendFileSync(path.join(dir, "README.md"), "\n![typo](animations/typo.svg)\n");
+    expect(() => collect({ repoRoot: repo, siteDir })).toThrow(
+      "data-structures/src/main/java/learn/ds/hashmap/README.md: no trace for animations/typo.svg",
+    );
+  });
+
+  it("ignores an animations image inside a code fence", () => {
+    const { repo, dir } = tempRepo();
+    fs.appendFileSync(path.join(dir, "README.md"), "\n```md\n![x](animations/typo.svg)\n```\n");
+    expect(() => collect({ repoRoot: repo, siteDir })).not.toThrow();
+  });
+
+  it("rejects a source.file that is not a plain file name", () => {
+    const { repo, dir } = tempRepo();
+    const file = path.join(dir, "animations/put.trace.json");
+    const trace = JSON.parse(fs.readFileSync(file, "utf8"));
+    trace.steps[0].source.file = "../README.md";
+    fs.writeFileSync(file, JSON.stringify(trace));
+    expect(() => collect({ repoRoot: repo, siteDir })).toThrow(
+      /^data-structures\/.*put\.trace\.json: source\.file must be a plain file name/,
+    );
+  });
+
+  it("skips a missing still silently and fails on a malformed trace", () => {
+    const { repo, dir } = tempRepo();
+    const animations = path.join(dir, "animations");
     fs.renameSync(path.join(animations, "put.svg"), path.join(repo, "moved.svg"));
     collect({ repoRoot: repo, siteDir });
     expect(exists("public/generated/animations/data-structures/hashmap/put.svg")).toBe(false);
