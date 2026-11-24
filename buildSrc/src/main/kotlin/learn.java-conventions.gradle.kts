@@ -42,6 +42,10 @@ tasks.withType<Test>().configureEach {
     if (project.hasProperty("traces.update")) {
         systemProperty("learn.traces.update", "true")
     }
+    // Committed traces are read by freshness tests, so editing or deleting one must rerun them.
+    inputs.files(fileTree("src") { include("**/*.trace.json") })
+        .withPropertyName("traces")
+        .withPathSensitivity(PathSensitivity.RELATIVE)
     testLogging {
         events("failed", "skipped")
         showStandardStreams = false
