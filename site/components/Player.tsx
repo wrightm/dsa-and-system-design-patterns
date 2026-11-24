@@ -33,9 +33,12 @@ function useReducedMotion(): boolean {
   return useSyncExternalStore(subscribeReducedMotion, reducedMotionSnapshot, () => false);
 }
 
+// The step buttons use aria-disabled at an end rather than disabled, so a keyboard user who
+// presses Forward onto the last step keeps focus inside the player.
 const buttonClass =
   "rounded-md border border-fd-border bg-fd-secondary px-3 py-1 text-sm text-fd-secondary-foreground " +
-  "hover:bg-fd-accent disabled:cursor-not-allowed disabled:opacity-50";
+  "hover:bg-fd-accent disabled:cursor-not-allowed disabled:opacity-50 " +
+  "aria-disabled:cursor-not-allowed aria-disabled:opacity-50 aria-disabled:hover:bg-fd-secondary";
 
 export function Player<S extends PlayerStep>({ trace, renderStep, footer }: PlayerProps<S>) {
   const steps = trace.steps;
@@ -111,10 +114,10 @@ export function Player<S extends PlayerStep>({ trace, renderStep, footer }: Play
         {step && footer ? <div className="mt-2">{footer(step)}</div> : null}
       </figcaption>
       <div className="mt-3 flex flex-wrap items-center gap-2">
-        <button type="button" className={buttonClass} disabled={atStart} onClick={() => dispatch({ type: "first" })}>
+        <button type="button" className={buttonClass} aria-disabled={atStart} onClick={() => dispatch({ type: "first" })}>
           First
         </button>
-        <button type="button" className={buttonClass} disabled={atStart} onClick={() => dispatch({ type: "prev" })}>
+        <button type="button" className={buttonClass} aria-disabled={atStart} onClick={() => dispatch({ type: "prev" })}>
           Back
         </button>
         <button
@@ -125,10 +128,10 @@ export function Player<S extends PlayerStep>({ trace, renderStep, footer }: Play
         >
           {state.playing ? "Pause" : "Play"}
         </button>
-        <button type="button" className={buttonClass} disabled={atEnd} onClick={() => dispatch({ type: "next" })}>
+        <button type="button" className={buttonClass} aria-disabled={atEnd} onClick={() => dispatch({ type: "next" })}>
           Forward
         </button>
-        <button type="button" className={buttonClass} disabled={atEnd} onClick={() => dispatch({ type: "last" })}>
+        <button type="button" className={buttonClass} aria-disabled={atEnd} onClick={() => dispatch({ type: "last" })}>
           Last
         </button>
         <span className="ml-auto text-sm text-fd-muted-foreground">

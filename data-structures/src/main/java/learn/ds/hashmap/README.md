@@ -165,7 +165,7 @@ It XORs the top 16 bits into the bottom 16, so the high bits get a say in the in
 
 ![255 whole-number floats in a 1,024-bucket table: without spreading they all land in bucket 0, with spreading they fill 255 buckets](animations/high-bits.svg)
 
-Watch bucket 0 in the first half: without spreading, every key goes there and nothing else fills; in the second half the same keys, spread first, each get a bucket of their own.
+On the site, step through the first half: without spreading, every key goes to bucket 0 and nothing else fills; in the second half the same keys, spread first, each get a bucket of their own.
 
 ## Invariants and complexity
 

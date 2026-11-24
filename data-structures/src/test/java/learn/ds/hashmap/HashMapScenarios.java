@@ -6,6 +6,7 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import learn.trace.Step;
@@ -214,6 +215,47 @@ class HashMapScenarios {
       assertThat(ids).as(step.caption()).hasSize(13).doesNotHaveDuplicates();
     }
     assertThat(inProgress.getLast().state().get("buckets")).isEqualTo(last.state().get("buckets"));
+  }
+
+  /** The README's claim: during the resize each node stays put or moves exactly 16 along. */
+  @Test
+  void resizeStepsKeepEveryNodeInItsOldBucketOrSixteenAlong() {
+    List<Step> steps = resize().steps();
+    int start = -1;
+    for (int i = 0; i < steps.size(); i++) {
+      if (steps.get(i).caption().contains("doubles from 16 to 32")) {
+        start = i;
+        break;
+      }
+    }
+    assertThat(start).as("resizing step").isPositive();
+
+    Map<Object, Integer> before = bucketOfEachNode(steps.get(start - 1));
+    assertThat(steps.get(start - 1).state()).containsEntry("capacity", 16);
+    assertThat(before).hasSize(13);
+    for (Step step : steps.subList(start, steps.size())) {
+      Map<Object, Integer> now = bucketOfEachNode(step);
+      assertThat(now.keySet()).as(step.caption()).isEqualTo(before.keySet());
+      for (Map.Entry<Object, Integer> node : now.entrySet()) {
+        int old = before.get(node.getKey());
+        assertThat(node.getValue())
+            .as("%s: node %s", step.caption(), node.getKey())
+            .isIn(old, old + 16);
+      }
+    }
+    // Something must actually move, or the check above would pass on a table that never split.
+    assertThat(bucketOfEachNode(steps.getLast())).isNotEqualTo(before);
+  }
+
+  private static Map<Object, Integer> bucketOfEachNode(Step step) {
+    List<?> buckets = (List<?>) step.state().get("buckets");
+    Map<Object, Integer> bucketOf = new HashMap<>();
+    for (int i = 0; i < buckets.size(); i++) {
+      for (Object node : (List<?>) buckets.get(i)) {
+        bucketOf.put(((Map<?, ?>) node).get("id"), i);
+      }
+    }
+    return bucketOf;
   }
 
   /**

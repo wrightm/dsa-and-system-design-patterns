@@ -19,7 +19,8 @@ function parse(svg: string): Document {
   return doc;
 }
 
-const awkward = `a<b&"c"`;
+// Markup characters, quotes, a backslash and a non-ASCII letter.
+const awkward = `a<b&"c"\\ü`;
 
 const awkwardTrace: Trace = {
   version: 1,
@@ -29,7 +30,7 @@ const awkwardTrace: Trace = {
   layout: "chains",
   steps: [
     {
-      caption: `put(${awkward}) lands in bucket 0 & stays.`,
+      caption: `put(${awkward}) lands in\nbucket 0 & stays.`,
       source: null,
       state: {
         capacity: 2,
@@ -71,6 +72,13 @@ describe("renderStill", () => {
     expect(texts).toContain(awkward);
     expect(doc.getElementsByTagName("title")[0]!.textContent).toBe("Keys & <markup>");
     expect(doc.getElementsByTagName("script")).toHaveLength(0);
+  });
+
+  it("wraps a caption on whitespace, so a newline in it becomes a space in the still", () => {
+    const doc = parse(renderStill(awkwardTrace));
+    const lines = Array.from(doc.getElementsByTagName("tspan")).map((t) => t.textContent);
+    expect(lines.join(" ")).toContain(`put(${awkward}) lands in bucket 0 & stays.`);
+    expect(lines.some((line) => line!.includes("\n"))).toBe(false);
   });
 
   it("draws an empty frame with the title for a trace with no steps", () => {

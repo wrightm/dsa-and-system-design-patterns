@@ -1,7 +1,7 @@
 import { type ReactNode, useMemo } from "react";
 import { AbsoluteFill, useCurrentFrame } from "remotion";
-import { FONT_SIZE, HashTableDrawing } from "../lib/render/hash-table/HashTableSvg";
-import { layoutTrace, slimState } from "../lib/render/hash-table/layout";
+import { FONT_SIZE, HashTableDrawing, type Positions } from "../lib/render/hash-table/HashTableSvg";
+import { type Scene, layoutTrace, slimState } from "../lib/render/hash-table/layout";
 import { LIGHT } from "../lib/render/hash-table/palette";
 import type { Trace } from "../lib/trace/types";
 import { at, mergeScenes, positionsAt, timeline } from "./interpolate";
@@ -47,11 +47,14 @@ function Card({ children }: { children: ReactNode }) {
   );
 }
 
-function TitleCard({ trace }: { trace: Trace }) {
+/** Exported for tests, which render it outside Remotion. */
+export function TitleCard({ trace }: { trace: Trace }) {
   const n = trace.steps.length;
   return (
     <Card>
-      <div style={{ fontSize: 68, fontWeight: 700, lineHeight: 1.2, textWrap: "balance" }}>{trace.title}</div>
+      <div style={{ fontSize: 68, fontWeight: 700, lineHeight: 1.2, textWrap: "balance", whiteSpace: "pre-wrap" }}>
+        {trace.title}
+      </div>
       <div style={{ fontSize: 40, lineHeight: 1.35, color: LIGHT.muted }}>
         {n === 0 ? "No steps recorded" : `${n} ${n === 1 ? "step" : "steps"} recorded from a hash map written in Java`}
       </div>
@@ -70,6 +73,49 @@ function EndCard({ page }: { page?: string }) {
         ))}
       </div>
     </Card>
+  );
+}
+
+type StepCardProps = {
+  trace: Trace;
+  index: number;
+  /** What to draw: this step's scene, or the merge of it and the one before while moving. */
+  scene: Scene;
+  /** The step's own scene, which sets the drawing's size; defaults to `scene`. */
+  size?: Scene;
+  positions?: Positions;
+};
+
+/** One step: the drawing, its caption and the step counter. Exported for tests. */
+export function StepCard({ trace, index, scene, size = scene, positions }: StepCardProps) {
+  const width = size.width + 2 * DRAWING_PAD;
+  const height = size.height + 2 * DRAWING_PAD;
+  return (
+    <AbsoluteFill style={{ padding: MARGIN, gap: GAP, color: LIGHT.text }}>
+      <svg
+        viewBox={`${-DRAWING_PAD} ${-DRAWING_PAD} ${width} ${height}`}
+        style={{ flex: 1, minHeight: 0, width: "100%" }}
+        fontFamily={LIGHT.font}
+        fontSize={FONT_SIZE}
+      >
+        <HashTableDrawing scene={scene} palette={LIGHT} positions={positions} animate={false} />
+      </svg>
+      {/* Every caption in one grid cell, all but this step's hidden: the cell is as tall as the
+          longest caption, so the drawing keeps one size for the whole video. */}
+      <div style={{ display: "grid", fontSize: CAPTION_SIZE, lineHeight: CAPTION_LINE, overflowWrap: "anywhere" }}>
+        {trace.steps.map((step, i) => (
+          <div
+            key={i}
+            style={{ gridArea: "1 / 1", visibility: i === index ? "visible" : "hidden", whiteSpace: "pre-wrap" }}
+          >
+            {step.caption}
+          </div>
+        ))}
+      </div>
+      <div style={{ fontSize: COUNTER_SIZE, color: LIGHT.muted, textAlign: "right", marginTop: -GAP / 2 }}>
+        {`Step ${index + 1} of ${trace.steps.length}`}
+      </div>
+    </AbsoluteFill>
   );
 }
 
@@ -100,32 +146,7 @@ export function TraceVideo({ trace, page }: TraceVideoProps) {
     const moving = moment.t < 1 && from !== to;
     const scene = moving ? mergeScenes(from, to) : to;
     const positions = moving ? positionsAt(from, to, smooth(moment.t)) : undefined;
-    const width = to.width + 2 * DRAWING_PAD;
-    const height = to.height + 2 * DRAWING_PAD;
-    body = (
-      <AbsoluteFill style={{ padding: MARGIN, gap: GAP, color: LIGHT.text }}>
-        <svg
-          viewBox={`${-DRAWING_PAD} ${-DRAWING_PAD} ${width} ${height}`}
-          style={{ flex: 1, minHeight: 0, width: "100%" }}
-          fontFamily={LIGHT.font}
-          fontSize={FONT_SIZE}
-        >
-          <HashTableDrawing scene={scene} palette={LIGHT} positions={positions} animate={false} />
-        </svg>
-        {/* Every caption in one grid cell, all but this step's hidden: the cell is as tall as the
-            longest caption, so the drawing keeps one size for the whole video. */}
-        <div style={{ display: "grid", fontSize: CAPTION_SIZE, lineHeight: CAPTION_LINE, overflowWrap: "anywhere" }}>
-          {trace.steps.map((step, i) => (
-            <div key={i} style={{ gridArea: "1 / 1", visibility: i === moment.index ? "visible" : "hidden" }}>
-              {step.caption}
-            </div>
-          ))}
-        </div>
-        <div style={{ fontSize: COUNTER_SIZE, color: LIGHT.muted, textAlign: "right", marginTop: -GAP / 2 }}>
-          {`Step ${moment.index + 1} of ${trace.steps.length}`}
-        </div>
-      </AbsoluteFill>
-    );
+    body = <StepCard trace={trace} index={moment.index} scene={scene} size={to} positions={positions} />;
   }
 
   return <AbsoluteFill style={{ backgroundColor: "#ffffff", fontFamily: SANS }}>{body}</AbsoluteFill>;

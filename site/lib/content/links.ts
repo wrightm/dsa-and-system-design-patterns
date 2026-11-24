@@ -18,19 +18,24 @@ export function buildPages(articles: Article[], repoRoot: string): Map<string, s
   return pages;
 }
 
-/** Names (without extension) of `![](animations/<name>.svg)` images outside fenced code. */
-export function animationImages(markdown: string): string[] {
-  const names: string[] = [];
+/** Each `![alt](animations/<name>.svg)` image outside fenced code: its name (no extension) and alt text. */
+export function animationImages(markdown: string): { name: string; alt: string }[] {
+  const images: { name: string; alt: string }[] = [];
   let inFence = false;
   for (const line of markdown.split("\n")) {
     if (FENCE.test(line.trimStart())) inFence = !inFence;
     if (inFence) continue;
     for (const match of line.matchAll(LINK)) {
       const found = /^(?:.*\/)?animations\/([^/#]+)\.svg(?:#.*)?$/.exec(match[2]!);
-      if (match[1]!.startsWith("!") && found) names.push(found[1]!);
+      if (match[1]!.startsWith("!") && found) images.push({ name: found[1]!, alt: match[1]!.slice(2, -1) });
     }
   }
-  return names;
+  return images;
+}
+
+/** The error for an animation image with empty alt text, shared with the remark plugin. */
+export function missingAlt(article: string, name: string): string {
+  return `${article}: animations/${name}.svg needs alt text: it names the animation for screen readers`;
 }
 
 function posix(p: string): string {

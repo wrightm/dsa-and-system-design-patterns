@@ -81,13 +81,54 @@ describe("Player", () => {
     expect(screen.getByText("step 3 of 3")).toBeTruthy();
   });
 
-  it("one step: renders the state with play and step controls disabled", () => {
+  const button = (name: string) => screen.getByRole("button", { name }) as HTMLButtonElement;
+  const STEP_BUTTONS = ["First", "Back", "Forward", "Last"];
+
+  it("marks the step buttons at an end aria-disabled but keeps them focusable", () => {
+    render(<Player trace={traceOf(3)} renderStep={renderStep} />);
+    for (const name of STEP_BUTTONS) expect(button(name).disabled).toBe(false);
+    expect(STEP_BUTTONS.map((name) => button(name).getAttribute("aria-disabled"))).toEqual([
+      "true",
+      "true",
+      "false",
+      "false",
+    ]);
+    fireEvent.click(button("Back"));
+    expect(screen.getByText("step 1 of 3")).toBeTruthy();
+    fireEvent.click(button("Last"));
+    expect(STEP_BUTTONS.map((name) => button(name).getAttribute("aria-disabled"))).toEqual([
+      "false",
+      "false",
+      "true",
+      "true",
+    ]);
+    fireEvent.click(button("Forward"));
+    expect(screen.getByText("step 3 of 3")).toBeTruthy();
+  });
+
+  it("keeps focus on Forward after it reaches the last step, so the keys still work", () => {
+    render(<Player trace={traceOf(3)} renderStep={renderStep} />);
+    const forward = button("Forward");
+    forward.focus();
+    fireEvent.click(forward);
+    fireEvent.click(forward);
+    expect(screen.getByText("step 3 of 3")).toBeTruthy();
+    expect(forward.disabled).toBe(false);
+    expect(document.activeElement).toBe(forward);
+    fireEvent.keyDown(document.activeElement!, { key: "ArrowLeft" });
+    expect(screen.getByText("step 2 of 3")).toBeTruthy();
+  });
+
+  it("one step: renders the state with play disabled and the step buttons inert", () => {
     render(<Player trace={traceOf(1)} renderStep={renderStep} />);
     expect(screen.getByText("step 1 of 1")).toBeTruthy();
     expect(screen.getByTestId("frame").textContent).toBe("caption 1|false");
-    for (const name of ["First", "Back", "Play", "Forward", "Last"]) {
-      expect((screen.getByRole("button", { name }) as HTMLButtonElement).disabled).toBe(true);
+    expect(button("Play").disabled).toBe(true);
+    for (const name of STEP_BUTTONS) {
+      expect(button(name).getAttribute("aria-disabled")).toBe("true");
+      fireEvent.click(button(name));
     }
+    expect(screen.getByText("step 1 of 1")).toBeTruthy();
   });
 
   it("zero steps: renders an empty frame without calling renderStep or footer", () => {
@@ -97,9 +138,13 @@ describe("Player", () => {
     expect(screen.getByText("step 0 of 0")).toBeTruthy();
     expect(render1).not.toHaveBeenCalled();
     expect(footer).not.toHaveBeenCalled();
-    for (const name of ["Play", "Back", "Forward"]) {
-      expect((screen.getByRole("button", { name }) as HTMLButtonElement).disabled).toBe(true);
+    expect(button("Play").disabled).toBe(true);
+    for (const name of STEP_BUTTONS) {
+      expect(button(name).getAttribute("aria-disabled")).toBe("true");
+      fireEvent.click(button(name));
     }
+    expect(screen.getByText("step 0 of 0")).toBeTruthy();
+    expect(render1).not.toHaveBeenCalled();
   });
 
   it("passes the previous step and renders the footer", () => {

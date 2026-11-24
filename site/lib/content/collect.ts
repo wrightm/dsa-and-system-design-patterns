@@ -3,7 +3,7 @@ import path from "node:path";
 import { stringify } from "yaml";
 import { type Article, BRANCH, findArticles, GITHUB, MODULES, pagePath } from "./articles";
 import { catalogueFiles, catalogueProgress, catalogueTitle } from "./catalogue";
-import { animationImages, buildPages, rewriteLinks } from "./links";
+import { animationImages, buildPages, missingAlt, rewriteLinks } from "./links";
 import { validateTrace } from "../trace/validate";
 
 export type CollectOptions = {
@@ -66,7 +66,8 @@ export function collect({ repoRoot, siteDir }: CollectOptions): Article[] {
       tags: article.tags,
     });
     writeDoc(docPath, header + body.replace(/\n+$/, "") + "\n" + footer);
-    for (const name of new Set(animationImages(article.body))) {
+    for (const { name, alt } of animationImages(article.body)) {
+      if (alt.trim() === "") throw new Error(missingAlt(article.sourcePath, name));
       if (!fs.existsSync(path.join(path.dirname(source), "animations", `${name}.trace.json`))) {
         throw new Error(`${article.sourcePath}: no trace for animations/${name}.svg`);
       }

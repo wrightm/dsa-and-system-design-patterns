@@ -54,6 +54,18 @@ describe("remarkAnimations", () => {
     expect(tree.children).toEqual([before]);
   });
 
+  it.each(["", "   "])("fails, naming the article and the image, when the alt text is %j", (alt) => {
+    expect(() => run(paragraph(image("animations/put.svg", alt)))).toThrow(
+      "data-structures/hashmap.md: animations/put.svg needs alt text: it names the animation for screen readers",
+    );
+  });
+
+  it("fails the same way when an animation image has no alt at all", () => {
+    expect(() => run(paragraph({ type: "image", url: "animations/put.svg" }))).toThrow(
+      "data-structures/hashmap.md: animations/put.svg needs alt text",
+    );
+  });
+
   it("fails, naming the article, when the trace is missing", () => {
     expect(() => run(paragraph(image("animations/missing.svg", "alt")))).toThrow(
       "data-structures/hashmap.md: no trace for animations/missing.svg",

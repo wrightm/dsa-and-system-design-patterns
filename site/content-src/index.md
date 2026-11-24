@@ -27,6 +27,6 @@ Every claim is backed by a test you can run from the [repository](https://github
 
 - **[The series](series.md)** lists every article in the order it was published.
 - **[The catalogue](catalogue/index.md)** lists every planned topic and how far along it is.
-- The tabs at the top group articles by domain.
+- The sidebar groups articles by domain.
 
 Topics are written in the order they come up in real work and coding challenges, not in textbook order. Each article says what it assumes at the top, and explains it briefly if that article does not exist yet.

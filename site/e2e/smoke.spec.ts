@@ -83,23 +83,59 @@ test("the hash map page logs no console errors on load or while stepping", async
   expect(errors).toEqual([]);
 });
 
+test("keyboard focus stays on Forward after it reaches the last step", async ({ page }) => {
+  await page.goto("data-structures/hashmap/");
+  const player = page.locator("figure[aria-label^='Animation:']").first();
+  const forward = player.getByRole("button", { name: "Forward" });
+  const label = player.getByText(/^step \d+ of \d+$/);
+  const total = Number((await label.textContent())!.match(/of (\d+)/)![1]);
+  await forward.focus();
+  for (let i = 1; i < total; i++) await page.keyboard.press("Enter");
+  await expect(label).toHaveText(`step ${total} of ${total}`);
+  await expect(forward).toBeFocused();
+  await expect(forward).toHaveAttribute("aria-disabled", "true");
+  // The figure still hears the keys, because focus never left it.
+  await page.keyboard.press("ArrowLeft");
+  await expect(label).toHaveText(`step ${total - 1} of ${total}`);
+});
+
+// Step 2 of the first player adds "alice" to bucket 1: a node that appears, drawn with the new-node fill.
+const NEW_NODE = 'svg[role="img"] g:has(> rect[fill="var(--ht-new-fill)"])';
+
+test("by default a node that appears is tweened by Motion", async ({ page }) => {
+  await page.goto("data-structures/hashmap/");
+  const player = page.locator("figure[aria-label^='Animation:']").first();
+  await player.getByRole("button", { name: "Forward" }).click();
+  const node = player.locator(NEW_NODE);
+  await expect(node).toHaveCount(1);
+  // Motion positions it with an inline style transform, not the plain attribute.
+  expect(await node.getAttribute("transform")).toBeNull();
+  await expect(node).toHaveAttribute("style", /transform/);
+});
+
 test.describe("with reduced motion", () => {
   test.use({ reducedMotion: "reduce" });
 
-  test("steps cut without tweening and Play still advances", async ({ page }) => {
+  test("a node that appears is drawn at once in its place and Play still advances", async ({ page }) => {
     await page.goto("data-structures/hashmap/");
     const player = page.locator("figure[aria-label^='Animation:']").first();
     await player.getByRole("button", { name: "Forward" }).click();
     await expect(player.getByText("step 2 of")).toBeVisible();
-    // Only the player's own: clicking scrolls the page, and the Fumadocs contents list transitions.
-    const running = await player.evaluate(
-      (figure) =>
-        document.getAnimations().filter((a) => figure.contains((a.effect as KeyframeEffect | null)?.target ?? null))
-          .length,
-    );
-    expect(running).toBe(0);
+    const node = player.locator(NEW_NODE);
+    await expect(node).toHaveCount(1);
+    const placed = await node.getAttribute("transform");
+    expect(placed).toMatch(/^translate\([\d.]+ [\d.]+\)$/);
+    expect(await node.getAttribute("style")).toBeNull();
+    // Nothing in the drawing is driven by Motion, which writes its transforms as inline styles.
+    await expect(player.locator('svg[role="img"] [style*="transform"]')).toHaveCount(0);
+    // Longer than a tween: the node was already where it ends up.
+    await page.waitForTimeout(1000);
+    await expect(node).toHaveAttribute("transform", placed!);
+
+    const label = player.getByText(/^step \d+ of \d+$/);
+    const before = await label.textContent();
     await player.getByRole("button", { name: "Play" }).click();
-    await expect(player.getByText("step 3 of")).toBeVisible({ timeout: 5000 });
+    await expect(label).not.toHaveText(before ?? "", { timeout: 5000 });
   });
 });
 

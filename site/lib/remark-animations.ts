@@ -2,6 +2,7 @@ import fs from "node:fs";
 import path from "node:path";
 import type { Nodes, Paragraph, Parent, Root, RootContent } from "mdast";
 import type { MdxJsxFlowElement } from "mdast-util-mdx-jsx";
+import { missingAlt } from "./content/links";
 
 // Same rule as `animationImages` in lib/content/links.ts, which collect checks first.
 const ANIMATION = /^(?:.*\/)?animations\/([^/#]+)\.svg(?:#.*)?$/;
@@ -25,7 +26,7 @@ function isBlank(node: Paragraph["children"][number]): boolean {
 /**
  * Remark plugin: an image under `animations/` becomes `<Animation id="<module>/<slug>/<name>" alt>`,
  * rendered through the MDX components map. A paragraph holding one is split, so the player is
- * never inside a `<p>`. Throws, naming the article, when the trace is missing.
+ * never inside a `<p>`. Throws, naming the article, when the trace or the alt text is missing.
  */
 export function remarkAnimations({ pagePathOf, tracesDir = path.resolve("content/traces") }: RemarkAnimationsOptions) {
   return (tree: Root, file: { path: string }) => {
@@ -33,6 +34,7 @@ export function remarkAnimations({ pagePathOf, tracesDir = path.resolve("content
     const page = article.replace(/\.md$/, "");
 
     const element = (name: string, alt: string): MdxJsxFlowElement => {
+      if (alt.trim() === "") throw new Error(missingAlt(article, name));
       const id = `${page}/${name}`;
       if (!fs.existsSync(path.join(tracesDir, `${id}.json`))) {
         throw new Error(`${article}: no trace for animations/${name}.svg`);

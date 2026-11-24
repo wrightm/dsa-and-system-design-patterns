@@ -96,6 +96,15 @@ describe("collect", () => {
     );
   });
 
+  it("fails when an animation image has no alt text, naming the article and the image", () => {
+    const { repo, dir } = tempRepo();
+    fs.appendFileSync(path.join(dir, "README.md"), "\n![ ](animations/put.svg)\n");
+    expect(() => collect({ repoRoot: repo, siteDir })).toThrow(
+      "data-structures/src/main/java/learn/ds/hashmap/README.md: animations/put.svg needs alt text: " +
+        "it names the animation for screen readers",
+    );
+  });
+
   it("ignores an animations image inside a code fence", () => {
     const { repo, dir } = tempRepo();
     fs.appendFileSync(path.join(dir, "README.md"), "\n```md\n![x](animations/typo.svg)\n```\n");
