@@ -20,6 +20,12 @@ bin/
 site/.generated/
 site/.venv/
 __pycache__/
+site/node_modules/
+site/.next/
+site/out/
+site/.source/
+site/content/
+site/public/generated/
 
 # jqwik
 .jqwik-database

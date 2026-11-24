@@ -1,0 +1,33 @@
+{
+  "version": 1,
+  "id": "put",
+  "title": "One put",
+  "kind": "hash-table",
+  "layout": "chains",
+  "steps": [
+    {
+      "caption": "put(\"a\") hashes to bucket 1.",
+      "source": { "file": "ChainedHashMap.java", "line": 3 },
+      "state": {
+        "capacity": 2,
+        "size": 0,
+        "threshold": 1,
+        "buckets": [[], []],
+        "focus": { "bucket": 1, "node": null },
+        "pipeline": { "key": "a", "hashCode": "0x00000061", "spread": "0x00000061", "index": 1 }
+      }
+    },
+    {
+      "caption": "The node is stored.",
+      "source": null,
+      "state": {
+        "capacity": 2,
+        "size": 1,
+        "threshold": 1,
+        "buckets": [[], [{ "id": "k:a", "key": "a", "value": "1", "hash": "0x00000061" }]],
+        "focus": null,
+        "pipeline": null
+      }
+    }
+  ]
+}
