@@ -28,7 +28,7 @@ describe("findArticles", () => {
     );
   });
 
-  it("has the module table from collect.py", () => {
+  it("has the module table", () => {
     expect(Object.keys(MODULES)).toHaveLength(11);
     expect(MODULES["data-structures"]).toEqual({
       title: "Data structures",

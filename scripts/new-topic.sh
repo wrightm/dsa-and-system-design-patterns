@@ -90,3 +90,8 @@ echo "  ${test_dir#$root/}/${class_name}Test.java"
 echo
 echo "Next: move any questions for this topic out of docs/question-inbox.md,"
 echo "then run ./gradlew :$module:test"
+echo
+echo "Animations: none yet. When a step is worth animating, record a trace into"
+echo "  ${main_dir#$root/}/animations/"
+echo "with ./gradlew test -Ptraces.update, then run pnpm stills from site/."
+echo "The folder appears with the first trace; CONTRIBUTING.md, \"Adding an animation\", has the steps."

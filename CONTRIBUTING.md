@@ -42,11 +42,41 @@ The [hash map article](data-structures/src/main/java/learn/ds/hashmap/README.md)
 
 Pushing to `main` rebuilds the website. Articles still marked `draft` are left out of it.
 
+## Adding an animation
+
+An animation in an article replays a trace: the steps the real Java code took, recorded by a test. Nothing in an animation is drawn by hand, so the trace and its still image are generated files and never edited.
+
+1. **Record a scenario.** In the topic's test sources, write a class that runs the real implementation and records each step with a `TraceRecorder` from the [`trace`](trace/) module (`learn.trace`). The implementation reports what it is doing through a small probe interface that does nothing unless a test is listening. The hash map is the reference: [`HashMapProbe`](data-structures/src/main/java/learn/ds/hashmap/HashMapProbe.java) is the probe, [`HashMapTraceProbe`](data-structures/src/test/java/learn/ds/hashmap/HashMapTraceProbe.java) turns its events into steps, and [`HashMapScenarios`](data-structures/src/test/java/learn/ds/hashmap/HashMapScenarios.java) holds the scenarios and a freshness test for each one. A module that records traces needs `testImplementation(project(":trace"))` in its `build.gradle.kts`.
+2. **Write the trace.** `./gradlew test -Ptraces.update` runs the scenarios and writes `<name>.trace.json` into the topic's `animations/` folder, beside the article.
+3. **Render the still.** From `site/`, run `pnpm stills`. It writes `<name>.svg` beside every trace. GitHub shows the still in place of the animation, and so does the site when JavaScript is off.
+4. **Add the image line** to the article, with alt text that says what the animation shows:
+
+   ```markdown
+   ![Five puts into an eight-bucket table: four new keys and one replacement](animations/put.svg)
+   ```
+
+   The site swaps the image for a player that steps through the trace.
+5. **Commit** the `.trace.json` and the `.svg` together, then preview the site (below).
+
+Re-run steps 2 and 3 whenever the implementation, the scenario or the article's snippet of the code changes. The checks catch a trace or still that has fallen behind: a trace that no longer matches what the code records fails `./gradlew build`, a still that no longer matches its trace fails the site's unit tests (`pnpm test`), and an image under `animations/` with no trace beside it fails `pnpm collect`, so the site cannot be built.
+
 ## Preview the site locally
 
+The site is a Next.js static export in [`site/`](site/). You need Node 22.13 or later and pnpm 10. It does not need a JDK: the traces and stills it uses are committed.
+
 ```bash
-python3 -m venv site/.venv
-site/.venv/bin/pip install -r site/requirements.txt
-site/.venv/bin/python site/collect.py
-site/.venv/bin/mkdocs serve -f site/.generated/mkdocs.yml
+cd site
+pnpm install
+pnpm collect       # copy the published articles, traces and stills into the site
+pnpm build         # static export into site/out
+pnpm serve         # http://localhost:4173/dsa-and-system-design-patterns/
+```
+
+Run `pnpm collect` and `pnpm build` again after changing an article. The same checks the site workflow runs on a pull request are:
+
+```bash
+pnpm typecheck
+pnpm test
+pnpm exec playwright install chromium   # once
+pnpm exec playwright test               # smoke tests against the built site
 ```

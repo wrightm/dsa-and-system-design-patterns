@@ -14,7 +14,7 @@ Every article does three things that most tutorials skip:
 2. **It reads production source.** Each topic is compared with how the JDK or an open source library does it, with links pinned to a release tag and a table of the decisions made and what each one cost.
 3. **It keeps the questions.** The confusions that came up while learning the topic are logged and answered in the article.
 
-Every claim in an article is backed by a test in this repo that you can run.
+Every claim in an article is backed by a test in this repo that you can run. The animations are too: each one replays steps recorded from the real implementation by a test, so it can only show what the code actually did. On GitHub, and on the site without JavaScript, the same animation appears as a still image.
 
 ## Published so far
 
@@ -32,6 +32,7 @@ You need any JDK from 17 up to start Gradle. Gradle downloads JDK 25 for the bui
 ./gradlew build                          # compile, test and check formatting
 ./gradlew :data-structures:test          # one module
 ./gradlew spotlessApply                  # fix formatting
+./gradlew test -Ptraces.update           # rewrite the traces behind the animations
 ./gradlew :benchmarks:jmh -Pjmh.include=MapLookupBenchmark
 ```
 
@@ -43,9 +44,11 @@ One Gradle module per domain, one package per topic. A topic's folder holds its 
 data-structures/src/main/java/learn/ds/hashmap/
 ├── ChainedHashMap.java     the implementation
 ├── README.md               the article
-└── NOTES.md                questions asked while learning it
+├── NOTES.md                questions asked while learning it
+└── animations/             recorded traces and their still images
 data-structures/src/test/java/learn/ds/hashmap/
-└── ChainedHashMapTest.java the tests the article refers to
+├── ChainedHashMapTest.java the tests the article refers to
+└── HashMapScenarios.java   the scenarios that record the traces
 ```
 
 | Module | Package | What goes in it |
@@ -62,8 +65,9 @@ data-structures/src/test/java/learn/ds/hashmap/
 | [`library-studies`](library-studies/) | `learn.libstudy` | Reading JDK and open source library code |
 | [`challenges`](challenges/) | `learn.challenges` | Coding challenge solutions, linked to the topics they use |
 | [`benchmarks`](benchmarks/) | `learn.bench` | JMH benchmarks behind performance claims |
+| [`trace`](trace/) | `learn.trace` | Records the steps an implementation takes, for the animations |
 
-Other folders: [`topics/`](topics/README.md) is the catalogue, [`templates/`](templates/) holds the article templates, [`site/`](site/) builds the website, and [`blog/linkedin/`](blog/linkedin/) keeps the post that announces each article.
+Other folders: [`topics/`](topics/README.md) is the catalogue, [`templates/`](templates/) holds the article templates, [`site/`](site/) builds the website (a Next.js static export; [CONTRIBUTING.md](CONTRIBUTING.md#preview-the-site-locally) shows how to preview it), and [`blog/linkedin/`](blog/linkedin/) keeps the post that announces each article.
 
 ## Start a new topic
 

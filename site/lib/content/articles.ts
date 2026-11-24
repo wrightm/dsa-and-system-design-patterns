@@ -7,7 +7,7 @@ export const BRANCH = "main";
 
 export type Module = { title: string; description: string; catalogue: string | null };
 
-/** Module directory to its title, one-line description and catalogue file. Same table as collect.py. */
+/** Module directory to its title, one-line description and catalogue file. */
 export const MODULES: Record<string, Module> = {
   "data-structures": {
     title: "Data structures",

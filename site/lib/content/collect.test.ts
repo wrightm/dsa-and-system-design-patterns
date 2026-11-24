@@ -71,7 +71,7 @@ describe("collect", () => {
     });
   });
 
-  it("writes a home page without MkDocs-only front matter", () => {
+  it("writes a home page with only a title and description in its front matter", () => {
     expect(read("content/docs/index.md")).toMatch(/^---\ntitle: Home\ndescription: [^\n]+\n---\n/);
   });
 

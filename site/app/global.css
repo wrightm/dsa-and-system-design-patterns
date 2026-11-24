@@ -2,7 +2,7 @@
 @import "fumadocs-ui/css/neutral.css";
 @import "fumadocs-ui/css/preset.css";
 
-/* Indigo accent, as on the MkDocs Material site (primary and accent: indigo). */
+/* Indigo accent, the colour the site has always used. */
 :root {
   --color-fd-primary: #3f51b5;
   --color-fd-primary-foreground: #ffffff;

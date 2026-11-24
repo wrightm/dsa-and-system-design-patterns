@@ -17,8 +17,6 @@ bin/
 .DS_Store
 
 # Site
-site/.generated/
-site/.venv/
 __pycache__/
 site/node_modules/
 site/.next/

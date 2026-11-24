@@ -26,6 +26,14 @@ prerequisites: []
 
 <!-- Small steps. Each step names the test that proves it. Keep snippets short and link to the full source. -->
 
+<!-- To animate a step, record a trace and render its still first (CONTRIBUTING.md, "Adding an animation"),
+     then add an image line like this one, with alt text that says what the animation shows:
+
+```markdown
+![Five puts into an eight-bucket table: four new keys and one replacement](animations/put.svg)
+```
+-->
+
 ## Invariants and complexity
 
 <!-- What must always be true, and what each operation costs (time and space, worst and expected). -->
