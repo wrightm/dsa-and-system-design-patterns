@@ -29,7 +29,7 @@ export async function GET(_request: Request, { params }: { params: Promise<{ slu
         }}
       >
         <div style={{ display: "flex", flexDirection: "column", gap: 32 }}>
-          <div style={{ fontSize: 60, fontWeight: 700, lineHeight: 1.15 }}>{page.data.title}</div>
+          <div style={{ fontSize: 60, lineHeight: 1.15 }}>{page.data.title}</div>
           <div style={{ fontSize: 30, lineHeight: 1.4, color: "#4a4d68" }}>{page.data.summary ?? ""}</div>
         </div>
         <div style={{ fontSize: 28, color: INDIGO }}>{SITE_NAME}</div>

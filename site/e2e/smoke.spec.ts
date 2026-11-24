@@ -27,6 +27,22 @@ test("the hash map article renders", async ({ page }) => {
   await expect(page.locator('a[href^="https://github.com/"][href$="ChainedHashMap.java"]').first()).toBeAttached();
 });
 
+test("an invalid Mermaid diagram falls back to its source and leaves the page intact", async ({ page }) => {
+  // Break the diagram in the served HTML (both the markup and the embedded React data), so no
+  // broken fixture page ever ships in the site.
+  await page.route("**/data-structures/hashmap/", async (route) => {
+    const response = await route.fetch();
+    const body = (await response.text()).replaceAll("flowchart LR", "notadiagram LR");
+    await route.fulfill({ response, body });
+  });
+  await page.goto("data-structures/hashmap/");
+  // data-mermaid="failed" is only set in the browser, after Mermaid has tried and failed.
+  await expect(page.locator('pre.mermaid-source[data-mermaid="failed"]')).toContainText("notadiagram LR");
+  await expect(page.locator("h1")).toContainText("Hash map");
+  await expect(page.getByText("This page couldn’t load")).toHaveCount(0);
+  await expect(page.getByText("Syntax error in text")).toHaveCount(0);
+});
+
 test("links between pages resolve to trailing-slash URLs under the base path", async ({ page }) => {
   await page.goto("series/");
   const link = page.locator("article a", { hasText: "Hash map" }).first();
