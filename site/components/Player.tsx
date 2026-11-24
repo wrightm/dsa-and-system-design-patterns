@@ -2,16 +2,18 @@
 
 import { type KeyboardEvent, type ReactNode, useEffect, useReducer, useSyncExternalStore } from "react";
 import { type PlayerState, type Speed, playerReducer } from "../lib/player/reducer";
-import type { Step, Trace } from "../lib/trace/types";
 
 const BASE_STEP_MS = 1800;
 const SPEEDS: Speed[] = [0.5, 1, 2];
 const REDUCED_MOTION_QUERY = "(prefers-reduced-motion: reduce)";
 
-type PlayerProps = {
-  trace: Trace;
-  renderStep: (step: Step, previous: Step | null, reducedMotion: boolean) => ReactNode;
-  footer?: (step: Step) => ReactNode;
+/** Any step with a caption: a trace's own `Step`, or a slimmed copy made for the browser. */
+type PlayerStep = { caption: string };
+
+type PlayerProps<S extends PlayerStep> = {
+  trace: { title: string; steps: readonly S[] };
+  renderStep: (step: S, previous: S | null, reducedMotion: boolean) => ReactNode;
+  footer?: (step: S) => ReactNode;
 };
 
 function subscribeReducedMotion(onChange: () => void): () => void {
@@ -35,7 +37,7 @@ const buttonClass =
   "rounded-md border border-fd-border bg-fd-secondary px-3 py-1 text-sm text-fd-secondary-foreground " +
   "hover:bg-fd-accent disabled:cursor-not-allowed disabled:opacity-50";
 
-export function Player({ trace, renderStep, footer }: PlayerProps) {
+export function Player<S extends PlayerStep>({ trace, renderStep, footer }: PlayerProps<S>) {
   const steps = trace.steps;
   const stepCount = steps.length;
   const [state, dispatch] = useReducer(

@@ -6,6 +6,7 @@ import { defineConfig, defineDocs } from "fumadocs-mdx/config";
 import rehypeRaw from "rehype-raw";
 import { z } from "zod";
 import { remarkPageLinks } from "./lib/page-links";
+import { remarkAnimations } from "./lib/remark-animations";
 
 const DOCS_DIR = "content/docs";
 
@@ -25,8 +26,20 @@ export const docs = defineDocs({
 
 export default defineConfig({
   mdxOptions: {
-    // Run before the preset so links are site URLs before Fumadocs reads them.
-    remarkPlugins: (preset) => [[remarkPageLinks, { docsDir: path.resolve(DOCS_DIR) }], remarkMdxMermaid, ...preset],
+    // Run before the preset: links must be site URLs before Fumadocs reads them, and an
+    // animation image must be an <Animation> before the preset's remarkImage makes it an import.
+    remarkPlugins: (preset) => [
+      [remarkPageLinks, { docsDir: path.resolve(DOCS_DIR) }],
+      [
+        remarkAnimations,
+        {
+          pagePathOf: (file: string) => path.relative(path.resolve(DOCS_DIR), file),
+          tracesDir: path.resolve("content/traces"),
+        },
+      ],
+      remarkMdxMermaid,
+      ...preset,
+    ],
     // Raw HTML such as `<br>` in tables, as GitHub renders it. MDX nodes pass through untouched.
     rehypePlugins: (preset) => [[rehypeRaw, { passThrough: nodeTypes }], ...preset],
   },

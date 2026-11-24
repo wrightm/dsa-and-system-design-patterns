@@ -55,3 +55,28 @@ test("search finds the hash map article", async ({ page }) => {
   await page.getByRole("dialog").getByRole("combobox").fill("hash map");
   await expect(page.getByRole("dialog").getByText(/Hash map: from a list of pairs/).first()).toBeVisible();
 });
+
+// The hash map article gains its animation images in Task 7. Until then the page has no player,
+// so these stay `fixme`; Task 7 turns them on.
+test.fixme("the first player's Forward button changes its caption", async ({ page }) => {
+  await page.goto("data-structures/hashmap/");
+  const player = page.locator("figure[aria-label^='Animation:']").first();
+  const caption = player.locator("[aria-live]");
+  const before = await caption.textContent();
+  await player.getByRole("button", { name: "Forward" }).click();
+  await expect(caption).not.toHaveText(before ?? "");
+});
+
+test.describe("with reduced motion", () => {
+  test.use({ reducedMotion: "reduce" });
+
+  test.fixme("steps cut without tweening and Play still advances", async ({ page }) => {
+    await page.goto("data-structures/hashmap/");
+    const player = page.locator("figure[aria-label^='Animation:']").first();
+    await player.getByRole("button", { name: "Forward" }).click();
+    await expect(player.getByText("step 2 of")).toBeVisible();
+    expect(await page.evaluate(() => document.getAnimations().length)).toBe(0);
+    await player.getByRole("button", { name: "Play" }).click();
+    await expect(player.getByText("step 3 of")).toBeVisible({ timeout: 5000 });
+  });
+});
