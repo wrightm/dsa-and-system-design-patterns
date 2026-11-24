@@ -5,6 +5,7 @@
   "packageManager": "pnpm@10.30.3",
   "scripts": {
     "collect": "tsx scripts/collect.ts",
+    "stills": "tsx scripts/render-stills.tsx",
     "build": "next build",
     "serve": "tsx scripts/serve.ts",
     "e2e": "playwright test",

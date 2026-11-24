@@ -10,6 +10,8 @@ export type SceneItem = {
   text?: string;
   emphasis?: "focus" | "new" | "none";
   count?: number;
+  /** Font size of a label, when not the default 12. */
+  size?: number;
 };
 
 export type Scene = { width: number; height: number; items: SceneItem[] };
@@ -53,6 +55,10 @@ const INDEX_W = NODE_MIN_W;
 const GRID_COLUMNS = 32;
 const CELL = 14;
 const CELL_PITCH = 16;
+// The grid draws at about 0.6 scale on a phone, so its legend is larger than the other labels.
+const LEGEND_FONT = 16;
+const LEGEND_CHAR_W = (CHAR_W * LEGEND_FONT) / 13;
+const LEGEND_H = 22;
 
 /** Lower bound of each colour band in the grid, from empty to long chains. */
 export const HEAT_BANDS = [0, 1, 2, 4, 16] as const;
@@ -230,21 +236,41 @@ function layoutGrid(state: LayoutState, frame: Frame): Scene {
   }
 
   const legendY = TABLE_Y + rows * CELL_PITCH + 8;
+  const legendW = (text: string) => Math.ceil(Array.from(text).length * LEGEND_CHAR_W);
   let x = 0;
   HEAT_BANDS.forEach((band, i) => {
     const text = BAND_LABELS[i]!;
-    const w = 18 + Math.ceil(Array.from(text).length * CHAR_W);
-    items.push({ id: `legend:${band}`, kind: "label", x, y: legendY, w, h: LABEL_H, text, count: band });
+    const w = LEGEND_FONT + 6 + legendW(text);
+    items.push({
+      id: `legend:${band}`,
+      kind: "label",
+      x,
+      y: legendY,
+      w,
+      h: LEGEND_H,
+      text,
+      count: band,
+      size: LEGEND_FONT,
+    });
     x += w + 14;
   });
   const longestText = `longest ${longest}`;
-  const longestW = Math.ceil(Array.from(longestText).length * CHAR_W);
-  items.push({ id: "s:longest", kind: "label", x: x + 10, y: legendY, w: longestW, h: LABEL_H, text: longestText });
+  const longestW = legendW(longestText);
+  items.push({
+    id: "s:longest",
+    kind: "label",
+    x: x + 10,
+    y: legendY,
+    w: longestW,
+    h: LEGEND_H,
+    text: longestText,
+    size: LEGEND_FONT,
+  });
   x += 10 + longestW;
 
   return {
     width: Math.max(top.width, GRID_COLUMNS * CELL_PITCH - (CELL_PITCH - CELL), x),
-    height: legendY + LABEL_H,
+    height: legendY + LEGEND_H,
     items,
   };
 }

@@ -10,7 +10,7 @@ prerequisites: []
 
 # Hash map: from a list of pairs to java.util.HashMap
 
-By the end of this article you will have built a working hash map in about 200 lines of Java, and you will be able to open `java.util.HashMap` and explain why each of its odd-looking constants is there.
+By the end of this article you will have built a working hash map in about 250 lines of Java, and you will be able to open `java.util.HashMap` and explain why each of its odd-looking constants is there.
 
 **Prerequisites:** arrays, linked lists, and Big-O notation. None of those have articles here yet; the [catalogue](../../../../../../../topics/data-structures.md) tracks them.
 
@@ -48,16 +48,26 @@ flowchart LR
     K["key: &quot;carol&quot;"] --> H["hashCode()<br/>an int, any int"]
     H --> S["spread<br/>mix high bits into low bits"]
     S --> I["index = hash &amp; (length - 1)"]
-    I --> B2
+    I ~~~ B0
+    I --> B1
     subgraph table["table (length 8)"]
+        direction TB
         B0["0"]
         B1["1"]
         B2["2"]
         B3["3"]
-        B4["…"]
+        B4["4"]
+        B5["…"]
     end
-    B2 --> N1["alice → 31"] --> N2["carol → 27"]
-    B0 --> N3["bob → 45"]
+    B0 ~~~ E0[" "]
+    B1 --> N1["carol → 27"] --> N2["alice → 32"]
+    B2 --> N3["dave → 52"]
+    B3 ~~~ E3[" "]
+    B4 --> N4["bob → 45"]
+    B5 ~~~ E5[" "]
+    style E0 fill:none,stroke:none
+    style E3 fill:none,stroke:none
+    style E5 fill:none,stroke:none
 ```
 
 The rule never says where the key *is*. It says where the key would have to be. That is enough: you only search one short list, and if the key is not in it, the key is not in the map.
@@ -100,6 +110,10 @@ The hash only narrows the search. **`equals` makes the decision.** The test `key
 
 The reverse does break it. If two objects are `equals` but return different hash codes, the map looks in the wrong bucket and reports the key missing. That is the reason for the rule that you must override `hashCode` whenever you override `equals`.
 
+![Five puts into an eight-bucket table: four new keys and one replacement](animations/put.svg)
+
+Watch `carol` land in the same bucket as `alice` and go in at the head of the chain, then watch the second `put("alice")` walk that chain, find the match and replace the value without adding a node.
+
 ### Step 3: grow before the lists get long
 
 Stop here and you have built something that is still O(n). With 16 buckets and 100,000 entries, each list holds about 6,250 nodes. Sixteen times faster than the list of pairs, and still linear.
@@ -108,12 +122,20 @@ The fix is to keep the lists short by adding buckets as entries arrive. `Chained
 
 ```java
 table[index] = new Node<>(hash, key, value, table[index]);
-if (++size > threshold) {
+size++;
+probe.linked(key, index);
+if (size > threshold) {
   resize();
 }
 ```
 
+The `probe` call does nothing unless a test is listening; it is how the animations in this article were recorded from the real code.
+
 Resizing visits every node and moves it to its bucket in the larger table. That single `put` costs O(n), which sounds like it brings back the original problem. It does not, because doubling makes resizes rare. Growing to n entries moves at most n + n/2 + n/4 + … nodes in total, which is less than 2n. Spread over the n insertions that caused them, that is a constant amount of extra work each. This is what "amortised O(1)" means: any single operation may be slow, but the average over a sequence is constant.
+
+![The thirteenth entry doubles a 16-bucket table to 32](animations/resize.svg)
+
+Watch the thirteenth entry push the size past the threshold of 12: during the resize every node either stays in its bucket or moves exactly 16 along, because the larger mask looks at one more bit of the hash.
 
 `doublesWhenLoadFactorIsExceeded` checks the exact moment of growth (the 13th entry in a 16-bucket table), and `keepsEveryEntryAcrossManyResizes` starts from a single bucket and checks that 10,000 entries survive fourteen doublings.
 
@@ -140,6 +162,10 @@ return h ^ (h >>> 16);
 ```
 
 It XORs the top 16 bits into the bottom 16, so the high bits get a say in the index. The test `spreadingRescuesKeysThatDifferOnlyInTheirHighBits` measures both versions on those 255 keys: without spreading they occupy 1 bucket, with spreading they occupy 255.
+
+![255 whole-number floats in a 1,024-bucket table: without spreading they all land in bucket 0, with spreading they fill 255 buckets](animations/high-bits.svg)
+
+Watch bucket 0 in the first half: without spreading, every key goes there and nothing else fills; in the second half the same keys, spread first, each get a bucket of their own.
 
 ## Invariants and complexity
 

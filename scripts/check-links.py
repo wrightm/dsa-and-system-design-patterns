@@ -24,8 +24,10 @@ def markdown_files() -> list[Path]:
         path
         for path in ROOT.rglob("*.md")
         if not SKIP_DIRS.intersection(path.relative_to(ROOT).parts)
-        # Pages under site/pages link relative to the built site, and mkdocs --strict checks them.
-        and not path.is_relative_to(ROOT / "site" / "pages")
+        # Pages under site/pages and site/content-src link relative to the built site, which
+        # checks them; site/content is generated from the articles checked here; the site's
+        # test fixtures break links on purpose.
+        and not any(path.is_relative_to(ROOT / "site" / d) for d in ("pages", "content-src", "content", "test"))
     )
 
 

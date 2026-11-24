@@ -56,9 +56,7 @@ test("search finds the hash map article", async ({ page }) => {
   await expect(page.getByRole("dialog").getByText(/Hash map: from a list of pairs/).first()).toBeVisible();
 });
 
-// The hash map article gains its animation images in Task 7. Until then the page has no player,
-// so these stay `fixme`; Task 7 turns them on.
-test.fixme("the first player's Forward button changes its caption", async ({ page }) => {
+test("the first player's Forward button changes its caption", async ({ page }) => {
   await page.goto("data-structures/hashmap/");
   const player = page.locator("figure[aria-label^='Animation:']").first();
   const caption = player.locator("[aria-live]");
@@ -67,16 +65,59 @@ test.fixme("the first player's Forward button changes its caption", async ({ pag
   await expect(caption).not.toHaveText(before ?? "");
 });
 
+test("the hash map page logs no console errors on load or while stepping", async ({ page }) => {
+  const errors: string[] = [];
+  page.on("console", (message) => {
+    if (message.type() === "error") errors.push(message.text());
+  });
+  page.on("pageerror", (error) => errors.push(error.message));
+  await page.goto("data-structures/hashmap/");
+  const players = page.locator("figure[aria-label^='Animation:']");
+  await expect(players).toHaveCount(3);
+  for (const player of await players.all()) {
+    await player.getByRole("button", { name: "Forward" }).click();
+    await expect(player.getByText("step 2 of")).toBeVisible();
+    await player.getByRole("button", { name: "Last" }).click();
+  }
+  await page.waitForLoadState("networkidle");
+  expect(errors).toEqual([]);
+});
+
 test.describe("with reduced motion", () => {
   test.use({ reducedMotion: "reduce" });
 
-  test.fixme("steps cut without tweening and Play still advances", async ({ page }) => {
+  test("steps cut without tweening and Play still advances", async ({ page }) => {
     await page.goto("data-structures/hashmap/");
     const player = page.locator("figure[aria-label^='Animation:']").first();
     await player.getByRole("button", { name: "Forward" }).click();
     await expect(player.getByText("step 2 of")).toBeVisible();
-    expect(await page.evaluate(() => document.getAnimations().length)).toBe(0);
+    // Only the player's own: clicking scrolls the page, and the Fumadocs contents list transitions.
+    const running = await player.evaluate(
+      (figure) =>
+        document.getAnimations().filter((a) => figure.contains((a.effect as KeyframeEffect | null)?.target ?? null))
+          .length,
+    );
+    expect(running).toBe(0);
     await player.getByRole("button", { name: "Play" }).click();
     await expect(player.getByText("step 3 of")).toBeVisible({ timeout: 5000 });
+  });
+});
+
+test.describe("without JavaScript", () => {
+  test.use({ javaScriptEnabled: false });
+
+  test("each animation shows its still and no player", async ({ page }) => {
+    await page.goto("data-structures/hashmap/");
+    const stills = page.locator("img[src*='/generated/animations/data-structures/hashmap/']");
+    await expect(stills).toHaveCount(3);
+    for (const still of await stills.all()) {
+      await expect(still).toBeVisible();
+      expect(await still.evaluate((img: HTMLImageElement) => img.complete && img.naturalWidth > 0)).toBe(true);
+    }
+    // The server-rendered players are still in the page, but hidden: their controls cannot work.
+    const players = page.locator("figure[aria-label^='Animation:']");
+    await expect(players).toHaveCount(3);
+    for (const player of await players.all()) await expect(player).toBeHidden();
+    await expect(page.getByRole("button", { name: "Forward" })).toHaveCount(0);
   });
 });

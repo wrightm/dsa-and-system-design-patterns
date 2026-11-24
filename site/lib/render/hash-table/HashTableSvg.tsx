@@ -19,7 +19,8 @@ type Props = {
 };
 
 const PAD = 8;
-const FONT_SIZE = 13;
+export const FONT_SIZE = 13;
+const LABEL_SIZE = 12;
 const TWEEN = { duration: 0.45, ease: "easeInOut" } as const;
 
 function stroke(item: SceneItem, palette: Palette, normal: string) {
@@ -108,20 +109,22 @@ function Shape({ item, palette }: { item: SceneItem; palette: Palette }): ReactN
         </>
       );
     }
-    case "label":
+    case "label": {
+      const size = item.size ?? LABEL_SIZE;
       if (item.count !== undefined) {
+        // A legend entry: a swatch as tall as the text, then the text.
         return (
           <>
             <rect
-              y={(item.h - 12) / 2}
-              width={12}
-              height={12}
+              y={(item.h - size) / 2}
+              width={size}
+              height={size}
               rx={2}
               fill={palette.heat[heatLevel(item.count)]}
               stroke={palette.bucketStroke}
               strokeWidth={0.5}
             />
-            <text x={18} y={item.h / 2} dominantBaseline="central" fill={palette.muted} fontSize={12}>
+            <text x={size + 6} y={item.h / 2} dominantBaseline="central" fill={palette.muted} fontSize={size}>
               {item.text}
             </text>
           </>
@@ -134,11 +137,12 @@ function Shape({ item, palette }: { item: SceneItem; palette: Palette }): ReactN
           textAnchor="middle"
           dominantBaseline="central"
           fill={palette.muted}
-          fontSize={12}
+          fontSize={size}
         >
           {item.text}
         </text>
       );
+    }
   }
 }
 
@@ -168,10 +172,13 @@ function Cells({ items, palette, positions }: { items: SceneItem[]; palette: Pal
   );
 }
 
-/** A scene drawn in SVG. It scales down to fit its container and never past its own size. */
-export function HashTableSvg({ scene, palette, positions, animate, label }: Props) {
-  const width = scene.width + 2 * PAD;
-  const height = scene.height + 2 * PAD;
+type DrawingProps = Omit<Props, "label">;
+
+/**
+ * The items of a scene, drawn at their scene coordinates with no wrapper: `HashTableSvg` puts
+ * them in a scaling `<svg>`, and a still places them inside its own document.
+ */
+export function HashTableDrawing({ scene, palette, positions, animate }: DrawingProps) {
   const tweened = animate && positions === undefined;
   const plainCell = (item: SceneItem) =>
     isCell(item) && item.emphasis !== "focus" && (positions?.[item.id]?.opacity ?? 1) === 1;
@@ -181,15 +188,7 @@ export function HashTableSvg({ scene, palette, positions, animate, label }: Prop
   const fixed = (item: SceneItem) => !tweened || isCell(item);
 
   return (
-    <svg
-      viewBox={`${-PAD} ${-PAD} ${width} ${height}`}
-      width="100%"
-      style={{ maxWidth: width, height: "auto", display: "block", margin: "0 auto" }}
-      role="img"
-      aria-label={label}
-      fontFamily={palette.font}
-      fontSize={FONT_SIZE}
-    >
+    <>
       <Cells items={cells} palette={palette} positions={positions} />
       {rest.filter(fixed).map((item) => {
         const at = positions?.[item.id] ?? { x: item.x, y: item.y, opacity: 1 };
@@ -220,6 +219,25 @@ export function HashTableSvg({ scene, palette, positions, animate, label }: Prop
             ))}
         </AnimatePresence>
       ) : null}
+    </>
+  );
+}
+
+/** A scene drawn in SVG. It scales down to fit its container and never past its own size. */
+export function HashTableSvg({ scene, palette, positions, animate, label }: Props) {
+  const width = scene.width + 2 * PAD;
+  const height = scene.height + 2 * PAD;
+  return (
+    <svg
+      viewBox={`${-PAD} ${-PAD} ${width} ${height}`}
+      width="100%"
+      style={{ maxWidth: width, height: "auto", display: "block", margin: "0 auto" }}
+      role="img"
+      aria-label={label}
+      fontFamily={palette.font}
+      fontSize={FONT_SIZE}
+    >
+      <HashTableDrawing scene={scene} palette={palette} positions={positions} animate={animate} />
     </svg>
   );
 }

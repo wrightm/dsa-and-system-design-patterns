@@ -9,6 +9,7 @@ import { CONTEXT_LINES, type Excerpt } from "./SourceExcerpt";
 const CONTENT = path.resolve("content");
 const ID = /^[a-z0-9-]+\/[a-z0-9-]+\/[a-z0-9-]+$/;
 const BASE_PATH = process.env.NEXT_PUBLIC_BASE_PATH ?? "";
+const NOSCRIPT_RULE = "[data-animation-player]{display:none}";
 
 /** Renderers by trace kind. A kind with none fails the build rather than drawing nothing. */
 const RENDERERS = { "hash-table": HashTablePlayer } as const;
@@ -67,11 +68,16 @@ export function Animation({ id, alt }: { id: string; alt: string }) {
     state: slimState(step.state, trace.layout),
   }));
   const Renderer = RENDERERS[trace.kind];
+  // Without JavaScript the player cannot step, so the noscript rule hides it and the still shows
+  // alone. With JavaScript the browser never parses the noscript, so only the player shows.
   return (
     <>
-      <Renderer title={trace.title} layout={trace.layout} alt={alt} steps={steps} excerpts={excerpts} />
+      <div data-animation-player="">
+        <Renderer title={trace.title} layout={trace.layout} alt={alt} steps={steps} excerpts={excerpts} />
+      </div>
       <noscript>
-        <img src={`${BASE_PATH}/generated/animations/${id}.svg`} alt={alt} />
+        <style>{NOSCRIPT_RULE}</style>
+        <img src={`${BASE_PATH}/generated/animations/${id}.svg`} alt={alt} className="my-6" />
       </noscript>
     </>
   );
