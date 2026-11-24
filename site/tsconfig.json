@@ -22,6 +22,7 @@
     "components",
     "e2e",
     "lib",
+    "remotion",
     "scripts",
     "*.ts",
     "*.tsx",

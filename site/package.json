@@ -6,6 +6,7 @@
   "scripts": {
     "collect": "tsx scripts/collect.ts",
     "stills": "tsx scripts/render-stills.tsx",
+    "video": "tsx scripts/render-video.ts",
     "build": "next build",
     "serve": "tsx scripts/serve.ts",
     "e2e": "playwright test",
@@ -28,6 +29,9 @@
   },
   "devDependencies": {
     "@playwright/test": "1.65.1",
+    "@remotion/bundler": "4.0.546",
+    "@remotion/cli": "4.0.546",
+    "@remotion/renderer": "4.0.546",
     "@tailwindcss/postcss": "4.3.5",
     "@testing-library/dom": "10.4.2",
     "@testing-library/react": "16.3.3",
@@ -39,6 +43,7 @@
     "jsdom": "29.1.1",
     "mdast-util-mdx-jsx": "3.2.2",
     "postcss": "8.5.33",
+    "remotion": "4.0.546",
     "tailwindcss": "4.3.5",
     "tsx": "4.23.15",
     "typescript": "7.0.2",
