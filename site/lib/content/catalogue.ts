@@ -16,7 +16,8 @@ export function catalogueFiles(repoRoot: string): string[] {
 }
 
 export function catalogueTitle(text: string): string {
-  return (text.split("\n", 1)[0] ?? "").replace(/^# /, "").trim();
+  // split always returns at least one string, even for empty text.
+  return text.split("\n", 1)[0]!.replace(/^# /, "").trim();
 }
 
 export function catalogueProgress(repoRoot: string): Progress[] {

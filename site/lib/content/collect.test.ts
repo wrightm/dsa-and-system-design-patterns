@@ -135,4 +135,71 @@ describe("collect", () => {
       /^data-structures\/src\/main\/java\/learn\/ds\/hashmap\/animations\/put\.trace\.json: /,
     );
   });
+
+  it("fails on a trace that is not JSON, naming the file", () => {
+    const { repo, dir } = tempRepo();
+    fs.writeFileSync(path.join(dir, "animations/put.trace.json"), "{");
+    expect(() => collect({ repoRoot: repo, siteDir })).toThrow(
+      /^data-structures\/src\/main\/java\/learn\/ds\/hashmap\/animations\/put\.trace\.json: not valid JSON \(.+\)$/,
+    );
+  });
+
+  it("fails when a trace names a source file that is not beside the article", () => {
+    const { repo, dir } = tempRepo();
+    const file = path.join(dir, "animations/put.trace.json");
+    const trace = JSON.parse(fs.readFileSync(file, "utf8"));
+    trace.steps[0].source.file = "Missing.java";
+    fs.writeFileSync(file, JSON.stringify(trace));
+    expect(() => collect({ repoRoot: repo, siteDir })).toThrow(
+      "data-structures/src/main/java/learn/ds/hashmap/animations/put.trace.json: " +
+        "source file not found beside the article: Missing.java",
+    );
+  });
+
+  it("fails when the catalogue has no README", () => {
+    const { repo } = tempRepo();
+    fs.renameSync(path.join(repo, "topics/README.md"), path.join(repo, "topics-readme.md"));
+    expect(() => collect({ repoRoot: repo, siteDir })).toThrow(new Error("topics/README.md is missing"));
+  });
+
+  it("says so on the home page when nothing is published", () => {
+    const { repo, dir } = tempRepo();
+    const readme = path.join(dir, "README.md");
+    fs.writeFileSync(readme, fs.readFileSync(readme, "utf8").replace("status: published", "status: draft"));
+    expect(collect({ repoRoot: repo, siteDir })).toEqual([]);
+    expect(read("content/docs/index.md")).toContain("Nothing published yet.");
+    expect(read("content/docs/series.md")).toMatch(/\|---\|---\|---\|---\|\n$/);
+  });
+
+  it("lists a domain's articles by title, ignoring case, and the series and home by number", () => {
+    const { repo } = tempRepo();
+    const base = "data-structures/src/main/java/learn/ds";
+    const article = (title: string, series: number) =>
+      `---\ntitle: ${title}\nsummary: About ${title}.\nstatus: published\ndate: 2026-11-2${series}\nseries: ${series}\n---\n# ${title}\n`;
+    for (const [slug, title, series] of [
+      ["trie", "trie", 2],
+      ["array", "Zipped array", 3],
+      ["bag", "Bag", 4],
+      ["deque", "deque", 5],
+      ["heap", "Heap", 6],
+    ] as const) {
+      fs.mkdirSync(path.join(repo, base, slug));
+      fs.writeFileSync(path.join(repo, base, slug, "README.md"), article(title, series));
+    }
+    expect(collect({ repoRoot: repo, siteDir }).map((a) => a.series)).toEqual([1, 2, 3, 4, 5, 6]);
+    const index = read("content/docs/data-structures/index.md");
+    const order = ["Bag", "deque", "Hash map: a fixture", "Heap", "trie", "Zipped array"].map((t) =>
+      index.indexOf(`[${t}]`),
+    );
+    expect(order).toEqual([...order].sort((a, b) => a - b));
+    expect(order).not.toContain(-1);
+    const series = read("content/docs/series.md");
+    expect(series.indexOf("| 1 |")).toBeLessThan(series.indexOf("| 2 |"));
+    expect(series.indexOf("| 5 |")).toBeLessThan(series.indexOf("| 6 |"));
+    const home = read("content/docs/index.md");
+    expect(home.indexOf("[Heap]")).toBeLessThan(home.indexOf("[deque]"));
+    expect(home.indexOf("[Zipped array]")).toBeLessThan(home.indexOf("[trie]"));
+    expect(home).not.toContain("Hash map: a fixture");
+    expect(exists("content/traces/data-structures/trie")).toBe(false);
+  });
 });

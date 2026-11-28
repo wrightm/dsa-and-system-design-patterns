@@ -3,9 +3,10 @@ import path from "node:path";
 import { describe, expect, it } from "vitest";
 import type { HashTableState, Node } from "../../trace/types";
 import { validateTrace } from "../../trace/validate";
+import { REPO_ROOT } from "../../../test/repo-root";
 import { type SceneItem, layoutHashTable, layoutTrace, slimState } from "./layout";
 
-const animations = path.resolve(__dirname, "../../../../data-structures/src/main/java/learn/ds/hashmap/animations");
+const animations = path.join(REPO_ROOT, "data-structures/src/main/java/learn/ds/hashmap/animations");
 
 function committed(name: string) {
   const file = path.join(animations, `${name}.trace.json`);
@@ -106,6 +107,19 @@ describe("layoutHashTable", () => {
     const resize = committed("resize");
     const sizes = new Set(layoutTrace(resize.steps.map((s) => s.state), "chains").map((s) => `${s.width}x${s.height}`));
     expect(sizes.size).toBe(1);
+  });
+
+  it("draws a bucket the state does not list as an empty one", () => {
+    const items = layoutHashTable(stateWith([[node("a")]], 2), "chains").items;
+    expect(items.filter((i) => i.kind === "bucket").map((i) => i.id)).toEqual(["b:0", "b:1"]);
+    expect(nodesOf(items).map((i) => i.id)).toEqual(["k:a"]);
+  });
+
+  it("refuses to draw chains from a state that holds only counts", () => {
+    const counts = slimState(stateWith([[node("a")], []]), "grid");
+    expect(() => layoutHashTable(counts, "chains")).toThrow(
+      new Error("the chains layout needs the nodes, but this state holds only counts"),
+    );
   });
 
   it("lays out an empty trace as no scenes", () => {

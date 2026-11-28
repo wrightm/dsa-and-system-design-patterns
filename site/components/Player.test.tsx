@@ -40,6 +40,8 @@ afterEach(() => {
   vi.unstubAllGlobals();
 });
 
+const button = (name: string) => screen.getByRole("button", { name }) as HTMLButtonElement;
+
 describe("Player", () => {
   it("Forward moves to step two", () => {
     render(<Player trace={traceOf(3)} renderStep={renderStep} />);
@@ -75,13 +77,48 @@ describe("Player", () => {
     expect(screen.getByRole("button", { name: "Play" })).toBeTruthy();
   });
 
+  it("Space elsewhere in the player plays and pauses, and the keys it handles do nothing else", () => {
+    render(<Player trace={traceOf(3)} renderStep={renderStep} />);
+    const figure = screen.getByRole("figure");
+    expect(fireEvent.keyDown(figure, { key: " " })).toBe(false);
+    expect(button("Pause")).toBeTruthy();
+    expect(fireEvent.keyDown(figure, { key: " " })).toBe(false);
+    expect(button("Play")).toBeTruthy();
+    for (const key of ["ArrowRight", "ArrowLeft", "End", "Home"]) expect(fireEvent.keyDown(figure, { key })).toBe(false);
+  });
+
+  it("the Play button pauses while playing", () => {
+    render(<Player trace={traceOf(3)} renderStep={renderStep} />);
+    fireEvent.click(button("Play"));
+    fireEvent.click(button("Pause"));
+    expect(button("Play")).toBeTruthy();
+  });
+
+  it("leaves keys it does not handle, and Space on a button, to the browser", () => {
+    render(<Player trace={traceOf(3)} renderStep={renderStep} />);
+    expect(fireEvent.keyDown(screen.getByRole("figure"), { key: "a" })).toBe(true);
+    expect(fireEvent.keyDown(button("Play"), { key: " " })).toBe(true);
+    expect(screen.getByText("step 1 of 3")).toBeTruthy();
+  });
+
+  it.each(["altKey", "ctrlKey", "metaKey", "shiftKey"])("leaves a key pressed with %s to the browser", (modifier) => {
+    render(<Player trace={traceOf(3)} renderStep={renderStep} />);
+    expect(fireEvent.keyDown(screen.getByRole("figure"), { key: "ArrowRight", [modifier]: true })).toBe(true);
+    expect(screen.getByText("step 1 of 3")).toBeTruthy();
+  });
+
+  it("leaves keys typed into a text box in the footer to the text box", () => {
+    render(<Player trace={traceOf(3)} renderStep={renderStep} footer={() => <textarea aria-label="Notes" />} />);
+    expect(fireEvent.keyDown(screen.getByLabelText("Notes"), { key: "ArrowRight" })).toBe(true);
+    expect(screen.getByText("step 1 of 3")).toBeTruthy();
+  });
+
   it("scrubbing seeks and clamps string input", () => {
     render(<Player trace={traceOf(3)} renderStep={renderStep} />);
     fireEvent.change(screen.getByLabelText("Step"), { target: { value: "2" } });
     expect(screen.getByText("step 3 of 3")).toBeTruthy();
   });
 
-  const button = (name: string) => screen.getByRole("button", { name }) as HTMLButtonElement;
   const STEP_BUTTONS = ["First", "Back", "Forward", "Last"];
 
   it("marks the step buttons at an end aria-disabled but keeps them focusable", () => {
@@ -204,6 +241,23 @@ describe("Player", () => {
       expect(vi.getTimerCount()).toBeGreaterThan(0);
       unmount();
       expect(vi.getTimerCount()).toBe(0);
+    });
+
+    it("keeps playing when the tab becomes visible again", () => {
+      render(<Player trace={traceOf(3)} renderStep={renderStep} />);
+      fireEvent.click(screen.getByRole("button", { name: "Play" }));
+      vi.spyOn(document, "visibilityState", "get").mockReturnValue("visible");
+      act(() => {
+        document.dispatchEvent(new Event("visibilitychange"));
+      });
+      expect(screen.getByRole("button", { name: "Pause" })).toBeTruthy();
+    });
+
+    it("stops listening for the tab's visibility on unmount", () => {
+      const remove = vi.spyOn(document, "removeEventListener");
+      const { unmount } = render(<Player trace={traceOf(3)} renderStep={renderStep} />);
+      unmount();
+      expect(remove).toHaveBeenCalledWith("visibilitychange", expect.any(Function));
     });
 
     it("pauses when the tab is hidden", () => {

@@ -4,13 +4,14 @@
   "type": "module",
   "packageManager": "pnpm@10.30.3",
   "scripts": {
-    "collect": "tsx scripts/collect.ts",
-    "stills": "tsx scripts/render-stills.tsx",
-    "video": "tsx scripts/render-video.ts",
+    "collect": "tsx scripts/run/collect.ts",
+    "stills": "tsx scripts/run/render-stills.ts",
+    "video": "tsx scripts/run/render-video.ts",
     "build": "next build",
-    "serve": "tsx scripts/serve.ts",
+    "serve": "tsx scripts/run/serve.ts",
     "e2e": "playwright test",
     "test": "vitest run",
+    "test:coverage": "vitest run --coverage",
     "typecheck": "fumadocs-mdx && tsc --noEmit"
   },
   "dependencies": {
@@ -40,6 +41,7 @@
     "@types/node": "22.20.5",
     "@types/react": "19.3.0",
     "@types/react-dom": "19.3.0",
+    "@vitest/coverage-v8": "5.1.1",
     "jsdom": "29.1.1",
     "mdast-util-mdx-jsx": "3.2.2",
     "postcss": "8.5.33",

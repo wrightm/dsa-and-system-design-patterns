@@ -11,35 +11,62 @@ import { FPS, MAX_FRAMES } from "../remotion/interpolate";
 import type { TraceVideoProps } from "../remotion/TraceVideo";
 
 const ID = /^([a-z0-9-]+\/[a-z0-9-]+)\/[a-z0-9-]+$/;
-const site = path.resolve(import.meta.dirname, "..");
 
-async function main([id, output]: string[]) {
+export type VideoDeps = {
+  /** The site folder, which holds `content/traces` and `remotion/index.ts`. */
+  site: string;
+  bundle: typeof bundle;
+  selectComposition: typeof selectComposition;
+  renderMedia: typeof renderMedia;
+  now: () => number;
+  log: (line: string) => void;
+  error: (line: string) => void;
+};
+
+/** This site, Remotion, the clock and the console. */
+export const DEFAULTS: VideoDeps = {
+  site: path.resolve(import.meta.dirname, ".."),
+  bundle,
+  selectComposition,
+  renderMedia,
+  now: Date.now,
+  log: console.log,
+  error: console.error,
+};
+
+async function render([id, output]: string[], deps: VideoDeps) {
   const match = id === undefined ? null : ID.exec(id);
   if (!match || !output) throw new Error("usage: pnpm video <module>/<slug>/<name> <output.mp4>");
   const shown = `content/traces/${id}.json`;
-  const file = path.join(site, shown);
+  const file = path.join(deps.site, shown);
   if (!fs.existsSync(file)) throw new Error(`${shown}: not found (run pnpm collect first)`);
   const trace = validateTrace(JSON.parse(fs.readFileSync(file, "utf8")), shown);
   const inputProps: TraceVideoProps = { trace, page: match[1]! };
 
-  const started = Date.now();
-  const serveUrl = await bundle({ entryPoint: path.join(site, "remotion/index.ts") });
-  const composition = await selectComposition({ serveUrl, id: "TraceVideo", inputProps });
+  const started = deps.now();
+  const serveUrl = await deps.bundle({ entryPoint: path.join(deps.site, "remotion/index.ts") });
+  const composition = await deps.selectComposition({ serveUrl, id: "TraceVideo", inputProps });
   if (composition.durationInFrames > MAX_FRAMES) {
     throw new Error(`${shown}: ${trace.steps.length} steps need ${(composition.durationInFrames / FPS).toFixed(1)} s, over the limit`);
   }
   const outputLocation = path.resolve(output);
   fs.mkdirSync(path.dirname(outputLocation), { recursive: true });
-  await renderMedia({ composition, serveUrl, codec: "h264", outputLocation, inputProps });
+  await deps.renderMedia({ composition, serveUrl, codec: "h264", outputLocation, inputProps });
 
-  const seconds = ((Date.now() - started) / 1000).toFixed(1);
+  const seconds = ((deps.now() - started) / 1000).toFixed(1);
   const bytes = fs.statSync(outputLocation).size;
-  console.log(
+  deps.log(
     `wrote ${output}: ${composition.width}x${composition.height}, ${(composition.durationInFrames / FPS).toFixed(1)} s, ${bytes} bytes, in ${seconds} s`,
   );
 }
 
-main(process.argv.slice(2)).catch((error: Error) => {
-  console.error(error.message);
-  process.exit(1);
-});
+/** `pnpm video <id> <output.mp4>`. Returns the exit code. */
+export async function main(argv: string[], deps: VideoDeps): Promise<number> {
+  try {
+    await render(argv, deps);
+    return 0;
+  } catch (failure) {
+    deps.error((failure as Error).message);
+    return 1;
+  }
+}

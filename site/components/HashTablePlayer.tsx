@@ -21,6 +21,7 @@ export type HashTablePlayerProps = {
   /** The image's alt text, used as the drawing's accessible name. */
   alt: string;
   steps: AnimationStep[];
+  /** The excerpt for every key a step names. */
   excerpts: Record<string, Excerpt>;
 };
 
@@ -43,7 +44,7 @@ export function HashTablePlayer({ title, layout, alt, steps, excerpts }: HashTab
       )}
       footer={
         hasSource
-          ? (step) => <SourceExcerpt excerpt={step.excerpt === null ? null : (excerpts[step.excerpt] ?? null)} />
+          ? (step) => <SourceExcerpt excerpt={step.excerpt === null ? null : excerpts[step.excerpt]!} />
           : undefined
       }
     />

@@ -17,7 +17,7 @@ const BACKGROUND = "#ffffff";
 const NOTE = "Interactive version on the site";
 
 /** Words cut into lines of at most `max` characters; a word longer than a line is split. */
-function wrap(text: string, max: number): string[] {
+export function wrap(text: string, max: number): string[] {
   const lines: string[] = [];
   let line = "";
   for (const word of text.split(/\s+/).filter(Boolean)) {

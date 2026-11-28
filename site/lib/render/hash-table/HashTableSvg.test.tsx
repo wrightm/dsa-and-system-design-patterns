@@ -50,4 +50,23 @@ describe("HashTableSvg", () => {
     expect(container.querySelectorAll("path[d^='M']").length).toBeLessThanOrEqual(5 + 3); // bands, plus pipeline arrowheads
     expect(container.querySelectorAll("rect").length).toBeLessThan(40);
   });
+
+  it("draws a focused or fading grid cell on its own, outlining only the focused one heavily", () => {
+    const grid: HashTableState = { ...state, capacity: 64, buckets: Array.from({ length: 64 }, () => []), focus: { bucket: 3, node: null }, pipeline: null };
+    const { container } = render(
+      <HashTableSvg
+        scene={layoutHashTable(grid, "grid")}
+        palette={LIGHT}
+        animate={false}
+        positions={{ "b:5": { x: 1, y: 2, opacity: 0.5 } }}
+      />,
+    );
+    const cells = Array.from(container.querySelectorAll("g > rect"), (r) => ({
+      width: r.getAttribute("stroke-width"),
+      at: r.parentElement!.getAttribute("transform"),
+      opacity: r.parentElement!.getAttribute("opacity"),
+    })).filter((c) => c.width !== null);
+    expect(cells.filter((c) => c.width === "2.5")).toEqual([expect.objectContaining({ opacity: null })]);
+    expect(cells.filter((c) => c.opacity !== null)).toEqual([{ width: "0.5", at: "translate(1 2)", opacity: "0.5" }]);
+  });
 });

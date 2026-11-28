@@ -28,6 +28,7 @@ site/next-env.d.ts
 site/tsconfig.tsbuildinfo
 site/test-results/
 site/playwright-report/
+site/reports/
 
 # jqwik
 .jqwik-database

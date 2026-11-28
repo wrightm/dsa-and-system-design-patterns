@@ -65,7 +65,7 @@ export function Player<S extends PlayerStep>({ trace, renderStep, footer }: Play
   }, []);
 
   const step = steps[state.index];
-  const previous = state.index > 0 ? (steps[state.index - 1] ?? null) : null;
+  const previous = state.index > 0 ? steps[state.index - 1]! : null;
   const canMove = stepCount > 1;
   const atStart = !canMove || state.index === 0;
   const atEnd = !canMove || state.index === stepCount - 1;

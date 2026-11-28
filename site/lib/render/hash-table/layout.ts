@@ -144,7 +144,8 @@ function topRows(state: LayoutState, keyW: number): { items: SceneItem[]; width:
         y: PIPELINE_Y,
         w: box.w,
         h: BOX_H,
-        text: fit(box.text ?? ""),
+        // The pipeline is set, so every box has its text.
+        text: fit(box.text!),
         emphasis: box.name === "index" ? "focus" : "none",
       });
       if (i < boxes.length - 1) {

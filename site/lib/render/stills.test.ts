@@ -4,9 +4,9 @@ import path from "node:path";
 import { describe, expect, it } from "vitest";
 import type { Trace } from "../trace/types";
 import { validateTrace } from "../trace/validate";
-import { findTraces, renderStill, stillPathOf } from "./stills";
+import { REPO_ROOT as repoRoot } from "../../test/repo-root";
+import { findTraces, renderStill, stillPathOf, wrap } from "./stills";
 
-const repoRoot = path.resolve(import.meta.dirname, "..", "..", "..");
 const putFile = path.join(repoRoot, "data-structures/src/main/java/learn/ds/hashmap/animations/put.trace.json");
 
 function load(file: string): Trace {
@@ -91,6 +91,22 @@ describe("renderStill", () => {
   it("is deterministic", () => {
     const trace = load(putFile);
     expect(renderStill(trace)).toBe(renderStill(load(putFile)));
+  });
+});
+
+describe("wrap", () => {
+  it.each<[string, number, string[]]>([
+    ["", 5, []],
+    ["  \n ", 5, []],
+    ["one two three", 7, ["one two", "three"]],
+    ["one two", 7, ["one two"]],
+    ["ab cd", 4, ["ab", "cd"]],
+    ["abcdefgh", 3, ["abc", "def", "gh"]],
+    ["abcdef", 3, ["abc", "def"]],
+    ["ab abcdefg x", 3, ["ab", "abc", "def", "g x"]],
+    ["😀😀😀😀", 3, ["😀😀😀", "😀"]],
+  ])("cuts %j into lines of %i", (text, max, lines) => {
+    expect(wrap(text, max)).toEqual(lines);
   });
 });
 

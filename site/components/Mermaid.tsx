@@ -57,10 +57,10 @@ async function draw(mermaid: MermaidApi | null, chart: string): Promise<{ svg: s
 
 function MermaidDiagram({ chart }: { chart: string }) {
   const id = `mermaid-${useId().replace(/[^a-zA-Z0-9]/g, "")}`;
-  const theme = useSyncExternalStore<"dark" | "default">(
-    subscribeTheme,
-    () => (document.documentElement.classList.contains("dark") ? "dark" : "default"),
-    () => "default",
+  // No server snapshot: Mermaid only renders this once it is on the client, never on the server
+  // or while hydrating.
+  const theme = useSyncExternalStore<"dark" | "default">(subscribeTheme, () =>
+    document.documentElement.classList.contains("dark") ? "dark" : "default",
   );
   const mermaid = use(
     once("mermaid", () =>
