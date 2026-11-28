@@ -11,10 +11,11 @@
     "serve": "tsx scripts/run/serve.ts",
     "e2e": "playwright test",
     "mutation": "stryker run",
+    "mutation:full": "stryker run --force",
     "test": "vitest run",
     "test:coverage": "vitest run --coverage",
     "typecheck": "fumadocs-mdx && tsc --noEmit",
-    "verify": "pnpm collect && pnpm typecheck && pnpm test:coverage && pnpm build && pnpm exec playwright test && pnpm mutation"
+    "verify": "pnpm collect && pnpm typecheck && pnpm test:coverage && pnpm build && pnpm exec playwright test && pnpm mutation:full"
   },
   "dependencies": {
     "@mdx-js/mdx": "3.1.1",

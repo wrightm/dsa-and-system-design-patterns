@@ -7,10 +7,13 @@ import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 const CHART = "graph TD; A-->B";
 
 /** A stand-in for Mermaid that draws an SVG carrying the id it is given. */
-function fakeMermaid({ parses = true, renders = true } = {}) {
+function fakeMermaid({ parses = true as boolean | "throws", renders = true } = {}) {
   return {
     initialize: vi.fn(),
-    parse: vi.fn(async () => parses),
+    parse: vi.fn(async () => {
+      if (parses === "throws") throw new Error("cannot parse");
+      return parses;
+    }),
     render: vi.fn(async (id: string, chart: string) => {
       if (!renders) throw new Error("cannot draw");
       return { svg: `<svg id="${id}"><style>#${id}{}</style><text>${chart}</text></svg>` };
@@ -120,6 +123,7 @@ describe("Mermaid", () => {
 
   it.each([
     ["does not parse, without asking Mermaid to draw it", { parses: false }, 0],
+    ["makes Mermaid's parser throw, without asking Mermaid to draw it", { parses: "throws" as const }, 0],
     ["parses but Mermaid fails to draw it", { renders: false }, 1],
   ])("shows the source, marked failed, when the chart %s", async (_name, options, draws) => {
     mermaid = fakeMermaid(options);

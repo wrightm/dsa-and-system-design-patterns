@@ -12,6 +12,8 @@ export default defineConfig({
       "{app,components,lib,remotion,scripts}/**/*.test.{ts,tsx}",
       "mdx-components.test.tsx",
       "source.config.test.ts",
+      "stryker.ignorers.test.ts",
+      "test-gates.test.ts",
     ],
     exclude: ["e2e/**", "node_modules/**"],
     // Fumadocs' layouts import `next/navigation` with no extension, which only a bundler resolves
@@ -20,7 +22,8 @@ export default defineConfig({
     coverage: {
       provider: "v8",
       // Every source file is measured whether or not a test imports it, so a new untested file
-      // fails the thresholds below.
+      // fails the thresholds below. test-gates.test.ts fails on any source file these globs miss
+      // and its list does not explain.
       include: [
         "app/**/*.{ts,tsx}",
         "components/**/*.{ts,tsx}",
@@ -29,6 +32,7 @@ export default defineConfig({
         "scripts/**/*.{ts,tsx}",
         "mdx-components.tsx",
         "source.config.ts",
+        "stryker.ignorers.mjs",
       ],
       exclude: [
         "**/*.test.{ts,tsx}",

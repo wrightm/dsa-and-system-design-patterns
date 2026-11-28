@@ -52,10 +52,10 @@ let renders = 0;
  * does not parse.
  */
 async function draw(mermaid: MermaidApi, chart: string): Promise<{ svg: string; id: string } | null> {
-  // Parse first: a failed render leaves Mermaid's error graphic in the document.
-  if (!(await mermaid.parse(chart, { suppressErrors: true }))) return null;
-  const id = `mermaid-render-${++renders}`;
   try {
+    // Parse first: a failed render leaves Mermaid's error graphic in the document.
+    if (!(await mermaid.parse(chart, { suppressErrors: true }))) return null;
+    const id = `mermaid-render-${++renders}`;
     return { svg: (await mermaid.render(id, chart)).svg, id };
   } catch {
     return null;

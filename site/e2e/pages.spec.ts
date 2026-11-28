@@ -56,6 +56,14 @@ function decodeEntities(text: string): string {
     .replace(/&amp;/g, "&");
 }
 
+/** The `src` of every animation still a built page carries for readers without JavaScript. */
+function stillsIn(file: string): string[] {
+  const html = fs.readFileSync(file, "utf8");
+  return Array.from(html.matchAll(/<noscript>(.*?)<\/noscript>/gs), (m) => m[1]!).flatMap((noscript) =>
+    Array.from(noscript.matchAll(/<img[^>]*\ssrc="([^"]*\/animations\/[^"]*)"/g), (m) => decodeEntities(m[1]!)),
+  );
+}
+
 /** Waits for every image to finish loading, including any the browser would have loaded lazily. */
 async function settleImages(page: Page) {
   await page.evaluate(async () => {
@@ -71,6 +79,18 @@ test("the build exported the pages the site links to", () => {
     expect(PAGES).toContain(`${BASE}${url}`);
   }
   expect(PAGES.some((url) => /^\/dsa-and-system-design-patterns\/catalogue\/[^/]+\/$/.test(url))).toBe(true);
+  // At least one page carries an animation, so the still and player checks below check something.
+  expect(PAGES.some((url) => stillsIn(fileFor(url)!).length > 0)).toBe(true);
+});
+
+// The not-found page is exported twice, as /404/ and /_not-found/, and both are checked below like
+// any other page. This checks what a reader actually meets: a missing address answers 404 with it.
+test("an address with no page answers 404 with the not-found page", async ({ page }) => {
+  const response = await page.goto(`${BASE}/no-such-page/`);
+  expect(response?.status()).toBe(404);
+  await expect(page).toHaveTitle(/Page not found/);
+  await expect(page.locator("h1:visible")).toHaveText("Page not found");
+  await expect(page.locator("#nd-sidebar a[href]").first()).toBeAttached();
 });
 
 test.describe("every page", () => {
@@ -131,8 +151,14 @@ test.describe("every page", () => {
         expect(image.alt?.trim(), `${image.src} has no alt text`).toBeTruthy();
       }
 
+      // Each animation's still is built, and the page shows a player for it, not only the still.
+      const stills = stillsIn(fileFor(url)!);
+      expect(stills.filter((src) => fileFor(new URL(src, origin).pathname) === null)).toEqual([]);
+      const players = await page.locator("figure[aria-label^='Animation:']").all();
+      expect(players, "one player for each animation still").toHaveLength(stills.length);
+
       // Each player draws its scene, and Forward moves it on a step.
-      for (const player of await page.locator("figure[aria-label^='Animation:']").all()) {
+      for (const player of players) {
         await expect(player.locator("svg[role='img']")).toBeVisible();
         const label = player.getByText(/^step \d+ of \d+$/);
         await expect(label).toHaveText(/^step 1 of \d+$/);

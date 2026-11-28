@@ -6,8 +6,9 @@ export default {
   testRunner: "vitest",
   // Named explicitly: Stryker's plugin discovery does not find it under pnpm's layout.
   plugins: ["@stryker-mutator/vitest-runner", "./stryker.ignorers.mjs"],
-  // The only rule that leaves mutants out: Tailwind class strings. See stryker.ignorers.mjs.
+  // Leaves Tailwind class strings out. See stryker.ignorers.mjs.
   ignorers: ["class-names"],
+  // test-gates.test.ts fails on any source file these globs miss and its list does not explain.
   mutate: [
     "app/**/*.{ts,tsx}",
     "components/**/*.{ts,tsx}",
@@ -27,8 +28,10 @@ export default {
   coverageAnalysis: "perTest",
   // Every mutant must be killed.
   thresholds: { high: 100, low: 100, break: 100 },
-  // Reruns only mutants whose code or tests changed since the last run. The state file is
-  // git-ignored; CI starts without it and runs everything.
+  // `pnpm mutation` reruns only mutants whose code or tests changed since the last run. That is for
+  // quick iteration only: it can reuse a stale result (say, when a helper the mutated code calls
+  // changes) and be wrong either way. `pnpm verify` runs `pnpm mutation:full`, which forces every
+  // mutant, and CI starts without the git-ignored state file, so both run everything.
   incremental: true,
   incrementalFile: "reports/stryker-incremental.json",
   // TypeScript 7 has no JavaScript API, so Stryker's TypeScript checker cannot load it and the

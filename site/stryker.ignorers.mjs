@@ -1,9 +1,10 @@
-// The one rule for leaving mutants out of `pnpm mutation`, so the exclusion is in a single place.
+// The one rule for leaving Tailwind class strings out of `pnpm mutation`, so it is in a single place.
 //
 // Stryker already leaves the string in `className="..."` alone. This extends that to the same
 // Tailwind class strings when they reach `className` through an expression, such as
 // `className={current ? "a b" : "c d"}`, or through a constant whose name ends in `Class`.
-// Only the string literals are skipped: the condition that picks between them is still mutated.
+// Only the strings are skipped (a template only when it has no `${}`): the condition that picks
+// between them is still mutated.
 
 /** Expressions a class string can pass through on its way to `className` unchanged. */
 const CARRIERS = new Set(["ConditionalExpression", "BinaryExpression", "TemplateLiteral", "JSXExpressionContainer"]);
@@ -30,6 +31,9 @@ const classNames = {
   shouldIgnore(path) {
     const type = path.node.type;
     if (type !== "StringLiteral" && type !== "TemplateLiteral") return undefined;
+    // Stryker skips everything under an ignored node, so a template with `${}` stays mutated:
+    // a condition inside it is behaviour. Its class strings are still skipped one by one.
+    if (type === "TemplateLiteral" && path.node.expressions.length > 0) return undefined;
     return flowsIntoClassName(path) ? "Tailwind class names are presentation, checked by eye, not by tests" : undefined;
   },
 };

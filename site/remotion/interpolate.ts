@@ -84,7 +84,7 @@ export function timeline(trace: Trace): Timeline {
   let holds = trace.steps.map((step) => holdFor(step.caption));
   const budget = MAX_FRAMES - TITLE_FRAMES - END_FRAMES - LAST_HOLD_FRAMES;
   const wanted = holds.reduce((sum, frames) => sum + frames, 0);
-  // Stryker disable next-line EqualityOperator: when the steps want exactly the budget, scaling them by one changes nothing.
+  // Stryker disable next-line EqualityOperator: when the steps want exactly the budget, scaling them by one changes nothing. This relies on every hold being at least the 1 s floor, so the floor never lifts one.
   if (wanted > budget) {
     holds = holds.map((frames) => Math.max(FLOOR_STEP_FRAMES, Math.floor((frames * budget) / wanted)));
   }
