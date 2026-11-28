@@ -90,7 +90,7 @@ jobs:
         run: pnpm install --frozen-lockfile
       # No incremental state in CI, so every mutant runs; it fails on any that survives.
       - name: Mutation tests
-        run: pnpm mutation
+        run: pnpm mutation:full
       - name: Keep the mutation report
         if: always()
         uses: actions/upload-artifact@v7
