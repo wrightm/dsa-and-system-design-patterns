@@ -29,7 +29,7 @@ Michael's questions are raw material for the articles. This is the most importan
 ## Starting and finishing a topic
 
 - Start with `scripts/new-topic.sh <module> <slug> "Title"`. Add the topic to `topics/` if it is missing.
-- A topic is not done, and its article is not `status: published`, until: `./gradlew build` passes, `python3 scripts/check-links.py` passes, and every template section is filled.
+- A topic is not done, and its article is not `status: published`, until: `./gradlew build` passes, `python3 scripts/check-links.py` passes, `pnpm verify` passes from `site/`, and every template section is filled.
 - On publishing: set `status`, `date`, `summary` and the next `series` number in the front matter; tick the catalogue entry and link it to the article; add a row to the table in the root `README.md`; draft `blog/linkedin/NNN-<slug>.md`. If the article has an animation, the post can carry a video rendered from the same trace with `pnpm video`, saved under `blog/linkedin/media/` (see `blog/linkedin/README.md`). Like the text, it is never posted without Michael's approval.
 - When a challenge solution in `challenges/` uses a topic, link it from that article's "Seen in" line, and link the article from the solution.
 
@@ -40,7 +40,19 @@ Michael's questions are raw material for the articles. This is the most importan
 - Shared build logic is in `buildSrc/src/main/kotlin/learn.java-conventions.gradle.kts`.
 - A topic that needs heavy dependencies (Spring, Kafka, Testcontainers) becomes its own nested subproject so the dependency does not leak into the rest of its module.
 - The `trace` module records the steps behind the animations. `./gradlew build` includes it and the freshness tests that compare committed traces with what the code records now.
-- The website is a Next.js static export in `site/`, built with Node 22.13 or later and pnpm 10 (the exact version is `packageManager` in `site/package.json`). It needs no JDK. From `site/`: `pnpm install`, `pnpm collect`, `pnpm typecheck`, `pnpm test`, `pnpm build`, then `pnpm exec playwright test` for the smoke tests and `pnpm serve` to preview. Dependency versions in `site/package.json` are exact, and `pnpm-lock.yaml` is committed.
+- The website is a Next.js static export in `site/`, built with Node 22.13 or later and pnpm 10 (the exact version is `packageManager` in `site/package.json`). It needs no JDK. From `site/`: `pnpm install`, then `pnpm verify`, which runs `pnpm collect`, `pnpm typecheck`, `pnpm test:coverage`, `pnpm build`, the Playwright smoke tests and `pnpm mutation` in that order and stops at the first failure. `pnpm test` is the fast unit run while working, and `pnpm serve` previews the build. Dependency versions in `site/package.json` are exact, and `pnpm-lock.yaml` is committed.
+
+## Testing the site
+
+The site's tests are a gate, not a report. These hold for every change under `site/`, however small.
+
+- Write the test first. Watch it fail for the reason you expect, then make it pass.
+- Unit coverage stays at 100% for statements, branches, functions and lines. `vitest.config.ts` measures every source file, so a new untested file fails. Reach it with tests of real behaviour: move logic out of framework wiring into a function you can test, and keep the wiring thin.
+- The mutation score stays at the threshold in `stryker.config.mjs`, which is 100. A surviving mutant is behaviour nothing checks: kill it with a stronger test, not by loosening the threshold.
+- Every built page has a smoke test. `e2e/pages.spec.ts` finds them in `out/`, so a new page is covered by building it. Every new interactive feature also gets a targeted Playwright test of its own in `e2e/smoke.spec.ts`.
+- Exclusions and disables are the exception, and each one carries its reason where it is made: a coverage exclusion in `vitest.config.ts` only for a file that cannot run under Vitest and that the build or Playwright exercises; `/* v8 ignore */` only for a branch that cannot be reached; `// Stryker disable next-line <mutator>: <reason>` only for a mutant that is equivalent. Never add one without telling Michael, naming the file and the reason.
+- Test output stays clean: no warnings, no stray logging, no React `act` notices.
+- A change is not done until `pnpm verify` passes. Report the real numbers from that run (tests passed, coverage, mutants killed out of the total, smoke tests passed and pages covered), never a summary from memory.
 
 ## Publishing outside the repo
 

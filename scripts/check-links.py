@@ -13,7 +13,8 @@ import sys
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parent.parent
-SKIP_DIRS = {".git", ".gradle", "build", ".venv", "node_modules", "templates"}
+# .stryker-tmp holds copies of site/ that an interrupted mutation run can leave behind.
+SKIP_DIRS = {".git", ".gradle", "build", ".venv", "node_modules", "templates", ".stryker-tmp"}
 LINK = re.compile(r"!?\[[^\]]*\]\(([^)\s]+)\)")
 EXTERNAL = re.compile(r"^([a-z][a-z0-9+.-]*:|//)", re.IGNORECASE)
 HEADING = re.compile(r"^#{1,6}\s+(.*?)\s*#*$")

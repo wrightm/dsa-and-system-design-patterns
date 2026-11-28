@@ -1,7 +1,8 @@
 name: site
 
 # Builds and tests the Next.js static export in site/. Pull requests run every check;
-# only a push to main (or a manual run on main) deploys to GitHub Pages.
+# only a push to main (or a manual run on main) deploys to GitHub Pages. Together the two jobs
+# run what `pnpm verify` runs locally: coverage, build and smoke tests in one, mutation in the other.
 on:
   push:
     branches: [main]
@@ -41,8 +42,15 @@ jobs:
         run: pnpm collect
       - name: Type check
         run: pnpm typecheck
-      - name: Unit tests
-        run: pnpm test
+      - name: Unit tests with 100% coverage
+        run: pnpm test:coverage
+      - name: Keep the coverage report
+        if: always()
+        uses: actions/upload-artifact@v7
+        with:
+          name: coverage-report
+          path: site/reports/coverage/
+          if-no-files-found: ignore
       - name: Build
         run: pnpm build
       - name: Install Chromium for the smoke tests
@@ -63,8 +71,39 @@ jobs:
         with:
           path: site/out
 
+  mutation:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: site
+    steps:
+      - uses: actions/checkout@v7
+      - uses: pnpm/action-setup@v6
+        with:
+          package_json_file: site/package.json
+      - uses: actions/setup-node@v7
+        with:
+          node-version: 22
+          cache: pnpm
+          cache-dependency-path: site/pnpm-lock.yaml
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+      # No incremental state in CI, so every mutant runs; it fails on any that survives.
+      - name: Mutation tests
+        run: pnpm mutation
+      - name: Keep the mutation report
+        if: always()
+        uses: actions/upload-artifact@v7
+        with:
+          name: mutation-report
+          path: site/reports/mutation/
+          if-no-files-found: ignore
+
   deploy:
-    needs: build
+    # Waits for mutation too: a change is not done until every gate passes, and that includes
+    # what reaches the live site. The two jobs run side by side, so this costs no extra time
+    # unless mutation is the slower of the two.
+    needs: [build, mutation]
     if: github.event_name != 'pull_request' && github.ref == 'refs/heads/main'
     runs-on: ubuntu-latest
     environment:

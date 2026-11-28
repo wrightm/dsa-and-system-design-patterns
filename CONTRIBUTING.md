@@ -72,11 +72,42 @@ pnpm build         # static export into site/out
 pnpm serve         # http://localhost:4173/dsa-and-system-design-patterns/
 ```
 
-Run `pnpm collect` and `pnpm build` again after changing an article. The same checks the site workflow runs on a pull request are:
+Run `pnpm collect` and `pnpm build` again after changing an article.
+
+## Testing the site
+
+Every change to the site's code passes the same gates the site workflow runs on a pull request. Run them all, in order, with:
 
 ```bash
-pnpm typecheck
-pnpm test
+cd site
 pnpm exec playwright install chromium   # once
-pnpm exec playwright test               # smoke tests against the built site
+pnpm verify
 ```
+
+`pnpm verify` runs these and stops at the first that fails:
+
+| Step | Command | Passes when |
+|---|---|---|
+| Collect | `pnpm collect` | the published articles, traces and stills copy into the site |
+| Types | `pnpm typecheck` | TypeScript finds no errors |
+| Unit tests | `pnpm test:coverage` | every test passes and coverage is 100% for statements, branches, functions and lines |
+| Build | `pnpm build` | the static export is written to `out/` |
+| Smoke tests | `pnpm exec playwright test` | every built page passes its checks |
+| Mutation | `pnpm mutation` | every mutant is killed |
+
+While working, `pnpm test` runs the unit tests alone in a few seconds.
+
+**Coverage.** Every source file is measured, whether or not a test imports it, so a new file needs tests before it passes. Write them first. If logic is hard to reach inside framework wiring (a Next.js route, a script's entry point), move it into a plain function, test that, and keep the wiring thin. The HTML report is in `reports/coverage/index.html`.
+
+**Mutation testing.** [StrykerJS](https://stryker-mutator.io/) makes one small change to the code at a time, such as flipping `<` to `<=`, emptying a string or removing a call, and runs the tests that cover it. If they still pass, the mutant has survived: the tests do not check that behaviour. Locally the run is incremental and only retests what changed since the last run; CI runs everything. Incremental mode can keep a survivor that a newly added test now kills, because it does not know what the new test covers; `pnpm mutation --force` reruns everything. The only mutants left out on purpose are Tailwind class strings (`site/stryker.ignorers.mjs`), since a test that pins a class list checks the styling, not the behaviour. The report is in `reports/mutation/index.html`. For each survivor it shows the file, the line and the change, for example:
+
+```text
+[Survived] Regex
+lib/render/stills.tsx:151:28
+-     return traceFile.replace(/\.trace\.json$/, ".svg");
++     return traceFile.replace(/\.trace\.json/, ".svg");
+```
+
+That one came up when the site's mutation testing was first switched on. Read it as a question: what input would behave differently with this change? Here it is a path with `.trace.json` somewhere before its end, such as a folder named `a.trace.json`. A test that `stillPathOf("/r/a.trace.json/put.trace.json")` is `"/r/a.trace.json/put.svg"` passes on the real code and fails on the mutant, so the mutant is killed. Very rarely a mutant changes nothing anyone could observe (an equivalent mutant). Then mark that line with `// Stryker disable next-line <mutator>: <why no test can tell the difference>` and mention it in the pull request.
+
+**Smoke tests.** `e2e/pages.spec.ts` opens every page in `out/` and checks that it returns 200 with a title and a single visible heading, logs no errors, fails no requests, links only to pages and headings that exist, loads every image with alt text, shows the navigation, and that each animation player draws and steps forward. A new page is covered as soon as it is built. A new interactive feature also needs a test of its own in `e2e/smoke.spec.ts`.
