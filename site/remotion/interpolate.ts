@@ -34,9 +34,8 @@ export function positionsAt(from: Scene, to: Scene, t: number): Positions {
   const p = clamp01(t);
   const before = new Map(from.items.map((item) => [item.id, item]));
   const positions: Positions = {};
-  for (const item of from.items) {
-    if (!to.items.some((other) => other.id === item.id)) positions[item.id] = { x: item.x, y: item.y, opacity: 1 - p };
-  }
+  // Every item of `from` fades out where it was, unless `to` has it too and the loop below moves it.
+  for (const item of from.items) positions[item.id] = { x: item.x, y: item.y, opacity: 1 - p };
   for (const item of to.items) {
     const was = before.get(item.id);
     positions[item.id] = was
@@ -85,6 +84,7 @@ export function timeline(trace: Trace): Timeline {
   let holds = trace.steps.map((step) => holdFor(step.caption));
   const budget = MAX_FRAMES - TITLE_FRAMES - END_FRAMES - LAST_HOLD_FRAMES;
   const wanted = holds.reduce((sum, frames) => sum + frames, 0);
+  // Stryker disable next-line EqualityOperator: when the steps want exactly the budget, scaling them by one changes nothing.
   if (wanted > budget) {
     holds = holds.map((frames) => Math.max(FLOOR_STEP_FRAMES, Math.floor((frames * budget) / wanted)));
   }
@@ -103,7 +103,8 @@ export function timeline(trace: Trace): Timeline {
 export type Moment = { kind: "title" } | { kind: "step"; index: number; t: number } | { kind: "end" };
 
 export function at(tl: Timeline, frame: number): Moment {
-  const f = Math.min(tl.total - 1, Math.max(0, Math.floor(frame)));
+  // Before the video is the title card, and after it the end card (or the title card when it has no steps).
+  const f = Math.floor(frame);
   if (f < tl.title || tl.steps.length === 0) return { kind: "title" };
   if (f >= tl.end) return { kind: "end" };
   const index = tl.steps.findIndex((step) => f < step.start + step.frames);

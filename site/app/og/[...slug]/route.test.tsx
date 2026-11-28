@@ -1,8 +1,6 @@
 import { renderToStaticMarkup } from "react-dom/server";
-import { describe, expect, it, vi } from "vitest";
+import { describe, expect, it } from "vitest";
 import { GET, OgCard, dynamic, generateStaticParams } from "./route";
-
-vi.mock("../../../.source/server", () => import("../../../test/docs"));
 
 const get = (...slug: string[]) => GET(new Request("http://localhost/"), { params: Promise.resolve({ slug }) });
 

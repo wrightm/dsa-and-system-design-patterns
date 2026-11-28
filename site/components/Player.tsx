@@ -16,15 +16,17 @@ type PlayerProps<S extends PlayerStep> = {
   footer?: (step: S) => ReactNode;
 };
 
+// React calls these two only in the browser; the server uses the third argument below. A browser
+// without matchMedia reports no preference.
 function subscribeReducedMotion(onChange: () => void): () => void {
-  if (typeof window === "undefined" || typeof window.matchMedia !== "function") return () => {};
+  if (typeof window.matchMedia !== "function") return () => {};
   const query = window.matchMedia(REDUCED_MOTION_QUERY);
-  query.addEventListener?.("change", onChange);
-  return () => query.removeEventListener?.("change", onChange);
+  query.addEventListener("change", onChange);
+  return () => query.removeEventListener("change", onChange);
 }
 
 function reducedMotionSnapshot(): boolean {
-  if (typeof window === "undefined" || typeof window.matchMedia !== "function") return false;
+  if (typeof window.matchMedia !== "function") return false;
   return window.matchMedia(REDUCED_MOTION_QUERY).matches;
 }
 
@@ -62,7 +64,8 @@ export function Player<S extends PlayerStep>({ trace, renderStep, footer }: Play
     };
     document.addEventListener("visibilitychange", onVisibility);
     return () => document.removeEventListener("visibilitychange", onVisibility);
-  }, []);
+  }, // Stryker disable next-line ArrayDeclaration: any array that never changes runs the effect once, as [] does.
+  []);
 
   const step = steps[state.index];
   const previous = state.index > 0 ? steps[state.index - 1]! : null;

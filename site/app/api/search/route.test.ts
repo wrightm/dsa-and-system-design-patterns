@@ -1,7 +1,5 @@
-import { describe, expect, it, vi } from "vitest";
+import { describe, expect, it } from "vitest";
 import { GET, revalidate } from "./route";
-
-vi.mock("../../../.source/server", () => import("../../../test/docs"));
 
 describe("the search index", () => {
   it("is exported once, at build time", () => {

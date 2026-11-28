@@ -1,8 +1,7 @@
 // A small docs collection built through fumadocs-mdx's real server runtime, in place of the
-// `.source/server` that `fumadocs-mdx` generates from content/docs at build time. Tests mock that
-// module with this one, so the real `loader` in lib/source runs over pages whose content is known.
-//
-//   vi.mock("<path to>/.source/server", () => import("<path to>/test/docs"));
+// `.source/server` that `fumadocs-mdx` generates from content/docs at build time. vitest.config.ts
+// points every import of that module here, so the real `loader` in lib/source runs over pages whose
+// content is known, and the tests need neither `pnpm collect` nor the generated folder.
 import { server } from "fumadocs-mdx/runtime/server";
 import type { InternalTypeConfig } from "fumadocs-mdx/runtime/types";
 import type { MDXComponents } from "mdx/types";

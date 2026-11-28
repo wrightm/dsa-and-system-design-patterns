@@ -14,9 +14,11 @@ export type RemarkAnimationsOptions = {
   tracesDir?: string;
 };
 
-function animationName(node: Nodes): string | null {
+/** The animation an image stands for, or null for any other node. */
+function animationOf(node: Nodes): { name: string; alt: string } | null {
   if (node.type !== "image") return null;
-  return ANIMATION.exec(node.url)?.[1] ?? null;
+  const name = ANIMATION.exec(node.url)?.[1];
+  return name === undefined ? null : { name, alt: node.alt ?? "" };
 }
 
 function isBlank(node: Paragraph["children"][number]): boolean {
@@ -58,13 +60,13 @@ export function remarkAnimations({ pagePathOf, tracesDir = path.resolve("content
         run = [];
       };
       for (const child of paragraph.children) {
-        const name = animationName(child);
-        if (name === null || child.type !== "image") {
+        const animation = animationOf(child);
+        if (animation === null) {
           run.push(child);
           continue;
         }
         flush();
-        out.push(element(name, child.alt ?? ""));
+        out.push(element(animation.name, animation.alt));
       }
       flush();
       return out;
@@ -73,13 +75,15 @@ export function remarkAnimations({ pagePathOf, tracesDir = path.resolve("content
     const visit = (parent: Parent) => {
       const children: RootContent[] = [];
       for (const child of parent.children as RootContent[]) {
-        if (child.type === "paragraph" && child.children.some((c) => animationName(c) !== null)) {
+        if (child.type === "paragraph" && child.children.some((c) => animationOf(c) !== null)) {
           children.push(...split(child));
           continue;
         }
-        const name = animationName(child);
-        if (name !== null) {
-          throw new Error(`${article}: animations/${name}.svg must stand in a paragraph, not inside a ${parent.type}`);
+        const animation = animationOf(child);
+        if (animation !== null) {
+          throw new Error(
+            `${article}: animations/${animation.name}.svg must stand in a paragraph, not inside a ${parent.type}`,
+          );
         }
         if ("children" in child) visit(child);
         children.push(child);

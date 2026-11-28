@@ -1,5 +1,6 @@
 // @vitest-environment jsdom
 import { act, cleanup, fireEvent, render, screen } from "@testing-library/react";
+import { renderToString } from "react-dom/server";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import type { Step, Trace } from "../lib/trace/types";
 import { Player } from "./Player";
@@ -113,6 +114,39 @@ describe("Player", () => {
     expect(screen.getByText("step 1 of 3")).toBeTruthy();
   });
 
+  it("First and Back move from wherever the player is", () => {
+    render(<Player trace={traceOf(3)} renderStep={renderStep} />);
+    fireEvent.click(button("Last"));
+    fireEvent.click(button("Back"));
+    expect(screen.getByText("step 2 of 3")).toBeTruthy();
+    fireEvent.click(button("Last"));
+    fireEvent.click(button("First"));
+    expect(screen.getByText("step 1 of 3")).toBeTruthy();
+  });
+
+  it("offers half, normal and double speed, starting at normal", () => {
+    render(<Player trace={traceOf(3)} renderStep={renderStep} />);
+    const options = Array.from((screen.getByLabelText("Speed") as HTMLSelectElement).options);
+    expect(options.map((o) => [o.value, o.textContent])).toEqual([
+      ["0.5", "0.5x"],
+      ["1", "1x"],
+      ["2", "2x"],
+    ]);
+    expect((screen.getByLabelText("Speed") as HTMLSelectElement).value).toBe("1");
+  });
+
+  it("the scrubber spans the steps, and is disabled when there is nowhere to go", () => {
+    render(<Player trace={traceOf(3)} renderStep={renderStep} />);
+    const range = screen.getByLabelText("Step") as HTMLInputElement;
+    expect([range.min, range.max, range.step, range.value, range.disabled]).toEqual(["0", "2", "1", "0", false]);
+    cleanup();
+    render(<Player trace={traceOf(1)} renderStep={renderStep} />);
+    expect((screen.getByLabelText("Step") as HTMLInputElement).disabled).toBe(true);
+    cleanup();
+    render(<Player trace={traceOf(0)} renderStep={renderStep} />);
+    expect((screen.getByLabelText("Step") as HTMLInputElement).max).toBe("0");
+  });
+
   it("scrubbing seeks and clamps string input", () => {
     render(<Player trace={traceOf(3)} renderStep={renderStep} />);
     fireEvent.change(screen.getByLabelText("Step"), { target: { value: "2" } });
@@ -182,22 +216,24 @@ describe("Player", () => {
     }
     expect(screen.getByText("step 0 of 0")).toBeTruthy();
     expect(render1).not.toHaveBeenCalled();
+    expect(screen.getByRole("figure").querySelector("[aria-live]")!.textContent).toBe("");
   });
 
-  it("passes the previous step and renders the footer", () => {
-    const seen: (string | null)[] = [];
+  it("passes the previous step, null on the first, and renders the footer", () => {
+    const seen: (Step | null)[] = [];
     render(
       <Player
         trace={traceOf(3)}
         renderStep={(s, p) => {
-          seen.push(p?.caption ?? null);
+          seen.push(p);
           return <span>{s.caption}</span>;
         }}
         footer={(s) => <p data-testid="footer">{`foot ${s.caption}`}</p>}
       />,
     );
+    expect(seen.at(-1)).toBeNull();
     fireEvent.click(screen.getByRole("button", { name: "Forward" }));
-    expect(seen.at(-1)).toBe("caption 1");
+    expect(seen.at(-1)!.caption).toBe("caption 1");
     expect(screen.getByTestId("footer").textContent).toBe("foot caption 2");
   });
 
@@ -273,6 +309,50 @@ describe("Player", () => {
   });
 
   describe("reduced motion", () => {
+    /** A media query list the test can flip, like the browser's when the setting changes. */
+    function preference(matches: boolean) {
+      const listeners = new Set<() => void>();
+      const query = {
+        matches,
+        add: vi.fn((type: string, listener: () => void) => type === "change" && listeners.add(listener)),
+        remove: vi.fn((type: string, listener: () => void) => type === "change" && listeners.delete(listener)),
+        flip(to: boolean) {
+          query.matches = to;
+          for (const listener of listeners) listener();
+        },
+        listeners,
+      };
+      vi.stubGlobal("matchMedia", (text: string) => ({
+        get matches() {
+          return text === "(prefers-reduced-motion: reduce)" && query.matches;
+        },
+        addEventListener: query.add,
+        removeEventListener: query.remove,
+      }));
+      return query;
+    }
+
+    it("is off in a browser without matchMedia", () => {
+      render(<Player trace={traceOf(3)} renderStep={renderStep} />);
+      expect(screen.getByTestId("frame").textContent).toBe("caption 1|false");
+    });
+
+    it("follows the setting when it changes, and stops listening on unmount", () => {
+      const query = preference(false);
+      const { unmount } = render(<Player trace={traceOf(3)} renderStep={renderStep} />);
+      expect(screen.getByTestId("frame").textContent).toBe("caption 1|false");
+      act(() => query.flip(true));
+      expect(screen.getByTestId("frame").textContent).toBe("caption 1|true");
+      expect(query.listeners.size).toBe(1);
+      unmount();
+      expect(query.listeners.size).toBe(0);
+    });
+
+    it("renders on the server as off, so the first render in the browser matches", () => {
+      preference(true);
+      expect(renderToString(<Player trace={traceOf(3)} renderStep={renderStep} />)).toContain("caption 1|false");
+    });
+
     it("tells renderStep and still autoplays", () => {
       vi.useFakeTimers();
       vi.stubGlobal("matchMedia", (query: string) => ({

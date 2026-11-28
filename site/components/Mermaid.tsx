@@ -6,8 +6,10 @@ import { use, useId, useSyncExternalStore } from "react";
 // diagram, the diagram source shows instead; an invalid diagram never breaks the rest of the page.
 export function Mermaid({ chart }: { chart: string }) {
   const isClient = useSyncExternalStore(
+    // Stryker disable next-line ArrowFunction: this store never changes, so React has nothing to unsubscribe.
     () => () => {},
     () => true,
+    // Stryker disable next-line ArrowFunction: undefined is falsy too, so the server still renders the source.
     () => false,
   );
   if (!isClient) return <Source chart={chart} />;
@@ -24,12 +26,18 @@ function Source({ chart, failed = false }: { chart: string; failed?: boolean }) 
 
 type MermaidApi = (typeof import("mermaid"))["default"];
 
-const cache = new Map<string, Promise<unknown>>();
+let loading: Promise<MermaidApi | null> | undefined;
 
-function once<T>(key: string, make: () => Promise<T>): Promise<T> {
-  if (!cache.has(key)) cache.set(key, make());
-  return cache.get(key) as Promise<T>;
+/** Mermaid, loaded once for the page, or null when it cannot load. */
+function loadMermaid(): Promise<MermaidApi | null> {
+  loading ??= import("mermaid").then(
+    (m) => m.default,
+    () => null,
+  );
+  return loading;
 }
+
+const drawings = new Map<string, ReturnType<typeof draw>>();
 
 function subscribeTheme(onChange: () => void) {
   const observer = new MutationObserver(onChange);
@@ -43,12 +51,11 @@ let renders = 0;
  * The SVG for a chart and the id Mermaid gave it, or null when Mermaid cannot load or the chart
  * does not parse.
  */
-async function draw(mermaid: MermaidApi | null, chart: string): Promise<{ svg: string; id: string } | null> {
-  if (mermaid === null) return null;
+async function draw(mermaid: MermaidApi, chart: string): Promise<{ svg: string; id: string } | null> {
+  // Parse first: a failed render leaves Mermaid's error graphic in the document.
+  if (!(await mermaid.parse(chart, { suppressErrors: true }))) return null;
   const id = `mermaid-render-${++renders}`;
   try {
-    // Parse first: a failed render leaves Mermaid's error graphic in the document.
-    if (!(await mermaid.parse(chart, { suppressErrors: true }))) return null;
     return { svg: (await mermaid.render(id, chart)).svg, id };
   } catch {
     return null;
@@ -62,17 +69,13 @@ function MermaidDiagram({ chart }: { chart: string }) {
   const theme = useSyncExternalStore<"dark" | "default">(subscribeTheme, () =>
     document.documentElement.classList.contains("dark") ? "dark" : "default",
   );
-  const mermaid = use(
-    once("mermaid", () =>
-      import("mermaid").then(
-        (m) => m.default,
-        () => null,
-      ),
-    ),
-  );
-  mermaid?.initialize({ startOnLoad: false, fontFamily: "inherit", theme });
+  const mermaid = use(loadMermaid());
+  if (mermaid === null) return <Source chart={chart} failed />;
+  mermaid.initialize({ startOnLoad: false, fontFamily: "inherit", theme });
   // Cached by chart, not by instance: React may retry a suspended first render with a new id.
-  const drawn = use(once(`${theme}:${chart}`, () => draw(mermaid, chart)));
+  const key = `${theme}:${chart}`;
+  if (!drawings.has(key)) drawings.set(key, draw(mermaid, chart));
+  const drawn = use(drawings.get(key)!);
   if (drawn === null) return <Source chart={chart} failed />;
   // Swap in this instance's id, so two identical charts on a page never share SVG ids.
   return <div className="mermaid-diagram" dangerouslySetInnerHTML={{ __html: drawn.svg.replaceAll(drawn.id, id) }} />;

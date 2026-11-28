@@ -66,9 +66,7 @@ const BAND_LABELS = ["0", "1", "2–3", "4–15", "16+"];
 
 /** Index into `HEAT_BANDS` (and a palette's `heat`) for a chain length. */
 export function heatLevel(count: number): number {
-  let level = 0;
-  for (let i = 0; i < HEAT_BANDS.length; i++) if (count >= HEAT_BANDS[i]!) level = i;
-  return level;
+  return HEAT_BANDS.findLastIndex((band) => count >= band);
 }
 
 /**

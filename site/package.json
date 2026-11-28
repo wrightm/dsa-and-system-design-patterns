@@ -10,6 +10,7 @@
     "build": "next build",
     "serve": "tsx scripts/run/serve.ts",
     "e2e": "playwright test",
+    "mutation": "stryker run",
     "test": "vitest run",
     "test:coverage": "vitest run --coverage",
     "typecheck": "fumadocs-mdx && tsc --noEmit"
@@ -33,6 +34,8 @@
     "@remotion/bundler": "4.0.545",
     "@remotion/cli": "4.0.545",
     "@remotion/renderer": "4.0.545",
+    "@stryker-mutator/core": "10.1.1",
+    "@stryker-mutator/vitest-runner": "10.1.1",
     "@tailwindcss/postcss": "4.3.5",
     "@testing-library/dom": "10.4.2",
     "@testing-library/react": "16.3.3",

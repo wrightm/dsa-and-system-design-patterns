@@ -72,4 +72,11 @@ describe("playerReducer", () => {
       expect(next.playing).toBe(false);
     }
   });
+
+  it("with one step or none, keeps a new speed and ignores everything else", () => {
+    const fast: PlayerState = { index: 0, playing: false, speed: 2 };
+    expect(playerReducer(fast, { type: "next" }, 1)).toEqual(fast);
+    expect(playerReducer(fast, { type: "play" }, 0)).toEqual(fast);
+    expect(playerReducer(at(0), { type: "speed", speed: 0.5 }, 1)).toEqual({ index: 0, playing: false, speed: 0.5 });
+  });
 });

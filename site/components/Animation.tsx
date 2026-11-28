@@ -1,5 +1,6 @@
 import fs from "node:fs";
 import path from "node:path";
+import { readJson } from "../lib/read-json";
 import { slimState } from "../lib/render/hash-table/layout";
 import { BASE_PATH } from "../lib/site";
 import type { Trace } from "../lib/trace/types";
@@ -22,13 +23,7 @@ export function loadTrace(id: string, content: string): Trace {
   if (!ID.test(id)) throw new Error(`Animation: id must be <module>/<slug>/<name>, found ${JSON.stringify(id)}`);
   const file = path.join(content, "traces", `${id}.json`);
   if (!fs.existsSync(file)) throw new Error(`${shown}: no trace for animation ${id}`);
-  let json: unknown;
-  try {
-    json = JSON.parse(fs.readFileSync(file, "utf8"));
-  } catch (error) {
-    throw new Error(`${shown}: not valid JSON (${(error as Error).message})`);
-  }
-  return validateTrace(json, shown);
+  return validateTrace(readJson(file, shown), shown);
 }
 
 /** The excerpt for every line the trace names, keyed `<file>:<line>`. Throws on a line past the end. */
@@ -40,7 +35,6 @@ export function excerptsOf(trace: Trace, id: string, content: string): Record<st
     if (step.source === null) continue;
     const { file, line } = step.source;
     const key = `${file}:${line}`;
-    if (key in excerpts) continue;
     if (!files.has(file)) {
       const from = path.join(content, "sources", path.dirname(id), file);
       if (!fs.existsSync(from)) throw new Error(`${shown}: source file not found: ${file}`);

@@ -37,7 +37,7 @@ export function playerReducer(
     case "first":
       return moveTo(state, 0, stepCount);
     case "last":
-      return moveTo(state, stepCount - 1, stepCount);
+      return moveTo(state, Number.POSITIVE_INFINITY, stepCount);
     case "seek": {
       const index = Number(action.index);
       if (!Number.isFinite(index)) return state;

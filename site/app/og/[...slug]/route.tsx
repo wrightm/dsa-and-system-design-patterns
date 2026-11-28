@@ -38,7 +38,8 @@ export async function GET(_request: Request, { params }: { params: Promise<{ slu
   const { slug } = await params;
   const page = source.getPage(slug.slice(0, -1));
   if (!page || !isArticle(page)) notFound();
-  return new ImageResponse(<OgCard title={page.data.title} summary={page.data.summary} />, { width: 1200, height: 630 });
+  // ImageResponse draws 1200 by 630 by default, the size Open Graph cards are shown at.
+  return new ImageResponse(<OgCard title={page.data.title} summary={page.data.summary} />);
 }
 
 export function generateStaticParams() {

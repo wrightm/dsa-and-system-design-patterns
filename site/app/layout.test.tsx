@@ -1,11 +1,9 @@
 import { DocsLayout } from "fumadocs-ui/layouts/docs";
 import type { ReactElement } from "react";
-import { describe, expect, it, vi } from "vitest";
+import { describe, expect, it } from "vitest";
 import { Provider } from "../components/Provider";
 import { source } from "../lib/source";
 import Layout, { metadata } from "./layout";
-
-vi.mock("../.source/server", () => import("../test/docs"));
 
 type Element = ReactElement<Record<string, unknown> & { children: Element }>;
 

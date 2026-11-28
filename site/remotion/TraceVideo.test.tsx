@@ -1,8 +1,9 @@
 // @vitest-environment jsdom
 import fs from "node:fs";
 import path from "node:path";
+import { cleanup, render } from "@testing-library/react";
 import { renderToStaticMarkup } from "react-dom/server";
-import { describe, expect, it, vi } from "vitest";
+import { afterEach, describe, expect, it, vi } from "vitest";
 import { layoutTrace, slimState } from "../lib/render/hash-table/layout";
 import type { Trace } from "../lib/trace/types";
 import { validateTrace } from "../lib/trace/validate";
@@ -13,6 +14,8 @@ import { StepCard, TitleCard, TraceVideo } from "./TraceVideo";
 // Remotion supplies the frame number while it renders; here each test sets it.
 const frame = vi.hoisted(() => ({ now: 0 }));
 vi.mock("remotion", async (real) => ({ ...(await real<typeof import("remotion")>()), useCurrentFrame: () => frame.now }));
+
+afterEach(cleanup);
 
 // A quote, a backslash, markup characters, a newline and a non-ASCII letter.
 const awkward = 'a"b\\c<&\nü';
@@ -132,5 +135,74 @@ describe("TraceVideo frames", () => {
     expect(lines(videoAt(tl.end))).toEqual(["wrightm.github.io", "/dsa-and-system-design-patterns", "/data-structures/hashmap/"]);
     expect(videoAt(tl.total - 1).body.textContent).toContain("The article, code and tests, with this animation to step through:");
     expect(lines(videoAt(tl.end, { trace: put }))).toEqual(["wrightm.github.io", "/dsa-and-system-design-patterns"]);
+  });
+});
+
+// The frame's design, as the comment at the top of TraceVideo.tsx sets it out: nothing within 64px
+// of an edge, cards centred, captions 38px stacked in one grid cell, the counter under them.
+describe("TraceVideo layout", () => {
+  const FILL = "position:absolute;top:0;left:0;right:0;bottom:0;width:100%;height:100%;display:flex;flex-direction:column;";
+  const state = { capacity: 1, size: 0, threshold: 0, buckets: [[]], focus: null, pipeline: null };
+  const two: Trace = {
+    ...trace,
+    title: "T",
+    steps: [
+      { caption: "c1", source: null, state },
+      { caption: "c2", source: null, state },
+    ],
+  };
+  const styles = (markup: string) => Array.from(parse(markup).querySelectorAll("[style]"), (e) => e.getAttribute("style"));
+
+  it("centres the title card's title and step count", () => {
+    expect(styles(renderToStaticMarkup(<TitleCard trace={two} />))).toEqual([
+      `${FILL}padding:64px;justify-content:center;align-items:center;text-align:center;gap:40px;color:#1f2937`,
+      "font-size:68px;font-weight:700;line-height:1.2;text-wrap:balance;white-space:pre-wrap",
+      "font-size:40px;line-height:1.35;color:#6b7280",
+    ]);
+  });
+
+  it("fills a step card with the drawing above every caption, showing only this step's", () => {
+    const scene = { width: 344, height: 112, items: [] };
+    const markup = renderToStaticMarkup(<StepCard trace={two} index={1} scene={scene} />);
+    expect(parse(markup).querySelector("svg")!.getAttribute("viewBox")).toBe("-8 -8 360 128");
+    expect(styles(markup)).toEqual([
+      `${FILL}padding:64px;gap:28px;color:#1f2937`,
+      "flex:1;min-height:0;width:100%",
+      "display:grid;font-size:38px;line-height:1.3;overflow-wrap:anywhere",
+      "grid-area:1 / 1;visibility:hidden;white-space:pre-wrap",
+      "grid-area:1 / 1;visibility:visible;white-space:pre-wrap",
+      "font-size:30px;color:#6b7280;text-align:right;margin-top:-14px",
+    ]);
+  });
+
+  it("centres the end card's lines, the address in bold blue", () => {
+    frame.now = timeline(two).end;
+    const markup = renderToStaticMarkup(<TraceVideo trace={two} />);
+    expect(styles(markup).slice(1)).toEqual([
+      `${FILL}padding:64px;justify-content:center;align-items:center;text-align:center;gap:40px;color:#1f2937`,
+      "font-size:44px;line-height:1.35",
+      "font-size:46px;font-weight:700;line-height:1.35;color:#3f51b5",
+    ]);
+  });
+
+  it("draws each item in place, with no Motion, since Remotion sets every frame itself", () => {
+    frame.now = timeline(put).steps[0]!.start;
+    const groups = Array.from(videoAt(frame.now).querySelectorAll("svg > g"));
+    expect(groups.length).toBeGreaterThan(0);
+    for (const g of groups) expect(g.getAttribute("transform")).toMatch(/^translate\(/);
+  });
+
+  it("times and lays out a new trace when the trace changes", () => {
+    frame.now = timeline(two).steps[1]!.start + 20;
+    const { container, rerender } = render(<TraceVideo trace={two} />);
+    expect(container.textContent).toContain("Step 2 of 2");
+    const three = { ...two, steps: [...two.steps, { caption: "c3", source: null, state: put.steps[0]!.state }] };
+    rerender(<TraceVideo trace={three} />);
+    expect(container.textContent).toContain("Step 2 of 3");
+    frame.now = timeline(three).steps[2]!.start + 20;
+    rerender(<TraceVideo trace={{ ...three }} />);
+    expect(container.querySelectorAll("svg > g").length).toBeGreaterThan(
+      layoutTrace([slimState(state, "chains")], "chains")[0]!.items.length,
+    );
   });
 });

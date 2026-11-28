@@ -1,12 +1,15 @@
 // @vitest-environment jsdom
 import { cleanup, render } from "@testing-library/react";
-import { afterEach, describe, expect, it } from "vitest";
+import { afterEach, describe, expect, it, vi } from "vitest";
 import type { HashTableState } from "../../trace/types";
 import { HashTableSvg } from "./HashTableSvg";
 import { layoutHashTable } from "./layout";
 import { LIGHT } from "./palette";
 
-afterEach(cleanup);
+afterEach(() => {
+  cleanup();
+  vi.restoreAllMocks();
+});
 
 const awkward = `a"b\\c<&\nü`;
 
@@ -68,5 +71,31 @@ describe("HashTableSvg", () => {
     })).filter((c) => c.width !== null);
     expect(cells.filter((c) => c.width === "2.5")).toEqual([expect.objectContaining({ opacity: null })]);
     expect(cells.filter((c) => c.opacity !== null)).toEqual([{ width: "0.5", at: "translate(1 2)", opacity: "0.5" }]);
+  });
+
+  it("pads the drawing by 8 on every side, and scales down but never past its own size", () => {
+    const { container } = render(
+      <HashTableSvg scene={{ width: 100, height: 50, items: [] }} palette={LIGHT} animate={false} />,
+    );
+    const svg = container.querySelector("svg")!;
+    expect(svg.getAttribute("viewBox")).toBe("-8 -8 116 66");
+    expect(svg.getAttribute("width")).toBe("100%");
+    expect(svg.getAttribute("style")).toBe("max-width: 116px; height: auto; display: block; margin: 0px auto;");
+  });
+
+  it("draws the grid's bands with no warnings from React", () => {
+    const errors = vi.spyOn(console, "error");
+    const grid: HashTableState = {
+      ...state,
+      capacity: 4,
+      buckets: [[], [{ id: "k:a", key: "a", value: "v", hash: "0x0" }], [], []],
+      focus: null,
+      pipeline: null,
+    };
+    const { container } = render(<HashTableSvg scene={layoutHashTable(grid, "grid")} palette={LIGHT} animate />);
+    expect(Array.from(container.querySelectorAll("path[fill]"), (p) => p.getAttribute("fill"))).toEqual(
+      [LIGHT.heat[0], LIGHT.heat[1]],
+    );
+    expect(errors).not.toHaveBeenCalled();
   });
 });

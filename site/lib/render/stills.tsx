@@ -20,8 +20,9 @@ const NOTE = "Interactive version on the site";
 export function wrap(text: string, max: number): string[] {
   const lines: string[] = [];
   let line = "";
-  for (const word of text.split(/\s+/).filter(Boolean)) {
+  for (const word of text.match(/\S+/g) ?? []) {
     let rest = Array.from(word);
+    // Stryker disable next-line EqualityOperator: a word exactly a line long ends up alone on its line either way.
     while (rest.length > max) {
       if (line) lines.push(line);
       lines.push(rest.slice(0, max).join(""));
@@ -73,7 +74,8 @@ export function renderStill(trace: Trace): string {
       ).at(-1)!
     : null;
   // The player keeps room for the key pipeline on every step; a still without one needs none.
-  const top = scene && scene.items.length > 0 ? Math.min(...scene.items.map((item) => item.y)) : 0;
+  // A scene always has its stats labels, so it is never empty.
+  const top = scene ? Math.min(...scene.items.map((item) => item.y)) : 0;
   const inner = Math.max(MIN_WIDTH, scene?.width ?? 0);
   const fits = (size: number) => Math.floor(inner / (size * CHAR_EM));
 

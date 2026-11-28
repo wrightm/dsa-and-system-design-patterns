@@ -142,10 +142,10 @@ export function TraceVideo({ trace, page }: TraceVideoProps) {
   else if (moment.kind === "end") body = <EndCard page={page} />;
   else {
     const to = scenes[moment.index]!;
-    const from = moment.index > 0 ? scenes[moment.index - 1]! : to;
-    const moving = moment.t < 1 && from !== to;
-    const scene = moving ? mergeScenes(from, to) : to;
-    const positions = moving ? positionsAt(from, to, smooth(moment.t)) : undefined;
+    // Only a step after the first moves in (see `at`), so a moving step always has one before it.
+    const from = moment.t < 1 ? scenes[moment.index - 1]! : null;
+    const scene = from === null ? to : mergeScenes(from, to);
+    const positions = from === null ? undefined : positionsAt(from, to, smooth(moment.t));
     body = <StepCard trace={trace} index={moment.index} scene={scene} size={to} positions={positions} />;
   }
 

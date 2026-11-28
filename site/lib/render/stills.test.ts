@@ -1,11 +1,16 @@
 // @vitest-environment jsdom
 import fs from "node:fs";
 import path from "node:path";
-import { describe, expect, it } from "vitest";
+import { afterEach, describe, expect, it, vi } from "vitest";
 import type { Trace } from "../trace/types";
 import { validateTrace } from "../trace/validate";
 import { REPO_ROOT as repoRoot } from "../../test/repo-root";
+import { tempDir, writeFiles } from "../../test/temp";
 import { findTraces, renderStill, stillPathOf, wrap } from "./stills";
+
+afterEach(() => {
+  vi.restoreAllMocks();
+});
 
 const putFile = path.join(repoRoot, "data-structures/src/main/java/learn/ds/hashmap/animations/put.trace.json");
 
@@ -85,7 +90,14 @@ describe("renderStill", () => {
     const svg = renderStill({ ...awkwardTrace, steps: [] });
     const doc = parse(svg);
     expect(doc.getElementsByTagName("title")[0]!.textContent).toBe("Keys & <markup>");
-    expect(doc.getElementsByTagName("rect").length).toBeGreaterThan(0); // the background
+    // 352 wide: 320 and a 16 margin each side. 81 high: the title's 21 and 12 below it, the
+    // note's 15.4, and the margins, rounded up.
+    expect(doc.documentElement.getAttribute("width")).toBe("352");
+    expect(doc.documentElement.getAttribute("height")).toBe("81");
+    expect(doc.documentElement.getAttribute("viewBox")).toBe("0 0 352 81");
+    const texts = Array.from(doc.getElementsByTagName("text"), (t) => t.textContent);
+    expect(texts).toEqual(["Keys & <markup>", "Interactive version on the site"]);
+    expect(doc.getElementsByTagName("rect")).toHaveLength(1); // the background
   });
 
   it("is deterministic", () => {
@@ -98,6 +110,7 @@ describe("wrap", () => {
   it.each<[string, number, string[]]>([
     ["", 5, []],
     ["  \n ", 5, []],
+    [" a  b ", 5, ["a b"]],
     ["one two three", 7, ["one two", "three"]],
     ["one two", 7, ["one two"]],
     ["ab cd", 4, ["ab", "cd"]],
@@ -117,6 +130,27 @@ describe("committed stills", () => {
     const shown = traces.map((f) => path.relative(repoRoot, f));
     expect(shown).toContain("data-structures/src/main/java/learn/ds/hashmap/animations/put.trace.json");
     expect(shown.filter((f) => f.startsWith("site/"))).toEqual([]);
+  });
+
+  it("skips build output, dependencies, the site and dot-folders, and sorts what it finds", () => {
+    const root = tempDir("traces");
+    const files = ["b/x.trace.json", "a/x.trace.json", "a/y.trace.json"];
+    writeFiles(root, {
+      ...Object.fromEntries(files.map((f) => [f, "{}"])),
+      "node_modules/m/x.trace.json": "{}",
+      "a/build/x.trace.json": "{}",
+      "site/x.trace.json": "{}",
+      ".git/x.trace.json": "{}",
+      "a/x.trace.json.bak": "{}",
+    });
+    const list = fs.readdirSync;
+    vi.spyOn(fs, "readdirSync").mockImplementation(((dir: fs.PathLike, options: never) =>
+      (list(dir, options) as unknown[]).reverse()) as typeof fs.readdirSync);
+    expect(findTraces(root).map((f) => path.relative(root, f))).toEqual(["a/x.trace.json", "a/y.trace.json", "b/x.trace.json"]);
+  });
+
+  it("puts a still beside its trace, replacing only the final extension", () => {
+    expect(stillPathOf("/r/a.trace.json/put.trace.json")).toBe("/r/a.trace.json/put.svg");
   });
 
   it.each(traces.map((f) => [path.relative(repoRoot, f), f]))("%s has an up-to-date still", (_shown, file) => {

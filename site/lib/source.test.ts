@@ -1,8 +1,6 @@
-import { describe, expect, it, vi } from "vitest";
+import { describe, expect, it } from "vitest";
 import { isArticle, ogImagePath } from "./og";
 import { source } from "./source";
-
-vi.mock("../.source/server", () => import("../test/docs"));
 
 describe("source", () => {
   it("serves every collected page at its path from the site root", () => {

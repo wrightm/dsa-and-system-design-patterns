@@ -29,6 +29,7 @@ site/tsconfig.tsbuildinfo
 site/test-results/
 site/playwright-report/
 site/reports/
+site/.stryker-tmp/
 
 # jqwik
 .jqwik-database

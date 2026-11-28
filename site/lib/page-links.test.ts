@@ -7,7 +7,7 @@ import { pageUrl, remarkPageLinks } from "./page-links";
 
 const docs = fs.mkdtempSync(path.join(os.tmpdir(), "page-links-"));
 afterAll(() => fs.rmSync(docs, { recursive: true, force: true }));
-for (const file of ["index.md", "series.md", "data-structures/index.md", "data-structures/hashmap.md", "catalogue/index.md"]) {
+for (const file of ["index.md", "series.md", "data-structures/index.md", "data-structures/hashmap.md", "catalogue/index.md", "indexes.md"]) {
   fs.mkdirSync(path.dirname(path.join(docs, file)), { recursive: true });
   fs.writeFileSync(path.join(docs, file), "");
 }
@@ -24,6 +24,7 @@ describe("pageUrl", () => {
     expect(pageUrl("data-structures/index.md", from("series.md"), docs)).toBe("/data-structures/");
     expect(pageUrl("../catalogue/index.md", from("data-structures/hashmap.md"), docs)).toBe("/catalogue/");
     expect(pageUrl("../index.md", from("data-structures/hashmap.md"), docs)).toBe("/");
+    expect(pageUrl("indexes.md", from("series.md"), docs)).toBe("/indexes/");
   });
 
   it("keeps the fragment", () => {

@@ -17,6 +17,9 @@ writeFiles(parent, {
   "out/..dots.txt": "dots",
   "out/empty/.keep": "",
   "out-evil/secret.txt": "secret",
+  // A page in the folder above the export, which a request must not reach either.
+  "index.html": "above",
+  ...Object.fromEntries(["js", "json", "svg", "png", "txt", "woff2"].map((ext) => [`out/types/f.${ext}`, ext])),
 });
 
 describe("resolveFile", () => {
@@ -58,6 +61,17 @@ describe("createServer", () => {
 
   it("serves a file with its content type", async () => {
     expect(await get(`${BASE}/a/style.css?v=1`)).toEqual({ status: 200, type: "text/css", body: "body{}" });
+  });
+
+  it.each([
+    ["js", "text/javascript"],
+    ["json", "application/json"],
+    ["svg", "image/svg+xml"],
+    ["png", "image/png"],
+    ["txt", "text/plain; charset=utf-8"],
+    ["woff2", "font/woff2"],
+  ])("serves a .%s file as %s", async (ext, type) => {
+    expect(await get(`${BASE}/types/f.${ext}`)).toEqual({ status: 200, type, body: ext });
   });
 
   it("serves a folder's index.html as HTML", async () => {

@@ -1,11 +1,9 @@
 import { DocsBody, DocsPage } from "fumadocs-ui/layouts/docs/page";
 import type { ReactElement } from "react";
 import { renderToStaticMarkup } from "react-dom/server";
-import { describe, expect, it, vi } from "vitest";
+import { describe, expect, it } from "vitest";
 import { getMDXComponents } from "../../mdx-components";
 import Page, { generateMetadata, generateStaticParams } from "./page";
-
-vi.mock("../../.source/server", () => import("../../test/docs"));
 
 const props = (...slug: string[]) => ({ params: Promise.resolve({ slug: slug.length === 0 ? undefined : slug }) });
 type Element = ReactElement<{ children: Element; toc?: unknown; components?: unknown }>;

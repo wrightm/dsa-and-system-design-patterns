@@ -6,6 +6,7 @@ import fs from "node:fs";
 import path from "node:path";
 import { bundle } from "@remotion/bundler";
 import { renderMedia, selectComposition } from "@remotion/renderer";
+import { readJson } from "../lib/read-json";
 import { validateTrace } from "../lib/trace/validate";
 import { FPS, MAX_FRAMES } from "../remotion/interpolate";
 import type { TraceVideoProps } from "../remotion/TraceVideo";
@@ -35,12 +36,13 @@ export const DEFAULTS: VideoDeps = {
 };
 
 async function render([id, output]: string[], deps: VideoDeps) {
-  const match = id === undefined ? null : ID.exec(id);
+  // No id at all reads as "undefined", which is not an id either.
+  const match = ID.exec(String(id));
   if (!match || !output) throw new Error("usage: pnpm video <module>/<slug>/<name> <output.mp4>");
   const shown = `content/traces/${id}.json`;
   const file = path.join(deps.site, shown);
   if (!fs.existsSync(file)) throw new Error(`${shown}: not found (run pnpm collect first)`);
-  const trace = validateTrace(JSON.parse(fs.readFileSync(file, "utf8")), shown);
+  const trace = validateTrace(readJson(file, shown), shown);
   const inputProps: TraceVideoProps = { trace, page: match[1]! };
 
   const started = deps.now();

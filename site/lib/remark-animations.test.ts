@@ -94,13 +94,26 @@ describe("remarkAnimations", () => {
     expect(tree.children.map((c) => c.type)).toEqual(["mdxJsxFlowElement", "mdxJsxFlowElement"]);
   });
 
-  it.each(["animations/put.png", "animations/sub/put.svg", "myanimations/put.svg"])(
+  it.each(["animations/put.png", "animations/sub/put.svg", "myanimations/put.svg", "animations/put.svg.png"])(
     "leaves %s alone, since it is not an animation",
     (url) => {
       const before = paragraph(image(url, "alt"));
       expect(run(structuredClone(before)).children).toEqual([before]);
     },
   );
+
+  it("leaves a plain link to an animation's still alone", () => {
+    const before = paragraph({ type: "link", url: "animations/put.svg", children: [{ type: "text", value: "still" }] });
+    expect(run(structuredClone(before)).children).toEqual([before]);
+  });
+
+  it("names the player after the whole page path, even one with .md inside it", () => {
+    fs.mkdirSync(path.join(tracesDir, "notes.md.d", "page"), { recursive: true });
+    fs.writeFileSync(path.join(tracesDir, "notes.md.d", "page", "put.json"), "{}");
+    const tree: Root = { type: "root", children: [paragraph(image("animations/put.svg", "alt"))] };
+    remarkAnimations({ pagePathOf: () => "notes.md.d/page.md", tracesDir })(tree, file);
+    expect(tree.children[0]).toMatchObject({ attributes: [{ value: "notes.md.d/page/put" }, { value: "alt" }] });
+  });
 
   it("fails, naming the article and the parent, when an animation image is inside a link", () => {
     const linked = paragraph({ type: "link", url: "x", children: [image("animations/put.svg", "alt")] });

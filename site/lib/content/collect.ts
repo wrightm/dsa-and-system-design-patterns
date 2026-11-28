@@ -4,6 +4,7 @@ import { stringify } from "yaml";
 import { type Article, BRANCH, findArticles, GITHUB, MODULES, pagePath } from "./articles";
 import { catalogueFiles, catalogueProgress, catalogueTitle } from "./catalogue";
 import { animationImages, buildPages, missingAlt, rewriteLinks } from "./links";
+import { readJson } from "../read-json";
 import { validateTrace } from "../trace/validate";
 
 export type CollectOptions = {
@@ -12,16 +13,18 @@ export type CollectOptions = {
   siteDir: string;
 };
 
-function frontMatter(fields: Record<string, unknown>): string {
+/** A YAML front matter block, leaving out empty fields and never folding a long line. */
+export function frontMatter(fields: Record<string, unknown>): string {
   const clean = Object.fromEntries(
     Object.entries(fields).filter(
-      ([, v]) => v !== null && v !== undefined && v !== "" && !(Array.isArray(v) && v.length === 0),
+      // YAML leaves out an undefined field by itself.
+      ([, v]) => v !== null && v !== "" && !(Array.isArray(v) && v.length === 0),
     ),
   );
   return `---\n${stringify(clean, { lineWidth: 0 })}---\n\n`;
 }
 
-const byTitle = (a: Article, b: Article) => a.title.toLowerCase().localeCompare(b.title.toLowerCase());
+const byTitle = (a: Article, b: Article) => a.title.localeCompare(b.title, "en-GB", { sensitivity: "base" });
 
 /**
  * Collects published articles, their traces and the generated pages into `<siteDir>/content/`
@@ -38,7 +41,11 @@ export function collect({ repoRoot, siteDir }: CollectOptions): Article[] {
 
   const write = (target: string, text: string) => {
     fs.mkdirSync(path.dirname(target), { recursive: true });
-    fs.writeFileSync(target, text, "utf8");
+    fs.writeFileSync(target, text);
+  };
+  const copy = (from: string, to: string) => {
+    fs.mkdirSync(path.dirname(to), { recursive: true });
+    fs.copyFileSync(from, to);
   };
   const writeDoc = (docPath: string, text: string) => write(path.join(docs, docPath), text);
 
@@ -83,29 +90,18 @@ export function collect({ repoRoot, siteDir }: CollectOptions): Article[] {
       if (!file.endsWith(".trace.json")) continue;
       const name = file.slice(0, -".trace.json".length);
       const shown = path.relative(repoRoot, path.join(animations, file)).split(path.sep).join("/");
-      const text = fs.readFileSync(path.join(animations, file), "utf8");
-      let json: unknown;
-      try {
-        json = JSON.parse(text);
-      } catch (error) {
-        throw new Error(`${shown}: not valid JSON (${(error as Error).message})`);
-      }
-      const trace = validateTrace(json, shown);
-      write(path.join(traces, slugDir, `${name}.json`), text);
+      const trace = validateTrace(readJson(path.join(animations, file), shown), shown);
+      copy(path.join(animations, file), path.join(traces, slugDir, `${name}.json`));
       for (const ref of new Set(trace.steps.flatMap((s) => (s.source ? [s.source.file] : [])))) {
         if (/[/\\]|\.\./.test(ref)) {
           throw new Error(`${shown}: source.file must be a plain file name, found ${JSON.stringify(ref)}`);
         }
         const from = path.join(articleDir, ref);
         if (!fs.existsSync(from)) throw new Error(`${shown}: source file not found beside the article: ${ref}`);
-        write(path.join(sources, slugDir, ref), fs.readFileSync(from, "utf8"));
+        copy(from, path.join(sources, slugDir, ref));
       }
       const still = path.join(animations, `${name}.svg`);
-      if (fs.existsSync(still)) {
-        const to = path.join(stills, slugDir, `${name}.svg`);
-        fs.mkdirSync(path.dirname(to), { recursive: true });
-        fs.copyFileSync(still, to);
-      }
+      if (fs.existsSync(still)) copy(still, path.join(stills, slugDir, `${name}.svg`));
     }
   }
 
@@ -149,7 +145,7 @@ export function collect({ repoRoot, siteDir }: CollectOptions): Article[] {
   const items = latest.map((a) => `- **[${a.title}](${pagePath(a)})**<br>${a.summary}`).join("\n");
   const home = fs.readFileSync(path.join(siteDir, "content-src", "index.md"), "utf8");
   writeDoc("index.md", home.replace("<!-- LATEST -->", () => items || "Nothing published yet."));
-  writeDoc("about.md", fs.readFileSync(path.join(siteDir, "content-src", "about.md"), "utf8"));
+  copy(path.join(siteDir, "content-src", "about.md"), path.join(docs, "about.md"));
 
   // Page tree order for Fumadocs: home, series, the domains in MODULES order, catalogue, about.
   const order = ["index", "series", "---Domains---", ...Object.keys(MODULES), "catalogue", "about"];

@@ -4,6 +4,7 @@ import { describe, expect, it } from "vitest";
 import type { Scene, SceneItem } from "../lib/render/hash-table/layout";
 import type { Step, Trace } from "../lib/trace/types";
 import { validateTrace } from "../lib/trace/validate";
+import { REPO_ROOT } from "../test/repo-root";
 import { FPS, MAX_FRAMES, at, mergeScenes, positionsAt, timeline } from "./interpolate";
 
 const item = (id: string, x: number, y: number): SceneItem => ({ id, kind: "node", x, y, w: 40, h: 28, text: id });
@@ -86,7 +87,7 @@ describe("timeline", () => {
     expect(tl.total).toBeGreaterThan(0);
     expect(tl.steps).toEqual([]);
     expect(tl.end).toBe(tl.total);
-    for (const frame of [0, tl.total - 1]) expect(at(tl, frame)).toEqual({ kind: "title" });
+    for (const frame of [-1, 0, tl.total - 1, tl.total + 100]) expect(at(tl, frame)).toEqual({ kind: "title" });
   });
 
   it("holds a single step with no transition into it, then the end card", () => {
@@ -124,6 +125,32 @@ describe("timeline", () => {
     expect(at(tl, tl.total + 100)).toEqual({ kind: "end" });
   });
 
+  it("lays out a short trace frame by frame", () => {
+    // Each caption is read in 1.3 s, under the 2.2 s floor; the last step holds a second more.
+    expect(timeline(traceOf(["one", "two"]))).toEqual({
+      title: 75,
+      transition: 15,
+      steps: [
+        { start: 75, frames: 66 },
+        { start: 141, frames: 96 },
+      ],
+      end: 237,
+      total: 342,
+    });
+  });
+
+  it("shortens every step in proportion to fit a long trace in 59 seconds", () => {
+    // 30 steps of 5 s want 4500 frames; 1560 are left after the cards and the last hold.
+    const tl = timeline(traceOf(Array.from({ length: 30 }, () => caption(200))));
+    expect(tl.steps.map((s) => s.frames)).toEqual([...Array(29).fill(52), 82]);
+    expect(tl.total).toBe(MAX_FRAMES);
+  });
+
+  it("never shortens a step below a second, even if the video then runs long", () => {
+    const tl = timeline(traceOf(Array.from({ length: 100 }, () => caption(200))));
+    expect(tl.steps.map((s) => s.frames)).toEqual([...Array(99).fill(30), 60]);
+  });
+
   it("keeps a trace with many long captions under a minute", () => {
     const tl = timeline(traceOf(Array.from({ length: 40 }, () => caption(200))));
     expect(tl.total).toBeLessThanOrEqual(MAX_FRAMES);
@@ -131,10 +158,7 @@ describe("timeline", () => {
   });
 
   it("fits the recorded put trace in under a minute, every frame a whole number", () => {
-    const file = path.resolve(
-      import.meta.dirname,
-      "../../data-structures/src/main/java/learn/ds/hashmap/animations/put.trace.json",
-    );
+    const file = path.join(REPO_ROOT, "data-structures/src/main/java/learn/ds/hashmap/animations/put.trace.json");
     const trace = validateTrace(JSON.parse(fs.readFileSync(file, "utf8")), file);
     const tl = timeline(trace);
     expect(tl.steps).toHaveLength(13);

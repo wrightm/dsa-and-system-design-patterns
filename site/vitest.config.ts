@@ -1,7 +1,12 @@
+import path from "node:path";
 import { defineConfig } from "vitest/config";
 
 // Component tests opt in to jsdom with `// @vitest-environment jsdom` at the top of the file.
 export default defineConfig({
+  resolve: {
+    // fumadocs-mdx generates .source/ from the collected content; tests use a known collection.
+    alias: [{ find: /^(\.\.\/)+\.source\/server$/, replacement: path.resolve(import.meta.dirname, "test/docs.ts") }],
+  },
   test: {
     include: [
       "{app,components,lib,remotion,scripts}/**/*.test.{ts,tsx}",
