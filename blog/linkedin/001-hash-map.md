@@ -1,6 +1,7 @@
 ---
 status: draft
 article: https://wrightm.github.io/dsa-and-system-design-patterns/data-structures/hashmap/
+media: media/001-hash-map-put.mp4
 posted:
 url:
 ---

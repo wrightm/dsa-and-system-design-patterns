@@ -17,9 +17,19 @@ bin/
 .DS_Store
 
 # Site
-site/.generated/
-site/.venv/
 __pycache__/
+site/node_modules/
+site/.next/
+site/out/
+site/.source/
+site/content/
+site/public/generated/
+site/next-env.d.ts
+site/tsconfig.tsbuildinfo
+site/test-results/
+site/playwright-report/
+site/reports/
+site/.stryker-tmp/
 
 # jqwik
 .jqwik-database

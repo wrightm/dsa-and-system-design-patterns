@@ -13,7 +13,8 @@ import sys
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parent.parent
-SKIP_DIRS = {".git", ".gradle", "build", ".generated", ".venv", "node_modules", "templates"}
+# .stryker-tmp holds copies of site/ that an interrupted mutation run can leave behind.
+SKIP_DIRS = {".git", ".gradle", "build", ".venv", "node_modules", "templates", ".stryker-tmp"}
 LINK = re.compile(r"!?\[[^\]]*\]\(([^)\s]+)\)")
 EXTERNAL = re.compile(r"^([a-z][a-z0-9+.-]*:|//)", re.IGNORECASE)
 HEADING = re.compile(r"^#{1,6}\s+(.*?)\s*#*$")
@@ -24,8 +25,10 @@ def markdown_files() -> list[Path]:
         path
         for path in ROOT.rglob("*.md")
         if not SKIP_DIRS.intersection(path.relative_to(ROOT).parts)
-        # Pages under site/pages link relative to the built site, and mkdocs --strict checks them.
-        and not path.is_relative_to(ROOT / "site" / "pages")
+        # Pages under site/content-src link relative to the built site, which checks them;
+        # site/content is generated from the articles checked here; the site's test fixtures
+        # break links on purpose.
+        and not any(path.is_relative_to(ROOT / "site" / d) for d in ("content-src", "content", "test"))
     )
 
 

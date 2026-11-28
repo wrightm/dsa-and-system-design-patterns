@@ -1,0 +1,63 @@
+@import "tailwindcss";
+@import "fumadocs-ui/css/neutral.css";
+@import "fumadocs-ui/css/preset.css";
+
+/* Indigo accent, the colour the site has always used. */
+:root {
+  --color-fd-primary: #3f51b5;
+  --color-fd-primary-foreground: #ffffff;
+  --color-fd-ring: #3f51b5;
+}
+
+.dark {
+  --color-fd-primary: #8c9eff;
+  --color-fd-primary-foreground: #1a1b2e;
+  --color-fd-ring: #8c9eff;
+}
+
+/* Hash table animations (THEMED in lib/render/hash-table/palette.ts). Light values match LIGHT. */
+:root {
+  --ht-text: #1f2937;
+  --ht-muted: #6b7280;
+  --ht-bucket-fill: #f3f4f6;
+  --ht-bucket-stroke: #9ca3af;
+  --ht-node-fill: #ffffff;
+  --ht-node-stroke: #6b7280;
+  --ht-link: #6b7280;
+  --ht-focus: #b45309;
+  --ht-new-fill: #e8eaf6;
+  --ht-new-stroke: #3f51b5;
+  --ht-pipeline-fill: #f9fafb;
+  --ht-pipeline-stroke: #9ca3af;
+  --ht-heat-0: #f3f4f6;
+  --ht-heat-1: #c5cae9;
+  --ht-heat-2: #7986cb;
+  --ht-heat-3: #3f51b5;
+  --ht-heat-4: #1a237e;
+}
+
+.dark {
+  --ht-text: #e5e7eb;
+  --ht-muted: #a3a3a3;
+  --ht-bucket-fill: #262626;
+  --ht-bucket-stroke: #737373;
+  --ht-node-fill: #171717;
+  --ht-node-stroke: #a3a3a3;
+  --ht-link: #a3a3a3;
+  --ht-focus: #fbbf24;
+  --ht-new-fill: #283593;
+  --ht-new-stroke: #8c9eff;
+  --ht-pipeline-fill: #1f1f1f;
+  --ht-pipeline-stroke: #737373;
+  --ht-heat-0: #262626;
+  --ht-heat-1: #3949ab;
+  --ht-heat-2: #5c6bc0;
+  --ht-heat-3: #8c9eff;
+  --ht-heat-4: #e8eaf6;
+}
+
+.mermaid-diagram {
+  display: flex;
+  justify-content: center;
+  margin: 1.5rem 0;
+}

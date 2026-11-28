@@ -1,0 +1,4584 @@
+{
+  "version": 1,
+  "id": "resize",
+  "title": "The thirteenth put doubles the table",
+  "kind": "hash-table",
+  "layout": "chains",
+  "steps": [
+    {
+      "caption": "put(\"1\"): hashCode() is 0x00000031. Its high 16 bits are all zero, so spreading leaves it unchanged, and its low 4 bits pick bucket 1 of 16.",
+      "source": {
+        "file": "ChainedHashMap.java",
+        "line": 68
+      },
+      "state": {
+        "capacity": 16,
+        "size": 0,
+        "threshold": 12,
+        "buckets": [
+          [],
+          [],
+          [],
+          [],
+          [],
+          [],
+          [],
+          [],
+          [],
+          [],
+          [],
+          [],
+          [],
+          [],
+          [],
+          []
+        ],
+        "focus": {
+          "bucket": 1,
+          "node": null
+        },
+        "pipeline": {
+          "key": "1",
+          "hashCode": "0x00000031",
+          "spread": "0x00000031",
+          "index": 1
+        }
+      }
+    },
+    {
+      "caption": "Bucket 1 was empty, so \"1\" becomes its only node. Size is now 1.",
+      "source": {
+        "file": "ChainedHashMap.java",
+        "line": 83
+      },
+      "state": {
+        "capacity": 16,
+        "size": 1,
+        "threshold": 12,
+        "buckets": [
+          [],
+          [
+            {
+              "id": "k:1",
+              "key": "1",
+              "value": "1",
+              "hash": "0x00000031"
+            }
+          ],
+          [],
+          [],
+          [],
+          [],
+          [],
+          [],
+          [],
+          [],
+          [],
+          [],
+          [],
+          [],
+          [],
+          []
+        ],
+        "focus": {
+          "bucket": 1,
+          "node": "k:1"
+        },
+        "pipeline": {
+          "key": "1",
+          "hashCode": "0x00000031",
+          "spread": "0x00000031",
+          "index": 1
+        }
+      }
+    },
+    {
+      "caption": "put(\"2\"): hashCode() is 0x00000032. Its high 16 bits are all zero, so spreading leaves it unchanged, and its low 4 bits pick bucket 2 of 16.",
+      "source": {
+        "file": "ChainedHashMap.java",
+        "line": 68
+      },
+      "state": {
+        "capacity": 16,
+        "size": 1,
+        "threshold": 12,
+        "buckets": [
+          [],
+          [
+            {
+              "id": "k:1",
+              "key": "1",
+              "value": "1",
+              "hash": "0x00000031"
+            }
+          ],
+          [],
+          [],
+          [],
+          [],
+          [],
+          [],
+          [],
+          [],
+          [],
+          [],
+          [],
+          [],
+          [],
+          []
+        ],
+        "focus": {
+          "bucket": 2,
+          "node": null
+        },
+        "pipeline": {
+          "key": "2",
+          "hashCode": "0x00000032",
+          "spread": "0x00000032",
+          "index": 2
+        }
+      }
+    },
+    {
+      "caption": "Bucket 2 was empty, so \"2\" becomes its only node. Size is now 2.",
+      "source": {
+        "file": "ChainedHashMap.java",
+        "line": 83
+      },
+      "state": {
+        "capacity": 16,
+        "size": 2,
+        "threshold": 12,
+        "buckets": [
+          [],
+          [
+            {
+              "id": "k:1",
+              "key": "1",
+              "value": "1",
+              "hash": "0x00000031"
+            }
+          ],
+          [
+            {
+              "id": "k:2",
+              "key": "2",
+              "value": "2",
+              "hash": "0x00000032"
+            }
+          ],
+          [],
+          [],
+          [],
+          [],
+          [],
+          [],
+          [],
+          [],
+          [],
+          [],
+          [],
+          [],
+          []
+        ],
+        "focus": {
+          "bucket": 2,
+          "node": "k:2"
+        },
+        "pipeline": {
+          "key": "2",
+          "hashCode": "0x00000032",
+          "spread": "0x00000032",
+          "index": 2
+        }
+      }
+    },
+    {
+      "caption": "put(\"3\"): hashCode() is 0x00000033. Its high 16 bits are all zero, so spreading leaves it unchanged, and its low 4 bits pick bucket 3 of 16.",
+      "source": {
+        "file": "ChainedHashMap.java",
+        "line": 68
+      },
+      "state": {
+        "capacity": 16,
+        "size": 2,
+        "threshold": 12,
+        "buckets": [
+          [],
+          [
+            {
+              "id": "k:1",
+              "key": "1",
+              "value": "1",
+              "hash": "0x00000031"
+            }
+          ],
+          [
+            {
+              "id": "k:2",
+              "key": "2",
+              "value": "2",
+              "hash": "0x00000032"
+            }
+          ],
+          [],
+          [],
+          [],
+          [],
+          [],
+          [],
+          [],
+          [],
+          [],
+          [],
+          [],
+          [],
+          []
+        ],
+        "focus": {
+          "bucket": 3,
+          "node": null
+        },
+        "pipeline": {
+          "key": "3",
+          "hashCode": "0x00000033",
+          "spread": "0x00000033",
+          "index": 3
+        }
+      }
+    },
+    {
+      "caption": "Bucket 3 was empty, so \"3\" becomes its only node. Size is now 3.",
+      "source": {
+        "file": "ChainedHashMap.java",
+        "line": 83
+      },
+      "state": {
+        "capacity": 16,
+        "size": 3,
+        "threshold": 12,
+        "buckets": [
+          [],
+          [
+            {
+              "id": "k:1",
+              "key": "1",
+              "value": "1",
+              "hash": "0x00000031"
+            }
+          ],
+          [
+            {
+              "id": "k:2",
+              "key": "2",
+              "value": "2",
+              "hash": "0x00000032"
+            }
+          ],
+          [
+            {
+              "id": "k:3",
+              "key": "3",
+              "value": "3",
+              "hash": "0x00000033"
+            }
+          ],
+          [],
+          [],
+          [],
+          [],
+          [],
+          [],
+          [],
+          [],
+          [],
+          [],
+          [],
+          []
+        ],
+        "focus": {
+          "bucket": 3,
+          "node": "k:3"
+        },
+        "pipeline": {
+          "key": "3",
+          "hashCode": "0x00000033",
+          "spread": "0x00000033",
+          "index": 3
+        }
+      }
+    },
+    {
+      "caption": "put(\"4\"): hashCode() is 0x00000034. Its high 16 bits are all zero, so spreading leaves it unchanged, and its low 4 bits pick bucket 4 of 16.",
+      "source": {
+        "file": "ChainedHashMap.java",
+        "line": 68
+      },
+      "state": {
+        "capacity": 16,
+        "size": 3,
+        "threshold": 12,
+        "buckets": [
+          [],
+          [
+            {
+              "id": "k:1",
+              "key": "1",
+              "value": "1",
+              "hash": "0x00000031"
+            }
+          ],
+          [
+            {
+              "id": "k:2",
+              "key": "2",
+              "value": "2",
+              "hash": "0x00000032"
+            }
+          ],
+          [
+            {
+              "id": "k:3",
+              "key": "3",
+              "value": "3",
+              "hash": "0x00000033"
+            }
+          ],
+          [],
+          [],
+          [],
+          [],
+          [],
+          [],
+          [],
+          [],
+          [],
+          [],
+          [],
+          []
+        ],
+        "focus": {
+          "bucket": 4,
+          "node": null
+        },
+        "pipeline": {
+          "key": "4",
+          "hashCode": "0x00000034",
+          "spread": "0x00000034",
+          "index": 4
+        }
+      }
+    },
+    {
+      "caption": "Bucket 4 was empty, so \"4\" becomes its only node. Size is now 4.",
+      "source": {
+        "file": "ChainedHashMap.java",
+        "line": 83
+      },
+      "state": {
+        "capacity": 16,
+        "size": 4,
+        "threshold": 12,
+        "buckets": [
+          [],
+          [
+            {
+              "id": "k:1",
+              "key": "1",
+              "value": "1",
+              "hash": "0x00000031"
+            }
+          ],
+          [
+            {
+              "id": "k:2",
+              "key": "2",
+              "value": "2",
+              "hash": "0x00000032"
+            }
+          ],
+          [
+            {
+              "id": "k:3",
+              "key": "3",
+              "value": "3",
+              "hash": "0x00000033"
+            }
+          ],
+          [
+            {
+              "id": "k:4",
+              "key": "4",
+              "value": "4",
+              "hash": "0x00000034"
+            }
+          ],
+          [],
+          [],
+          [],
+          [],
+          [],
+          [],
+          [],
+          [],
+          [],
+          [],
+          []
+        ],
+        "focus": {
+          "bucket": 4,
+          "node": "k:4"
+        },
+        "pipeline": {
+          "key": "4",
+          "hashCode": "0x00000034",
+          "spread": "0x00000034",
+          "index": 4
+        }
+      }
+    },
+    {
+      "caption": "put(\"5\"): hashCode() is 0x00000035. Its high 16 bits are all zero, so spreading leaves it unchanged, and its low 4 bits pick bucket 5 of 16.",
+      "source": {
+        "file": "ChainedHashMap.java",
+        "line": 68
+      },
+      "state": {
+        "capacity": 16,
+        "size": 4,
+        "threshold": 12,
+        "buckets": [
+          [],
+          [
+            {
+              "id": "k:1",
+              "key": "1",
+              "value": "1",
+              "hash": "0x00000031"
+            }
+          ],
+          [
+            {
+              "id": "k:2",
+              "key": "2",
+              "value": "2",
+              "hash": "0x00000032"
+            }
+          ],
+          [
+            {
+              "id": "k:3",
+              "key": "3",
+              "value": "3",
+              "hash": "0x00000033"
+            }
+          ],
+          [
+            {
+              "id": "k:4",
+              "key": "4",
+              "value": "4",
+              "hash": "0x00000034"
+            }
+          ],
+          [],
+          [],
+          [],
+          [],
+          [],
+          [],
+          [],
+          [],
+          [],
+          [],
+          []
+        ],
+        "focus": {
+          "bucket": 5,
+          "node": null
+        },
+        "pipeline": {
+          "key": "5",
+          "hashCode": "0x00000035",
+          "spread": "0x00000035",
+          "index": 5
+        }
+      }
+    },
+    {
+      "caption": "Bucket 5 was empty, so \"5\" becomes its only node. Size is now 5.",
+      "source": {
+        "file": "ChainedHashMap.java",
+        "line": 83
+      },
+      "state": {
+        "capacity": 16,
+        "size": 5,
+        "threshold": 12,
+        "buckets": [
+          [],
+          [
+            {
+              "id": "k:1",
+              "key": "1",
+              "value": "1",
+              "hash": "0x00000031"
+            }
+          ],
+          [
+            {
+              "id": "k:2",
+              "key": "2",
+              "value": "2",
+              "hash": "0x00000032"
+            }
+          ],
+          [
+            {
+              "id": "k:3",
+              "key": "3",
+              "value": "3",
+              "hash": "0x00000033"
+            }
+          ],
+          [
+            {
+              "id": "k:4",
+              "key": "4",
+              "value": "4",
+              "hash": "0x00000034"
+            }
+          ],
+          [
+            {
+              "id": "k:5",
+              "key": "5",
+              "value": "5",
+              "hash": "0x00000035"
+            }
+          ],
+          [],
+          [],
+          [],
+          [],
+          [],
+          [],
+          [],
+          [],
+          [],
+          []
+        ],
+        "focus": {
+          "bucket": 5,
+          "node": "k:5"
+        },
+        "pipeline": {
+          "key": "5",
+          "hashCode": "0x00000035",
+          "spread": "0x00000035",
+          "index": 5
+        }
+      }
+    },
+    {
+      "caption": "put(\"6\"): hashCode() is 0x00000036. Its high 16 bits are all zero, so spreading leaves it unchanged, and its low 4 bits pick bucket 6 of 16.",
+      "source": {
+        "file": "ChainedHashMap.java",
+        "line": 68
+      },
+      "state": {
+        "capacity": 16,
+        "size": 5,
+        "threshold": 12,
+        "buckets": [
+          [],
+          [
+            {
+              "id": "k:1",
+              "key": "1",
+              "value": "1",
+              "hash": "0x00000031"
+            }
+          ],
+          [
+            {
+              "id": "k:2",
+              "key": "2",
+              "value": "2",
+              "hash": "0x00000032"
+            }
+          ],
+          [
+            {
+              "id": "k:3",
+              "key": "3",
+              "value": "3",
+              "hash": "0x00000033"
+            }
+          ],
+          [
+            {
+              "id": "k:4",
+              "key": "4",
+              "value": "4",
+              "hash": "0x00000034"
+            }
+          ],
+          [
+            {
+              "id": "k:5",
+              "key": "5",
+              "value": "5",
+              "hash": "0x00000035"
+            }
+          ],
+          [],
+          [],
+          [],
+          [],
+          [],
+          [],
+          [],
+          [],
+          [],
+          []
+        ],
+        "focus": {
+          "bucket": 6,
+          "node": null
+        },
+        "pipeline": {
+          "key": "6",
+          "hashCode": "0x00000036",
+          "spread": "0x00000036",
+          "index": 6
+        }
+      }
+    },
+    {
+      "caption": "Bucket 6 was empty, so \"6\" becomes its only node. Size is now 6.",
+      "source": {
+        "file": "ChainedHashMap.java",
+        "line": 83
+      },
+      "state": {
+        "capacity": 16,
+        "size": 6,
+        "threshold": 12,
+        "buckets": [
+          [],
+          [
+            {
+              "id": "k:1",
+              "key": "1",
+              "value": "1",
+              "hash": "0x00000031"
+            }
+          ],
+          [
+            {
+              "id": "k:2",
+              "key": "2",
+              "value": "2",
+              "hash": "0x00000032"
+            }
+          ],
+          [
+            {
+              "id": "k:3",
+              "key": "3",
+              "value": "3",
+              "hash": "0x00000033"
+            }
+          ],
+          [
+            {
+              "id": "k:4",
+              "key": "4",
+              "value": "4",
+              "hash": "0x00000034"
+            }
+          ],
+          [
+            {
+              "id": "k:5",
+              "key": "5",
+              "value": "5",
+              "hash": "0x00000035"
+            }
+          ],
+          [
+            {
+              "id": "k:6",
+              "key": "6",
+              "value": "6",
+              "hash": "0x00000036"
+            }
+          ],
+          [],
+          [],
+          [],
+          [],
+          [],
+          [],
+          [],
+          [],
+          []
+        ],
+        "focus": {
+          "bucket": 6,
+          "node": "k:6"
+        },
+        "pipeline": {
+          "key": "6",
+          "hashCode": "0x00000036",
+          "spread": "0x00000036",
+          "index": 6
+        }
+      }
+    },
+    {
+      "caption": "put(\"7\"): hashCode() is 0x00000037. Its high 16 bits are all zero, so spreading leaves it unchanged, and its low 4 bits pick bucket 7 of 16.",
+      "source": {
+        "file": "ChainedHashMap.java",
+        "line": 68
+      },
+      "state": {
+        "capacity": 16,
+        "size": 6,
+        "threshold": 12,
+        "buckets": [
+          [],
+          [
+            {
+              "id": "k:1",
+              "key": "1",
+              "value": "1",
+              "hash": "0x00000031"
+            }
+          ],
+          [
+            {
+              "id": "k:2",
+              "key": "2",
+              "value": "2",
+              "hash": "0x00000032"
+            }
+          ],
+          [
+            {
+              "id": "k:3",
+              "key": "3",
+              "value": "3",
+              "hash": "0x00000033"
+            }
+          ],
+          [
+            {
+              "id": "k:4",
+              "key": "4",
+              "value": "4",
+              "hash": "0x00000034"
+            }
+          ],
+          [
+            {
+              "id": "k:5",
+              "key": "5",
+              "value": "5",
+              "hash": "0x00000035"
+            }
+          ],
+          [
+            {
+              "id": "k:6",
+              "key": "6",
+              "value": "6",
+              "hash": "0x00000036"
+            }
+          ],
+          [],
+          [],
+          [],
+          [],
+          [],
+          [],
+          [],
+          [],
+          []
+        ],
+        "focus": {
+          "bucket": 7,
+          "node": null
+        },
+        "pipeline": {
+          "key": "7",
+          "hashCode": "0x00000037",
+          "spread": "0x00000037",
+          "index": 7
+        }
+      }
+    },
+    {
+      "caption": "Bucket 7 was empty, so \"7\" becomes its only node. Size is now 7.",
+      "source": {
+        "file": "ChainedHashMap.java",
+        "line": 83
+      },
+      "state": {
+        "capacity": 16,
+        "size": 7,
+        "threshold": 12,
+        "buckets": [
+          [],
+          [
+            {
+              "id": "k:1",
+              "key": "1",
+              "value": "1",
+              "hash": "0x00000031"
+            }
+          ],
+          [
+            {
+              "id": "k:2",
+              "key": "2",
+              "value": "2",
+              "hash": "0x00000032"
+            }
+          ],
+          [
+            {
+              "id": "k:3",
+              "key": "3",
+              "value": "3",
+              "hash": "0x00000033"
+            }
+          ],
+          [
+            {
+              "id": "k:4",
+              "key": "4",
+              "value": "4",
+              "hash": "0x00000034"
+            }
+          ],
+          [
+            {
+              "id": "k:5",
+              "key": "5",
+              "value": "5",
+              "hash": "0x00000035"
+            }
+          ],
+          [
+            {
+              "id": "k:6",
+              "key": "6",
+              "value": "6",
+              "hash": "0x00000036"
+            }
+          ],
+          [
+            {
+              "id": "k:7",
+              "key": "7",
+              "value": "7",
+              "hash": "0x00000037"
+            }
+          ],
+          [],
+          [],
+          [],
+          [],
+          [],
+          [],
+          [],
+          []
+        ],
+        "focus": {
+          "bucket": 7,
+          "node": "k:7"
+        },
+        "pipeline": {
+          "key": "7",
+          "hashCode": "0x00000037",
+          "spread": "0x00000037",
+          "index": 7
+        }
+      }
+    },
+    {
+      "caption": "put(\"8\"): hashCode() is 0x00000038. Its high 16 bits are all zero, so spreading leaves it unchanged, and its low 4 bits pick bucket 8 of 16.",
+      "source": {
+        "file": "ChainedHashMap.java",
+        "line": 68
+      },
+      "state": {
+        "capacity": 16,
+        "size": 7,
+        "threshold": 12,
+        "buckets": [
+          [],
+          [
+            {
+              "id": "k:1",
+              "key": "1",
+              "value": "1",
+              "hash": "0x00000031"
+            }
+          ],
+          [
+            {
+              "id": "k:2",
+              "key": "2",
+              "value": "2",
+              "hash": "0x00000032"
+            }
+          ],
+          [
+            {
+              "id": "k:3",
+              "key": "3",
+              "value": "3",
+              "hash": "0x00000033"
+            }
+          ],
+          [
+            {
+              "id": "k:4",
+              "key": "4",
+              "value": "4",
+              "hash": "0x00000034"
+            }
+          ],
+          [
+            {
+              "id": "k:5",
+              "key": "5",
+              "value": "5",
+              "hash": "0x00000035"
+            }
+          ],
+          [
+            {
+              "id": "k:6",
+              "key": "6",
+              "value": "6",
+              "hash": "0x00000036"
+            }
+          ],
+          [
+            {
+              "id": "k:7",
+              "key": "7",
+              "value": "7",
+              "hash": "0x00000037"
+            }
+          ],
+          [],
+          [],
+          [],
+          [],
+          [],
+          [],
+          [],
+          []
+        ],
+        "focus": {
+          "bucket": 8,
+          "node": null
+        },
+        "pipeline": {
+          "key": "8",
+          "hashCode": "0x00000038",
+          "spread": "0x00000038",
+          "index": 8
+        }
+      }
+    },
+    {
+      "caption": "Bucket 8 was empty, so \"8\" becomes its only node. Size is now 8.",
+      "source": {
+        "file": "ChainedHashMap.java",
+        "line": 83
+      },
+      "state": {
+        "capacity": 16,
+        "size": 8,
+        "threshold": 12,
+        "buckets": [
+          [],
+          [
+            {
+              "id": "k:1",
+              "key": "1",
+              "value": "1",
+              "hash": "0x00000031"
+            }
+          ],
+          [
+            {
+              "id": "k:2",
+              "key": "2",
+              "value": "2",
+              "hash": "0x00000032"
+            }
+          ],
+          [
+            {
+              "id": "k:3",
+              "key": "3",
+              "value": "3",
+              "hash": "0x00000033"
+            }
+          ],
+          [
+            {
+              "id": "k:4",
+              "key": "4",
+              "value": "4",
+              "hash": "0x00000034"
+            }
+          ],
+          [
+            {
+              "id": "k:5",
+              "key": "5",
+              "value": "5",
+              "hash": "0x00000035"
+            }
+          ],
+          [
+            {
+              "id": "k:6",
+              "key": "6",
+              "value": "6",
+              "hash": "0x00000036"
+            }
+          ],
+          [
+            {
+              "id": "k:7",
+              "key": "7",
+              "value": "7",
+              "hash": "0x00000037"
+            }
+          ],
+          [
+            {
+              "id": "k:8",
+              "key": "8",
+              "value": "8",
+              "hash": "0x00000038"
+            }
+          ],
+          [],
+          [],
+          [],
+          [],
+          [],
+          [],
+          []
+        ],
+        "focus": {
+          "bucket": 8,
+          "node": "k:8"
+        },
+        "pipeline": {
+          "key": "8",
+          "hashCode": "0x00000038",
+          "spread": "0x00000038",
+          "index": 8
+        }
+      }
+    },
+    {
+      "caption": "put(\"9\"): hashCode() is 0x00000039. Its high 16 bits are all zero, so spreading leaves it unchanged, and its low 4 bits pick bucket 9 of 16.",
+      "source": {
+        "file": "ChainedHashMap.java",
+        "line": 68
+      },
+      "state": {
+        "capacity": 16,
+        "size": 8,
+        "threshold": 12,
+        "buckets": [
+          [],
+          [
+            {
+              "id": "k:1",
+              "key": "1",
+              "value": "1",
+              "hash": "0x00000031"
+            }
+          ],
+          [
+            {
+              "id": "k:2",
+              "key": "2",
+              "value": "2",
+              "hash": "0x00000032"
+            }
+          ],
+          [
+            {
+              "id": "k:3",
+              "key": "3",
+              "value": "3",
+              "hash": "0x00000033"
+            }
+          ],
+          [
+            {
+              "id": "k:4",
+              "key": "4",
+              "value": "4",
+              "hash": "0x00000034"
+            }
+          ],
+          [
+            {
+              "id": "k:5",
+              "key": "5",
+              "value": "5",
+              "hash": "0x00000035"
+            }
+          ],
+          [
+            {
+              "id": "k:6",
+              "key": "6",
+              "value": "6",
+              "hash": "0x00000036"
+            }
+          ],
+          [
+            {
+              "id": "k:7",
+              "key": "7",
+              "value": "7",
+              "hash": "0x00000037"
+            }
+          ],
+          [
+            {
+              "id": "k:8",
+              "key": "8",
+              "value": "8",
+              "hash": "0x00000038"
+            }
+          ],
+          [],
+          [],
+          [],
+          [],
+          [],
+          [],
+          []
+        ],
+        "focus": {
+          "bucket": 9,
+          "node": null
+        },
+        "pipeline": {
+          "key": "9",
+          "hashCode": "0x00000039",
+          "spread": "0x00000039",
+          "index": 9
+        }
+      }
+    },
+    {
+      "caption": "Bucket 9 was empty, so \"9\" becomes its only node. Size is now 9.",
+      "source": {
+        "file": "ChainedHashMap.java",
+        "line": 83
+      },
+      "state": {
+        "capacity": 16,
+        "size": 9,
+        "threshold": 12,
+        "buckets": [
+          [],
+          [
+            {
+              "id": "k:1",
+              "key": "1",
+              "value": "1",
+              "hash": "0x00000031"
+            }
+          ],
+          [
+            {
+              "id": "k:2",
+              "key": "2",
+              "value": "2",
+              "hash": "0x00000032"
+            }
+          ],
+          [
+            {
+              "id": "k:3",
+              "key": "3",
+              "value": "3",
+              "hash": "0x00000033"
+            }
+          ],
+          [
+            {
+              "id": "k:4",
+              "key": "4",
+              "value": "4",
+              "hash": "0x00000034"
+            }
+          ],
+          [
+            {
+              "id": "k:5",
+              "key": "5",
+              "value": "5",
+              "hash": "0x00000035"
+            }
+          ],
+          [
+            {
+              "id": "k:6",
+              "key": "6",
+              "value": "6",
+              "hash": "0x00000036"
+            }
+          ],
+          [
+            {
+              "id": "k:7",
+              "key": "7",
+              "value": "7",
+              "hash": "0x00000037"
+            }
+          ],
+          [
+            {
+              "id": "k:8",
+              "key": "8",
+              "value": "8",
+              "hash": "0x00000038"
+            }
+          ],
+          [
+            {
+              "id": "k:9",
+              "key": "9",
+              "value": "9",
+              "hash": "0x00000039"
+            }
+          ],
+          [],
+          [],
+          [],
+          [],
+          [],
+          []
+        ],
+        "focus": {
+          "bucket": 9,
+          "node": "k:9"
+        },
+        "pipeline": {
+          "key": "9",
+          "hashCode": "0x00000039",
+          "spread": "0x00000039",
+          "index": 9
+        }
+      }
+    },
+    {
+      "caption": "put(\"10\"): hashCode() is 0x0000061f. Its high 16 bits are all zero, so spreading leaves it unchanged, and its low 4 bits pick bucket 15 of 16.",
+      "source": {
+        "file": "ChainedHashMap.java",
+        "line": 68
+      },
+      "state": {
+        "capacity": 16,
+        "size": 9,
+        "threshold": 12,
+        "buckets": [
+          [],
+          [
+            {
+              "id": "k:1",
+              "key": "1",
+              "value": "1",
+              "hash": "0x00000031"
+            }
+          ],
+          [
+            {
+              "id": "k:2",
+              "key": "2",
+              "value": "2",
+              "hash": "0x00000032"
+            }
+          ],
+          [
+            {
+              "id": "k:3",
+              "key": "3",
+              "value": "3",
+              "hash": "0x00000033"
+            }
+          ],
+          [
+            {
+              "id": "k:4",
+              "key": "4",
+              "value": "4",
+              "hash": "0x00000034"
+            }
+          ],
+          [
+            {
+              "id": "k:5",
+              "key": "5",
+              "value": "5",
+              "hash": "0x00000035"
+            }
+          ],
+          [
+            {
+              "id": "k:6",
+              "key": "6",
+              "value": "6",
+              "hash": "0x00000036"
+            }
+          ],
+          [
+            {
+              "id": "k:7",
+              "key": "7",
+              "value": "7",
+              "hash": "0x00000037"
+            }
+          ],
+          [
+            {
+              "id": "k:8",
+              "key": "8",
+              "value": "8",
+              "hash": "0x00000038"
+            }
+          ],
+          [
+            {
+              "id": "k:9",
+              "key": "9",
+              "value": "9",
+              "hash": "0x00000039"
+            }
+          ],
+          [],
+          [],
+          [],
+          [],
+          [],
+          []
+        ],
+        "focus": {
+          "bucket": 15,
+          "node": null
+        },
+        "pipeline": {
+          "key": "10",
+          "hashCode": "0x0000061f",
+          "spread": "0x0000061f",
+          "index": 15
+        }
+      }
+    },
+    {
+      "caption": "Bucket 15 was empty, so \"10\" becomes its only node. Size is now 10.",
+      "source": {
+        "file": "ChainedHashMap.java",
+        "line": 83
+      },
+      "state": {
+        "capacity": 16,
+        "size": 10,
+        "threshold": 12,
+        "buckets": [
+          [],
+          [
+            {
+              "id": "k:1",
+              "key": "1",
+              "value": "1",
+              "hash": "0x00000031"
+            }
+          ],
+          [
+            {
+              "id": "k:2",
+              "key": "2",
+              "value": "2",
+              "hash": "0x00000032"
+            }
+          ],
+          [
+            {
+              "id": "k:3",
+              "key": "3",
+              "value": "3",
+              "hash": "0x00000033"
+            }
+          ],
+          [
+            {
+              "id": "k:4",
+              "key": "4",
+              "value": "4",
+              "hash": "0x00000034"
+            }
+          ],
+          [
+            {
+              "id": "k:5",
+              "key": "5",
+              "value": "5",
+              "hash": "0x00000035"
+            }
+          ],
+          [
+            {
+              "id": "k:6",
+              "key": "6",
+              "value": "6",
+              "hash": "0x00000036"
+            }
+          ],
+          [
+            {
+              "id": "k:7",
+              "key": "7",
+              "value": "7",
+              "hash": "0x00000037"
+            }
+          ],
+          [
+            {
+              "id": "k:8",
+              "key": "8",
+              "value": "8",
+              "hash": "0x00000038"
+            }
+          ],
+          [
+            {
+              "id": "k:9",
+              "key": "9",
+              "value": "9",
+              "hash": "0x00000039"
+            }
+          ],
+          [],
+          [],
+          [],
+          [],
+          [],
+          [
+            {
+              "id": "k:10",
+              "key": "10",
+              "value": "10",
+              "hash": "0x0000061f"
+            }
+          ]
+        ],
+        "focus": {
+          "bucket": 15,
+          "node": "k:10"
+        },
+        "pipeline": {
+          "key": "10",
+          "hashCode": "0x0000061f",
+          "spread": "0x0000061f",
+          "index": 15
+        }
+      }
+    },
+    {
+      "caption": "put(\"11\"): hashCode() is 0x00000620. Its high 16 bits are all zero, so spreading leaves it unchanged, and its low 4 bits pick bucket 0 of 16.",
+      "source": {
+        "file": "ChainedHashMap.java",
+        "line": 68
+      },
+      "state": {
+        "capacity": 16,
+        "size": 10,
+        "threshold": 12,
+        "buckets": [
+          [],
+          [
+            {
+              "id": "k:1",
+              "key": "1",
+              "value": "1",
+              "hash": "0x00000031"
+            }
+          ],
+          [
+            {
+              "id": "k:2",
+              "key": "2",
+              "value": "2",
+              "hash": "0x00000032"
+            }
+          ],
+          [
+            {
+              "id": "k:3",
+              "key": "3",
+              "value": "3",
+              "hash": "0x00000033"
+            }
+          ],
+          [
+            {
+              "id": "k:4",
+              "key": "4",
+              "value": "4",
+              "hash": "0x00000034"
+            }
+          ],
+          [
+            {
+              "id": "k:5",
+              "key": "5",
+              "value": "5",
+              "hash": "0x00000035"
+            }
+          ],
+          [
+            {
+              "id": "k:6",
+              "key": "6",
+              "value": "6",
+              "hash": "0x00000036"
+            }
+          ],
+          [
+            {
+              "id": "k:7",
+              "key": "7",
+              "value": "7",
+              "hash": "0x00000037"
+            }
+          ],
+          [
+            {
+              "id": "k:8",
+              "key": "8",
+              "value": "8",
+              "hash": "0x00000038"
+            }
+          ],
+          [
+            {
+              "id": "k:9",
+              "key": "9",
+              "value": "9",
+              "hash": "0x00000039"
+            }
+          ],
+          [],
+          [],
+          [],
+          [],
+          [],
+          [
+            {
+              "id": "k:10",
+              "key": "10",
+              "value": "10",
+              "hash": "0x0000061f"
+            }
+          ]
+        ],
+        "focus": {
+          "bucket": 0,
+          "node": null
+        },
+        "pipeline": {
+          "key": "11",
+          "hashCode": "0x00000620",
+          "spread": "0x00000620",
+          "index": 0
+        }
+      }
+    },
+    {
+      "caption": "Bucket 0 was empty, so \"11\" becomes its only node. Size is now 11.",
+      "source": {
+        "file": "ChainedHashMap.java",
+        "line": 83
+      },
+      "state": {
+        "capacity": 16,
+        "size": 11,
+        "threshold": 12,
+        "buckets": [
+          [
+            {
+              "id": "k:11",
+              "key": "11",
+              "value": "11",
+              "hash": "0x00000620"
+            }
+          ],
+          [
+            {
+              "id": "k:1",
+              "key": "1",
+              "value": "1",
+              "hash": "0x00000031"
+            }
+          ],
+          [
+            {
+              "id": "k:2",
+              "key": "2",
+              "value": "2",
+              "hash": "0x00000032"
+            }
+          ],
+          [
+            {
+              "id": "k:3",
+              "key": "3",
+              "value": "3",
+              "hash": "0x00000033"
+            }
+          ],
+          [
+            {
+              "id": "k:4",
+              "key": "4",
+              "value": "4",
+              "hash": "0x00000034"
+            }
+          ],
+          [
+            {
+              "id": "k:5",
+              "key": "5",
+              "value": "5",
+              "hash": "0x00000035"
+            }
+          ],
+          [
+            {
+              "id": "k:6",
+              "key": "6",
+              "value": "6",
+              "hash": "0x00000036"
+            }
+          ],
+          [
+            {
+              "id": "k:7",
+              "key": "7",
+              "value": "7",
+              "hash": "0x00000037"
+            }
+          ],
+          [
+            {
+              "id": "k:8",
+              "key": "8",
+              "value": "8",
+              "hash": "0x00000038"
+            }
+          ],
+          [
+            {
+              "id": "k:9",
+              "key": "9",
+              "value": "9",
+              "hash": "0x00000039"
+            }
+          ],
+          [],
+          [],
+          [],
+          [],
+          [],
+          [
+            {
+              "id": "k:10",
+              "key": "10",
+              "value": "10",
+              "hash": "0x0000061f"
+            }
+          ]
+        ],
+        "focus": {
+          "bucket": 0,
+          "node": "k:11"
+        },
+        "pipeline": {
+          "key": "11",
+          "hashCode": "0x00000620",
+          "spread": "0x00000620",
+          "index": 0
+        }
+      }
+    },
+    {
+      "caption": "put(\"12\"): hashCode() is 0x00000621. Its high 16 bits are all zero, so spreading leaves it unchanged, and its low 4 bits pick bucket 1 of 16.",
+      "source": {
+        "file": "ChainedHashMap.java",
+        "line": 68
+      },
+      "state": {
+        "capacity": 16,
+        "size": 11,
+        "threshold": 12,
+        "buckets": [
+          [
+            {
+              "id": "k:11",
+              "key": "11",
+              "value": "11",
+              "hash": "0x00000620"
+            }
+          ],
+          [
+            {
+              "id": "k:1",
+              "key": "1",
+              "value": "1",
+              "hash": "0x00000031"
+            }
+          ],
+          [
+            {
+              "id": "k:2",
+              "key": "2",
+              "value": "2",
+              "hash": "0x00000032"
+            }
+          ],
+          [
+            {
+              "id": "k:3",
+              "key": "3",
+              "value": "3",
+              "hash": "0x00000033"
+            }
+          ],
+          [
+            {
+              "id": "k:4",
+              "key": "4",
+              "value": "4",
+              "hash": "0x00000034"
+            }
+          ],
+          [
+            {
+              "id": "k:5",
+              "key": "5",
+              "value": "5",
+              "hash": "0x00000035"
+            }
+          ],
+          [
+            {
+              "id": "k:6",
+              "key": "6",
+              "value": "6",
+              "hash": "0x00000036"
+            }
+          ],
+          [
+            {
+              "id": "k:7",
+              "key": "7",
+              "value": "7",
+              "hash": "0x00000037"
+            }
+          ],
+          [
+            {
+              "id": "k:8",
+              "key": "8",
+              "value": "8",
+              "hash": "0x00000038"
+            }
+          ],
+          [
+            {
+              "id": "k:9",
+              "key": "9",
+              "value": "9",
+              "hash": "0x00000039"
+            }
+          ],
+          [],
+          [],
+          [],
+          [],
+          [],
+          [
+            {
+              "id": "k:10",
+              "key": "10",
+              "value": "10",
+              "hash": "0x0000061f"
+            }
+          ]
+        ],
+        "focus": {
+          "bucket": 1,
+          "node": null
+        },
+        "pipeline": {
+          "key": "12",
+          "hashCode": "0x00000621",
+          "spread": "0x00000621",
+          "index": 1
+        }
+      }
+    },
+    {
+      "caption": "Node 1 of bucket 1 holds \"1\", not \"12\".",
+      "source": {
+        "file": "ChainedHashMap.java",
+        "line": 73
+      },
+      "state": {
+        "capacity": 16,
+        "size": 11,
+        "threshold": 12,
+        "buckets": [
+          [
+            {
+              "id": "k:11",
+              "key": "11",
+              "value": "11",
+              "hash": "0x00000620"
+            }
+          ],
+          [
+            {
+              "id": "k:1",
+              "key": "1",
+              "value": "1",
+              "hash": "0x00000031"
+            }
+          ],
+          [
+            {
+              "id": "k:2",
+              "key": "2",
+              "value": "2",
+              "hash": "0x00000032"
+            }
+          ],
+          [
+            {
+              "id": "k:3",
+              "key": "3",
+              "value": "3",
+              "hash": "0x00000033"
+            }
+          ],
+          [
+            {
+              "id": "k:4",
+              "key": "4",
+              "value": "4",
+              "hash": "0x00000034"
+            }
+          ],
+          [
+            {
+              "id": "k:5",
+              "key": "5",
+              "value": "5",
+              "hash": "0x00000035"
+            }
+          ],
+          [
+            {
+              "id": "k:6",
+              "key": "6",
+              "value": "6",
+              "hash": "0x00000036"
+            }
+          ],
+          [
+            {
+              "id": "k:7",
+              "key": "7",
+              "value": "7",
+              "hash": "0x00000037"
+            }
+          ],
+          [
+            {
+              "id": "k:8",
+              "key": "8",
+              "value": "8",
+              "hash": "0x00000038"
+            }
+          ],
+          [
+            {
+              "id": "k:9",
+              "key": "9",
+              "value": "9",
+              "hash": "0x00000039"
+            }
+          ],
+          [],
+          [],
+          [],
+          [],
+          [],
+          [
+            {
+              "id": "k:10",
+              "key": "10",
+              "value": "10",
+              "hash": "0x0000061f"
+            }
+          ]
+        ],
+        "focus": {
+          "bucket": 1,
+          "node": "k:1"
+        },
+        "pipeline": {
+          "key": "12",
+          "hashCode": "0x00000621",
+          "spread": "0x00000621",
+          "index": 1
+        }
+      }
+    },
+    {
+      "caption": "\"12\" is not in bucket 1, so a new node goes at the head of the chain, in front of 1 other. Size is now 12.",
+      "source": {
+        "file": "ChainedHashMap.java",
+        "line": 83
+      },
+      "state": {
+        "capacity": 16,
+        "size": 12,
+        "threshold": 12,
+        "buckets": [
+          [
+            {
+              "id": "k:11",
+              "key": "11",
+              "value": "11",
+              "hash": "0x00000620"
+            }
+          ],
+          [
+            {
+              "id": "k:12",
+              "key": "12",
+              "value": "12",
+              "hash": "0x00000621"
+            },
+            {
+              "id": "k:1",
+              "key": "1",
+              "value": "1",
+              "hash": "0x00000031"
+            }
+          ],
+          [
+            {
+              "id": "k:2",
+              "key": "2",
+              "value": "2",
+              "hash": "0x00000032"
+            }
+          ],
+          [
+            {
+              "id": "k:3",
+              "key": "3",
+              "value": "3",
+              "hash": "0x00000033"
+            }
+          ],
+          [
+            {
+              "id": "k:4",
+              "key": "4",
+              "value": "4",
+              "hash": "0x00000034"
+            }
+          ],
+          [
+            {
+              "id": "k:5",
+              "key": "5",
+              "value": "5",
+              "hash": "0x00000035"
+            }
+          ],
+          [
+            {
+              "id": "k:6",
+              "key": "6",
+              "value": "6",
+              "hash": "0x00000036"
+            }
+          ],
+          [
+            {
+              "id": "k:7",
+              "key": "7",
+              "value": "7",
+              "hash": "0x00000037"
+            }
+          ],
+          [
+            {
+              "id": "k:8",
+              "key": "8",
+              "value": "8",
+              "hash": "0x00000038"
+            }
+          ],
+          [
+            {
+              "id": "k:9",
+              "key": "9",
+              "value": "9",
+              "hash": "0x00000039"
+            }
+          ],
+          [],
+          [],
+          [],
+          [],
+          [],
+          [
+            {
+              "id": "k:10",
+              "key": "10",
+              "value": "10",
+              "hash": "0x0000061f"
+            }
+          ]
+        ],
+        "focus": {
+          "bucket": 1,
+          "node": "k:12"
+        },
+        "pipeline": {
+          "key": "12",
+          "hashCode": "0x00000621",
+          "spread": "0x00000621",
+          "index": 1
+        }
+      }
+    },
+    {
+      "caption": "put(\"13\"): hashCode() is 0x00000622. Its high 16 bits are all zero, so spreading leaves it unchanged, and its low 4 bits pick bucket 2 of 16.",
+      "source": {
+        "file": "ChainedHashMap.java",
+        "line": 68
+      },
+      "state": {
+        "capacity": 16,
+        "size": 12,
+        "threshold": 12,
+        "buckets": [
+          [
+            {
+              "id": "k:11",
+              "key": "11",
+              "value": "11",
+              "hash": "0x00000620"
+            }
+          ],
+          [
+            {
+              "id": "k:12",
+              "key": "12",
+              "value": "12",
+              "hash": "0x00000621"
+            },
+            {
+              "id": "k:1",
+              "key": "1",
+              "value": "1",
+              "hash": "0x00000031"
+            }
+          ],
+          [
+            {
+              "id": "k:2",
+              "key": "2",
+              "value": "2",
+              "hash": "0x00000032"
+            }
+          ],
+          [
+            {
+              "id": "k:3",
+              "key": "3",
+              "value": "3",
+              "hash": "0x00000033"
+            }
+          ],
+          [
+            {
+              "id": "k:4",
+              "key": "4",
+              "value": "4",
+              "hash": "0x00000034"
+            }
+          ],
+          [
+            {
+              "id": "k:5",
+              "key": "5",
+              "value": "5",
+              "hash": "0x00000035"
+            }
+          ],
+          [
+            {
+              "id": "k:6",
+              "key": "6",
+              "value": "6",
+              "hash": "0x00000036"
+            }
+          ],
+          [
+            {
+              "id": "k:7",
+              "key": "7",
+              "value": "7",
+              "hash": "0x00000037"
+            }
+          ],
+          [
+            {
+              "id": "k:8",
+              "key": "8",
+              "value": "8",
+              "hash": "0x00000038"
+            }
+          ],
+          [
+            {
+              "id": "k:9",
+              "key": "9",
+              "value": "9",
+              "hash": "0x00000039"
+            }
+          ],
+          [],
+          [],
+          [],
+          [],
+          [],
+          [
+            {
+              "id": "k:10",
+              "key": "10",
+              "value": "10",
+              "hash": "0x0000061f"
+            }
+          ]
+        ],
+        "focus": {
+          "bucket": 2,
+          "node": null
+        },
+        "pipeline": {
+          "key": "13",
+          "hashCode": "0x00000622",
+          "spread": "0x00000622",
+          "index": 2
+        }
+      }
+    },
+    {
+      "caption": "Node 1 of bucket 2 holds \"2\", not \"13\".",
+      "source": {
+        "file": "ChainedHashMap.java",
+        "line": 73
+      },
+      "state": {
+        "capacity": 16,
+        "size": 12,
+        "threshold": 12,
+        "buckets": [
+          [
+            {
+              "id": "k:11",
+              "key": "11",
+              "value": "11",
+              "hash": "0x00000620"
+            }
+          ],
+          [
+            {
+              "id": "k:12",
+              "key": "12",
+              "value": "12",
+              "hash": "0x00000621"
+            },
+            {
+              "id": "k:1",
+              "key": "1",
+              "value": "1",
+              "hash": "0x00000031"
+            }
+          ],
+          [
+            {
+              "id": "k:2",
+              "key": "2",
+              "value": "2",
+              "hash": "0x00000032"
+            }
+          ],
+          [
+            {
+              "id": "k:3",
+              "key": "3",
+              "value": "3",
+              "hash": "0x00000033"
+            }
+          ],
+          [
+            {
+              "id": "k:4",
+              "key": "4",
+              "value": "4",
+              "hash": "0x00000034"
+            }
+          ],
+          [
+            {
+              "id": "k:5",
+              "key": "5",
+              "value": "5",
+              "hash": "0x00000035"
+            }
+          ],
+          [
+            {
+              "id": "k:6",
+              "key": "6",
+              "value": "6",
+              "hash": "0x00000036"
+            }
+          ],
+          [
+            {
+              "id": "k:7",
+              "key": "7",
+              "value": "7",
+              "hash": "0x00000037"
+            }
+          ],
+          [
+            {
+              "id": "k:8",
+              "key": "8",
+              "value": "8",
+              "hash": "0x00000038"
+            }
+          ],
+          [
+            {
+              "id": "k:9",
+              "key": "9",
+              "value": "9",
+              "hash": "0x00000039"
+            }
+          ],
+          [],
+          [],
+          [],
+          [],
+          [],
+          [
+            {
+              "id": "k:10",
+              "key": "10",
+              "value": "10",
+              "hash": "0x0000061f"
+            }
+          ]
+        ],
+        "focus": {
+          "bucket": 2,
+          "node": "k:2"
+        },
+        "pipeline": {
+          "key": "13",
+          "hashCode": "0x00000622",
+          "spread": "0x00000622",
+          "index": 2
+        }
+      }
+    },
+    {
+      "caption": "\"13\" is not in bucket 2, so a new node goes at the head of the chain, in front of 1 other. Size is now 13.",
+      "source": {
+        "file": "ChainedHashMap.java",
+        "line": 83
+      },
+      "state": {
+        "capacity": 16,
+        "size": 13,
+        "threshold": 12,
+        "buckets": [
+          [
+            {
+              "id": "k:11",
+              "key": "11",
+              "value": "11",
+              "hash": "0x00000620"
+            }
+          ],
+          [
+            {
+              "id": "k:12",
+              "key": "12",
+              "value": "12",
+              "hash": "0x00000621"
+            },
+            {
+              "id": "k:1",
+              "key": "1",
+              "value": "1",
+              "hash": "0x00000031"
+            }
+          ],
+          [
+            {
+              "id": "k:13",
+              "key": "13",
+              "value": "13",
+              "hash": "0x00000622"
+            },
+            {
+              "id": "k:2",
+              "key": "2",
+              "value": "2",
+              "hash": "0x00000032"
+            }
+          ],
+          [
+            {
+              "id": "k:3",
+              "key": "3",
+              "value": "3",
+              "hash": "0x00000033"
+            }
+          ],
+          [
+            {
+              "id": "k:4",
+              "key": "4",
+              "value": "4",
+              "hash": "0x00000034"
+            }
+          ],
+          [
+            {
+              "id": "k:5",
+              "key": "5",
+              "value": "5",
+              "hash": "0x00000035"
+            }
+          ],
+          [
+            {
+              "id": "k:6",
+              "key": "6",
+              "value": "6",
+              "hash": "0x00000036"
+            }
+          ],
+          [
+            {
+              "id": "k:7",
+              "key": "7",
+              "value": "7",
+              "hash": "0x00000037"
+            }
+          ],
+          [
+            {
+              "id": "k:8",
+              "key": "8",
+              "value": "8",
+              "hash": "0x00000038"
+            }
+          ],
+          [
+            {
+              "id": "k:9",
+              "key": "9",
+              "value": "9",
+              "hash": "0x00000039"
+            }
+          ],
+          [],
+          [],
+          [],
+          [],
+          [],
+          [
+            {
+              "id": "k:10",
+              "key": "10",
+              "value": "10",
+              "hash": "0x0000061f"
+            }
+          ]
+        ],
+        "focus": {
+          "bucket": 2,
+          "node": "k:13"
+        },
+        "pipeline": {
+          "key": "13",
+          "hashCode": "0x00000622",
+          "spread": "0x00000622",
+          "index": 2
+        }
+      }
+    },
+    {
+      "caption": "Size 13 is over the threshold of 12, so the table doubles from 16 to 32 buckets. Each node can only keep its index or move up by 16, and resize() relinks them one at a time.",
+      "source": {
+        "file": "ChainedHashMap.java",
+        "line": 222
+      },
+      "state": {
+        "capacity": 32,
+        "size": 13,
+        "threshold": 12,
+        "buckets": [
+          [
+            {
+              "id": "k:11",
+              "key": "11",
+              "value": "11",
+              "hash": "0x00000620"
+            }
+          ],
+          [
+            {
+              "id": "k:12",
+              "key": "12",
+              "value": "12",
+              "hash": "0x00000621"
+            },
+            {
+              "id": "k:1",
+              "key": "1",
+              "value": "1",
+              "hash": "0x00000031"
+            }
+          ],
+          [
+            {
+              "id": "k:13",
+              "key": "13",
+              "value": "13",
+              "hash": "0x00000622"
+            },
+            {
+              "id": "k:2",
+              "key": "2",
+              "value": "2",
+              "hash": "0x00000032"
+            }
+          ],
+          [
+            {
+              "id": "k:3",
+              "key": "3",
+              "value": "3",
+              "hash": "0x00000033"
+            }
+          ],
+          [
+            {
+              "id": "k:4",
+              "key": "4",
+              "value": "4",
+              "hash": "0x00000034"
+            }
+          ],
+          [
+            {
+              "id": "k:5",
+              "key": "5",
+              "value": "5",
+              "hash": "0x00000035"
+            }
+          ],
+          [
+            {
+              "id": "k:6",
+              "key": "6",
+              "value": "6",
+              "hash": "0x00000036"
+            }
+          ],
+          [
+            {
+              "id": "k:7",
+              "key": "7",
+              "value": "7",
+              "hash": "0x00000037"
+            }
+          ],
+          [
+            {
+              "id": "k:8",
+              "key": "8",
+              "value": "8",
+              "hash": "0x00000038"
+            }
+          ],
+          [
+            {
+              "id": "k:9",
+              "key": "9",
+              "value": "9",
+              "hash": "0x00000039"
+            }
+          ],
+          [],
+          [],
+          [],
+          [],
+          [],
+          [
+            {
+              "id": "k:10",
+              "key": "10",
+              "value": "10",
+              "hash": "0x0000061f"
+            }
+          ],
+          [],
+          [],
+          [],
+          [],
+          [],
+          [],
+          [],
+          [],
+          [],
+          [],
+          [],
+          [],
+          [],
+          [],
+          [],
+          []
+        ],
+        "focus": null,
+        "pipeline": null
+      }
+    },
+    {
+      "caption": "\"11\" stays in bucket 0.",
+      "source": {
+        "file": "ChainedHashMap.java",
+        "line": 231
+      },
+      "state": {
+        "capacity": 32,
+        "size": 13,
+        "threshold": 12,
+        "buckets": [
+          [
+            {
+              "id": "k:11",
+              "key": "11",
+              "value": "11",
+              "hash": "0x00000620"
+            }
+          ],
+          [
+            {
+              "id": "k:12",
+              "key": "12",
+              "value": "12",
+              "hash": "0x00000621"
+            },
+            {
+              "id": "k:1",
+              "key": "1",
+              "value": "1",
+              "hash": "0x00000031"
+            }
+          ],
+          [
+            {
+              "id": "k:13",
+              "key": "13",
+              "value": "13",
+              "hash": "0x00000622"
+            },
+            {
+              "id": "k:2",
+              "key": "2",
+              "value": "2",
+              "hash": "0x00000032"
+            }
+          ],
+          [
+            {
+              "id": "k:3",
+              "key": "3",
+              "value": "3",
+              "hash": "0x00000033"
+            }
+          ],
+          [
+            {
+              "id": "k:4",
+              "key": "4",
+              "value": "4",
+              "hash": "0x00000034"
+            }
+          ],
+          [
+            {
+              "id": "k:5",
+              "key": "5",
+              "value": "5",
+              "hash": "0x00000035"
+            }
+          ],
+          [
+            {
+              "id": "k:6",
+              "key": "6",
+              "value": "6",
+              "hash": "0x00000036"
+            }
+          ],
+          [
+            {
+              "id": "k:7",
+              "key": "7",
+              "value": "7",
+              "hash": "0x00000037"
+            }
+          ],
+          [
+            {
+              "id": "k:8",
+              "key": "8",
+              "value": "8",
+              "hash": "0x00000038"
+            }
+          ],
+          [
+            {
+              "id": "k:9",
+              "key": "9",
+              "value": "9",
+              "hash": "0x00000039"
+            }
+          ],
+          [],
+          [],
+          [],
+          [],
+          [],
+          [
+            {
+              "id": "k:10",
+              "key": "10",
+              "value": "10",
+              "hash": "0x0000061f"
+            }
+          ],
+          [],
+          [],
+          [],
+          [],
+          [],
+          [],
+          [],
+          [],
+          [],
+          [],
+          [],
+          [],
+          [],
+          [],
+          [],
+          []
+        ],
+        "focus": {
+          "bucket": 0,
+          "node": "k:11"
+        },
+        "pipeline": null
+      }
+    },
+    {
+      "caption": "\"12\" stays in bucket 1.",
+      "source": {
+        "file": "ChainedHashMap.java",
+        "line": 231
+      },
+      "state": {
+        "capacity": 32,
+        "size": 13,
+        "threshold": 12,
+        "buckets": [
+          [
+            {
+              "id": "k:11",
+              "key": "11",
+              "value": "11",
+              "hash": "0x00000620"
+            }
+          ],
+          [
+            {
+              "id": "k:12",
+              "key": "12",
+              "value": "12",
+              "hash": "0x00000621"
+            },
+            {
+              "id": "k:1",
+              "key": "1",
+              "value": "1",
+              "hash": "0x00000031"
+            }
+          ],
+          [
+            {
+              "id": "k:13",
+              "key": "13",
+              "value": "13",
+              "hash": "0x00000622"
+            },
+            {
+              "id": "k:2",
+              "key": "2",
+              "value": "2",
+              "hash": "0x00000032"
+            }
+          ],
+          [
+            {
+              "id": "k:3",
+              "key": "3",
+              "value": "3",
+              "hash": "0x00000033"
+            }
+          ],
+          [
+            {
+              "id": "k:4",
+              "key": "4",
+              "value": "4",
+              "hash": "0x00000034"
+            }
+          ],
+          [
+            {
+              "id": "k:5",
+              "key": "5",
+              "value": "5",
+              "hash": "0x00000035"
+            }
+          ],
+          [
+            {
+              "id": "k:6",
+              "key": "6",
+              "value": "6",
+              "hash": "0x00000036"
+            }
+          ],
+          [
+            {
+              "id": "k:7",
+              "key": "7",
+              "value": "7",
+              "hash": "0x00000037"
+            }
+          ],
+          [
+            {
+              "id": "k:8",
+              "key": "8",
+              "value": "8",
+              "hash": "0x00000038"
+            }
+          ],
+          [
+            {
+              "id": "k:9",
+              "key": "9",
+              "value": "9",
+              "hash": "0x00000039"
+            }
+          ],
+          [],
+          [],
+          [],
+          [],
+          [],
+          [
+            {
+              "id": "k:10",
+              "key": "10",
+              "value": "10",
+              "hash": "0x0000061f"
+            }
+          ],
+          [],
+          [],
+          [],
+          [],
+          [],
+          [],
+          [],
+          [],
+          [],
+          [],
+          [],
+          [],
+          [],
+          [],
+          [],
+          []
+        ],
+        "focus": {
+          "bucket": 1,
+          "node": "k:12"
+        },
+        "pipeline": null
+      }
+    },
+    {
+      "caption": "\"1\" moves from bucket 1 to bucket 17 (1 + 16).",
+      "source": {
+        "file": "ChainedHashMap.java",
+        "line": 231
+      },
+      "state": {
+        "capacity": 32,
+        "size": 13,
+        "threshold": 12,
+        "buckets": [
+          [
+            {
+              "id": "k:11",
+              "key": "11",
+              "value": "11",
+              "hash": "0x00000620"
+            }
+          ],
+          [
+            {
+              "id": "k:12",
+              "key": "12",
+              "value": "12",
+              "hash": "0x00000621"
+            }
+          ],
+          [
+            {
+              "id": "k:13",
+              "key": "13",
+              "value": "13",
+              "hash": "0x00000622"
+            },
+            {
+              "id": "k:2",
+              "key": "2",
+              "value": "2",
+              "hash": "0x00000032"
+            }
+          ],
+          [
+            {
+              "id": "k:3",
+              "key": "3",
+              "value": "3",
+              "hash": "0x00000033"
+            }
+          ],
+          [
+            {
+              "id": "k:4",
+              "key": "4",
+              "value": "4",
+              "hash": "0x00000034"
+            }
+          ],
+          [
+            {
+              "id": "k:5",
+              "key": "5",
+              "value": "5",
+              "hash": "0x00000035"
+            }
+          ],
+          [
+            {
+              "id": "k:6",
+              "key": "6",
+              "value": "6",
+              "hash": "0x00000036"
+            }
+          ],
+          [
+            {
+              "id": "k:7",
+              "key": "7",
+              "value": "7",
+              "hash": "0x00000037"
+            }
+          ],
+          [
+            {
+              "id": "k:8",
+              "key": "8",
+              "value": "8",
+              "hash": "0x00000038"
+            }
+          ],
+          [
+            {
+              "id": "k:9",
+              "key": "9",
+              "value": "9",
+              "hash": "0x00000039"
+            }
+          ],
+          [],
+          [],
+          [],
+          [],
+          [],
+          [
+            {
+              "id": "k:10",
+              "key": "10",
+              "value": "10",
+              "hash": "0x0000061f"
+            }
+          ],
+          [],
+          [
+            {
+              "id": "k:1",
+              "key": "1",
+              "value": "1",
+              "hash": "0x00000031"
+            }
+          ],
+          [],
+          [],
+          [],
+          [],
+          [],
+          [],
+          [],
+          [],
+          [],
+          [],
+          [],
+          [],
+          [],
+          []
+        ],
+        "focus": {
+          "bucket": 17,
+          "node": "k:1"
+        },
+        "pipeline": null
+      }
+    },
+    {
+      "caption": "\"13\" stays in bucket 2.",
+      "source": {
+        "file": "ChainedHashMap.java",
+        "line": 231
+      },
+      "state": {
+        "capacity": 32,
+        "size": 13,
+        "threshold": 12,
+        "buckets": [
+          [
+            {
+              "id": "k:11",
+              "key": "11",
+              "value": "11",
+              "hash": "0x00000620"
+            }
+          ],
+          [
+            {
+              "id": "k:12",
+              "key": "12",
+              "value": "12",
+              "hash": "0x00000621"
+            }
+          ],
+          [
+            {
+              "id": "k:13",
+              "key": "13",
+              "value": "13",
+              "hash": "0x00000622"
+            },
+            {
+              "id": "k:2",
+              "key": "2",
+              "value": "2",
+              "hash": "0x00000032"
+            }
+          ],
+          [
+            {
+              "id": "k:3",
+              "key": "3",
+              "value": "3",
+              "hash": "0x00000033"
+            }
+          ],
+          [
+            {
+              "id": "k:4",
+              "key": "4",
+              "value": "4",
+              "hash": "0x00000034"
+            }
+          ],
+          [
+            {
+              "id": "k:5",
+              "key": "5",
+              "value": "5",
+              "hash": "0x00000035"
+            }
+          ],
+          [
+            {
+              "id": "k:6",
+              "key": "6",
+              "value": "6",
+              "hash": "0x00000036"
+            }
+          ],
+          [
+            {
+              "id": "k:7",
+              "key": "7",
+              "value": "7",
+              "hash": "0x00000037"
+            }
+          ],
+          [
+            {
+              "id": "k:8",
+              "key": "8",
+              "value": "8",
+              "hash": "0x00000038"
+            }
+          ],
+          [
+            {
+              "id": "k:9",
+              "key": "9",
+              "value": "9",
+              "hash": "0x00000039"
+            }
+          ],
+          [],
+          [],
+          [],
+          [],
+          [],
+          [
+            {
+              "id": "k:10",
+              "key": "10",
+              "value": "10",
+              "hash": "0x0000061f"
+            }
+          ],
+          [],
+          [
+            {
+              "id": "k:1",
+              "key": "1",
+              "value": "1",
+              "hash": "0x00000031"
+            }
+          ],
+          [],
+          [],
+          [],
+          [],
+          [],
+          [],
+          [],
+          [],
+          [],
+          [],
+          [],
+          [],
+          [],
+          []
+        ],
+        "focus": {
+          "bucket": 2,
+          "node": "k:13"
+        },
+        "pipeline": null
+      }
+    },
+    {
+      "caption": "\"2\" moves from bucket 2 to bucket 18 (2 + 16).",
+      "source": {
+        "file": "ChainedHashMap.java",
+        "line": 231
+      },
+      "state": {
+        "capacity": 32,
+        "size": 13,
+        "threshold": 12,
+        "buckets": [
+          [
+            {
+              "id": "k:11",
+              "key": "11",
+              "value": "11",
+              "hash": "0x00000620"
+            }
+          ],
+          [
+            {
+              "id": "k:12",
+              "key": "12",
+              "value": "12",
+              "hash": "0x00000621"
+            }
+          ],
+          [
+            {
+              "id": "k:13",
+              "key": "13",
+              "value": "13",
+              "hash": "0x00000622"
+            }
+          ],
+          [
+            {
+              "id": "k:3",
+              "key": "3",
+              "value": "3",
+              "hash": "0x00000033"
+            }
+          ],
+          [
+            {
+              "id": "k:4",
+              "key": "4",
+              "value": "4",
+              "hash": "0x00000034"
+            }
+          ],
+          [
+            {
+              "id": "k:5",
+              "key": "5",
+              "value": "5",
+              "hash": "0x00000035"
+            }
+          ],
+          [
+            {
+              "id": "k:6",
+              "key": "6",
+              "value": "6",
+              "hash": "0x00000036"
+            }
+          ],
+          [
+            {
+              "id": "k:7",
+              "key": "7",
+              "value": "7",
+              "hash": "0x00000037"
+            }
+          ],
+          [
+            {
+              "id": "k:8",
+              "key": "8",
+              "value": "8",
+              "hash": "0x00000038"
+            }
+          ],
+          [
+            {
+              "id": "k:9",
+              "key": "9",
+              "value": "9",
+              "hash": "0x00000039"
+            }
+          ],
+          [],
+          [],
+          [],
+          [],
+          [],
+          [
+            {
+              "id": "k:10",
+              "key": "10",
+              "value": "10",
+              "hash": "0x0000061f"
+            }
+          ],
+          [],
+          [
+            {
+              "id": "k:1",
+              "key": "1",
+              "value": "1",
+              "hash": "0x00000031"
+            }
+          ],
+          [
+            {
+              "id": "k:2",
+              "key": "2",
+              "value": "2",
+              "hash": "0x00000032"
+            }
+          ],
+          [],
+          [],
+          [],
+          [],
+          [],
+          [],
+          [],
+          [],
+          [],
+          [],
+          [],
+          [],
+          []
+        ],
+        "focus": {
+          "bucket": 18,
+          "node": "k:2"
+        },
+        "pipeline": null
+      }
+    },
+    {
+      "caption": "\"3\" moves from bucket 3 to bucket 19 (3 + 16).",
+      "source": {
+        "file": "ChainedHashMap.java",
+        "line": 231
+      },
+      "state": {
+        "capacity": 32,
+        "size": 13,
+        "threshold": 12,
+        "buckets": [
+          [
+            {
+              "id": "k:11",
+              "key": "11",
+              "value": "11",
+              "hash": "0x00000620"
+            }
+          ],
+          [
+            {
+              "id": "k:12",
+              "key": "12",
+              "value": "12",
+              "hash": "0x00000621"
+            }
+          ],
+          [
+            {
+              "id": "k:13",
+              "key": "13",
+              "value": "13",
+              "hash": "0x00000622"
+            }
+          ],
+          [],
+          [
+            {
+              "id": "k:4",
+              "key": "4",
+              "value": "4",
+              "hash": "0x00000034"
+            }
+          ],
+          [
+            {
+              "id": "k:5",
+              "key": "5",
+              "value": "5",
+              "hash": "0x00000035"
+            }
+          ],
+          [
+            {
+              "id": "k:6",
+              "key": "6",
+              "value": "6",
+              "hash": "0x00000036"
+            }
+          ],
+          [
+            {
+              "id": "k:7",
+              "key": "7",
+              "value": "7",
+              "hash": "0x00000037"
+            }
+          ],
+          [
+            {
+              "id": "k:8",
+              "key": "8",
+              "value": "8",
+              "hash": "0x00000038"
+            }
+          ],
+          [
+            {
+              "id": "k:9",
+              "key": "9",
+              "value": "9",
+              "hash": "0x00000039"
+            }
+          ],
+          [],
+          [],
+          [],
+          [],
+          [],
+          [
+            {
+              "id": "k:10",
+              "key": "10",
+              "value": "10",
+              "hash": "0x0000061f"
+            }
+          ],
+          [],
+          [
+            {
+              "id": "k:1",
+              "key": "1",
+              "value": "1",
+              "hash": "0x00000031"
+            }
+          ],
+          [
+            {
+              "id": "k:2",
+              "key": "2",
+              "value": "2",
+              "hash": "0x00000032"
+            }
+          ],
+          [
+            {
+              "id": "k:3",
+              "key": "3",
+              "value": "3",
+              "hash": "0x00000033"
+            }
+          ],
+          [],
+          [],
+          [],
+          [],
+          [],
+          [],
+          [],
+          [],
+          [],
+          [],
+          [],
+          []
+        ],
+        "focus": {
+          "bucket": 19,
+          "node": "k:3"
+        },
+        "pipeline": null
+      }
+    },
+    {
+      "caption": "\"4\" moves from bucket 4 to bucket 20 (4 + 16).",
+      "source": {
+        "file": "ChainedHashMap.java",
+        "line": 231
+      },
+      "state": {
+        "capacity": 32,
+        "size": 13,
+        "threshold": 12,
+        "buckets": [
+          [
+            {
+              "id": "k:11",
+              "key": "11",
+              "value": "11",
+              "hash": "0x00000620"
+            }
+          ],
+          [
+            {
+              "id": "k:12",
+              "key": "12",
+              "value": "12",
+              "hash": "0x00000621"
+            }
+          ],
+          [
+            {
+              "id": "k:13",
+              "key": "13",
+              "value": "13",
+              "hash": "0x00000622"
+            }
+          ],
+          [],
+          [],
+          [
+            {
+              "id": "k:5",
+              "key": "5",
+              "value": "5",
+              "hash": "0x00000035"
+            }
+          ],
+          [
+            {
+              "id": "k:6",
+              "key": "6",
+              "value": "6",
+              "hash": "0x00000036"
+            }
+          ],
+          [
+            {
+              "id": "k:7",
+              "key": "7",
+              "value": "7",
+              "hash": "0x00000037"
+            }
+          ],
+          [
+            {
+              "id": "k:8",
+              "key": "8",
+              "value": "8",
+              "hash": "0x00000038"
+            }
+          ],
+          [
+            {
+              "id": "k:9",
+              "key": "9",
+              "value": "9",
+              "hash": "0x00000039"
+            }
+          ],
+          [],
+          [],
+          [],
+          [],
+          [],
+          [
+            {
+              "id": "k:10",
+              "key": "10",
+              "value": "10",
+              "hash": "0x0000061f"
+            }
+          ],
+          [],
+          [
+            {
+              "id": "k:1",
+              "key": "1",
+              "value": "1",
+              "hash": "0x00000031"
+            }
+          ],
+          [
+            {
+              "id": "k:2",
+              "key": "2",
+              "value": "2",
+              "hash": "0x00000032"
+            }
+          ],
+          [
+            {
+              "id": "k:3",
+              "key": "3",
+              "value": "3",
+              "hash": "0x00000033"
+            }
+          ],
+          [
+            {
+              "id": "k:4",
+              "key": "4",
+              "value": "4",
+              "hash": "0x00000034"
+            }
+          ],
+          [],
+          [],
+          [],
+          [],
+          [],
+          [],
+          [],
+          [],
+          [],
+          [],
+          []
+        ],
+        "focus": {
+          "bucket": 20,
+          "node": "k:4"
+        },
+        "pipeline": null
+      }
+    },
+    {
+      "caption": "\"5\" moves from bucket 5 to bucket 21 (5 + 16).",
+      "source": {
+        "file": "ChainedHashMap.java",
+        "line": 231
+      },
+      "state": {
+        "capacity": 32,
+        "size": 13,
+        "threshold": 12,
+        "buckets": [
+          [
+            {
+              "id": "k:11",
+              "key": "11",
+              "value": "11",
+              "hash": "0x00000620"
+            }
+          ],
+          [
+            {
+              "id": "k:12",
+              "key": "12",
+              "value": "12",
+              "hash": "0x00000621"
+            }
+          ],
+          [
+            {
+              "id": "k:13",
+              "key": "13",
+              "value": "13",
+              "hash": "0x00000622"
+            }
+          ],
+          [],
+          [],
+          [],
+          [
+            {
+              "id": "k:6",
+              "key": "6",
+              "value": "6",
+              "hash": "0x00000036"
+            }
+          ],
+          [
+            {
+              "id": "k:7",
+              "key": "7",
+              "value": "7",
+              "hash": "0x00000037"
+            }
+          ],
+          [
+            {
+              "id": "k:8",
+              "key": "8",
+              "value": "8",
+              "hash": "0x00000038"
+            }
+          ],
+          [
+            {
+              "id": "k:9",
+              "key": "9",
+              "value": "9",
+              "hash": "0x00000039"
+            }
+          ],
+          [],
+          [],
+          [],
+          [],
+          [],
+          [
+            {
+              "id": "k:10",
+              "key": "10",
+              "value": "10",
+              "hash": "0x0000061f"
+            }
+          ],
+          [],
+          [
+            {
+              "id": "k:1",
+              "key": "1",
+              "value": "1",
+              "hash": "0x00000031"
+            }
+          ],
+          [
+            {
+              "id": "k:2",
+              "key": "2",
+              "value": "2",
+              "hash": "0x00000032"
+            }
+          ],
+          [
+            {
+              "id": "k:3",
+              "key": "3",
+              "value": "3",
+              "hash": "0x00000033"
+            }
+          ],
+          [
+            {
+              "id": "k:4",
+              "key": "4",
+              "value": "4",
+              "hash": "0x00000034"
+            }
+          ],
+          [
+            {
+              "id": "k:5",
+              "key": "5",
+              "value": "5",
+              "hash": "0x00000035"
+            }
+          ],
+          [],
+          [],
+          [],
+          [],
+          [],
+          [],
+          [],
+          [],
+          [],
+          []
+        ],
+        "focus": {
+          "bucket": 21,
+          "node": "k:5"
+        },
+        "pipeline": null
+      }
+    },
+    {
+      "caption": "\"6\" moves from bucket 6 to bucket 22 (6 + 16).",
+      "source": {
+        "file": "ChainedHashMap.java",
+        "line": 231
+      },
+      "state": {
+        "capacity": 32,
+        "size": 13,
+        "threshold": 12,
+        "buckets": [
+          [
+            {
+              "id": "k:11",
+              "key": "11",
+              "value": "11",
+              "hash": "0x00000620"
+            }
+          ],
+          [
+            {
+              "id": "k:12",
+              "key": "12",
+              "value": "12",
+              "hash": "0x00000621"
+            }
+          ],
+          [
+            {
+              "id": "k:13",
+              "key": "13",
+              "value": "13",
+              "hash": "0x00000622"
+            }
+          ],
+          [],
+          [],
+          [],
+          [],
+          [
+            {
+              "id": "k:7",
+              "key": "7",
+              "value": "7",
+              "hash": "0x00000037"
+            }
+          ],
+          [
+            {
+              "id": "k:8",
+              "key": "8",
+              "value": "8",
+              "hash": "0x00000038"
+            }
+          ],
+          [
+            {
+              "id": "k:9",
+              "key": "9",
+              "value": "9",
+              "hash": "0x00000039"
+            }
+          ],
+          [],
+          [],
+          [],
+          [],
+          [],
+          [
+            {
+              "id": "k:10",
+              "key": "10",
+              "value": "10",
+              "hash": "0x0000061f"
+            }
+          ],
+          [],
+          [
+            {
+              "id": "k:1",
+              "key": "1",
+              "value": "1",
+              "hash": "0x00000031"
+            }
+          ],
+          [
+            {
+              "id": "k:2",
+              "key": "2",
+              "value": "2",
+              "hash": "0x00000032"
+            }
+          ],
+          [
+            {
+              "id": "k:3",
+              "key": "3",
+              "value": "3",
+              "hash": "0x00000033"
+            }
+          ],
+          [
+            {
+              "id": "k:4",
+              "key": "4",
+              "value": "4",
+              "hash": "0x00000034"
+            }
+          ],
+          [
+            {
+              "id": "k:5",
+              "key": "5",
+              "value": "5",
+              "hash": "0x00000035"
+            }
+          ],
+          [
+            {
+              "id": "k:6",
+              "key": "6",
+              "value": "6",
+              "hash": "0x00000036"
+            }
+          ],
+          [],
+          [],
+          [],
+          [],
+          [],
+          [],
+          [],
+          [],
+          []
+        ],
+        "focus": {
+          "bucket": 22,
+          "node": "k:6"
+        },
+        "pipeline": null
+      }
+    },
+    {
+      "caption": "\"7\" moves from bucket 7 to bucket 23 (7 + 16).",
+      "source": {
+        "file": "ChainedHashMap.java",
+        "line": 231
+      },
+      "state": {
+        "capacity": 32,
+        "size": 13,
+        "threshold": 12,
+        "buckets": [
+          [
+            {
+              "id": "k:11",
+              "key": "11",
+              "value": "11",
+              "hash": "0x00000620"
+            }
+          ],
+          [
+            {
+              "id": "k:12",
+              "key": "12",
+              "value": "12",
+              "hash": "0x00000621"
+            }
+          ],
+          [
+            {
+              "id": "k:13",
+              "key": "13",
+              "value": "13",
+              "hash": "0x00000622"
+            }
+          ],
+          [],
+          [],
+          [],
+          [],
+          [],
+          [
+            {
+              "id": "k:8",
+              "key": "8",
+              "value": "8",
+              "hash": "0x00000038"
+            }
+          ],
+          [
+            {
+              "id": "k:9",
+              "key": "9",
+              "value": "9",
+              "hash": "0x00000039"
+            }
+          ],
+          [],
+          [],
+          [],
+          [],
+          [],
+          [
+            {
+              "id": "k:10",
+              "key": "10",
+              "value": "10",
+              "hash": "0x0000061f"
+            }
+          ],
+          [],
+          [
+            {
+              "id": "k:1",
+              "key": "1",
+              "value": "1",
+              "hash": "0x00000031"
+            }
+          ],
+          [
+            {
+              "id": "k:2",
+              "key": "2",
+              "value": "2",
+              "hash": "0x00000032"
+            }
+          ],
+          [
+            {
+              "id": "k:3",
+              "key": "3",
+              "value": "3",
+              "hash": "0x00000033"
+            }
+          ],
+          [
+            {
+              "id": "k:4",
+              "key": "4",
+              "value": "4",
+              "hash": "0x00000034"
+            }
+          ],
+          [
+            {
+              "id": "k:5",
+              "key": "5",
+              "value": "5",
+              "hash": "0x00000035"
+            }
+          ],
+          [
+            {
+              "id": "k:6",
+              "key": "6",
+              "value": "6",
+              "hash": "0x00000036"
+            }
+          ],
+          [
+            {
+              "id": "k:7",
+              "key": "7",
+              "value": "7",
+              "hash": "0x00000037"
+            }
+          ],
+          [],
+          [],
+          [],
+          [],
+          [],
+          [],
+          [],
+          []
+        ],
+        "focus": {
+          "bucket": 23,
+          "node": "k:7"
+        },
+        "pipeline": null
+      }
+    },
+    {
+      "caption": "\"8\" moves from bucket 8 to bucket 24 (8 + 16).",
+      "source": {
+        "file": "ChainedHashMap.java",
+        "line": 231
+      },
+      "state": {
+        "capacity": 32,
+        "size": 13,
+        "threshold": 12,
+        "buckets": [
+          [
+            {
+              "id": "k:11",
+              "key": "11",
+              "value": "11",
+              "hash": "0x00000620"
+            }
+          ],
+          [
+            {
+              "id": "k:12",
+              "key": "12",
+              "value": "12",
+              "hash": "0x00000621"
+            }
+          ],
+          [
+            {
+              "id": "k:13",
+              "key": "13",
+              "value": "13",
+              "hash": "0x00000622"
+            }
+          ],
+          [],
+          [],
+          [],
+          [],
+          [],
+          [],
+          [
+            {
+              "id": "k:9",
+              "key": "9",
+              "value": "9",
+              "hash": "0x00000039"
+            }
+          ],
+          [],
+          [],
+          [],
+          [],
+          [],
+          [
+            {
+              "id": "k:10",
+              "key": "10",
+              "value": "10",
+              "hash": "0x0000061f"
+            }
+          ],
+          [],
+          [
+            {
+              "id": "k:1",
+              "key": "1",
+              "value": "1",
+              "hash": "0x00000031"
+            }
+          ],
+          [
+            {
+              "id": "k:2",
+              "key": "2",
+              "value": "2",
+              "hash": "0x00000032"
+            }
+          ],
+          [
+            {
+              "id": "k:3",
+              "key": "3",
+              "value": "3",
+              "hash": "0x00000033"
+            }
+          ],
+          [
+            {
+              "id": "k:4",
+              "key": "4",
+              "value": "4",
+              "hash": "0x00000034"
+            }
+          ],
+          [
+            {
+              "id": "k:5",
+              "key": "5",
+              "value": "5",
+              "hash": "0x00000035"
+            }
+          ],
+          [
+            {
+              "id": "k:6",
+              "key": "6",
+              "value": "6",
+              "hash": "0x00000036"
+            }
+          ],
+          [
+            {
+              "id": "k:7",
+              "key": "7",
+              "value": "7",
+              "hash": "0x00000037"
+            }
+          ],
+          [
+            {
+              "id": "k:8",
+              "key": "8",
+              "value": "8",
+              "hash": "0x00000038"
+            }
+          ],
+          [],
+          [],
+          [],
+          [],
+          [],
+          [],
+          []
+        ],
+        "focus": {
+          "bucket": 24,
+          "node": "k:8"
+        },
+        "pipeline": null
+      }
+    },
+    {
+      "caption": "\"9\" moves from bucket 9 to bucket 25 (9 + 16).",
+      "source": {
+        "file": "ChainedHashMap.java",
+        "line": 231
+      },
+      "state": {
+        "capacity": 32,
+        "size": 13,
+        "threshold": 12,
+        "buckets": [
+          [
+            {
+              "id": "k:11",
+              "key": "11",
+              "value": "11",
+              "hash": "0x00000620"
+            }
+          ],
+          [
+            {
+              "id": "k:12",
+              "key": "12",
+              "value": "12",
+              "hash": "0x00000621"
+            }
+          ],
+          [
+            {
+              "id": "k:13",
+              "key": "13",
+              "value": "13",
+              "hash": "0x00000622"
+            }
+          ],
+          [],
+          [],
+          [],
+          [],
+          [],
+          [],
+          [],
+          [],
+          [],
+          [],
+          [],
+          [],
+          [
+            {
+              "id": "k:10",
+              "key": "10",
+              "value": "10",
+              "hash": "0x0000061f"
+            }
+          ],
+          [],
+          [
+            {
+              "id": "k:1",
+              "key": "1",
+              "value": "1",
+              "hash": "0x00000031"
+            }
+          ],
+          [
+            {
+              "id": "k:2",
+              "key": "2",
+              "value": "2",
+              "hash": "0x00000032"
+            }
+          ],
+          [
+            {
+              "id": "k:3",
+              "key": "3",
+              "value": "3",
+              "hash": "0x00000033"
+            }
+          ],
+          [
+            {
+              "id": "k:4",
+              "key": "4",
+              "value": "4",
+              "hash": "0x00000034"
+            }
+          ],
+          [
+            {
+              "id": "k:5",
+              "key": "5",
+              "value": "5",
+              "hash": "0x00000035"
+            }
+          ],
+          [
+            {
+              "id": "k:6",
+              "key": "6",
+              "value": "6",
+              "hash": "0x00000036"
+            }
+          ],
+          [
+            {
+              "id": "k:7",
+              "key": "7",
+              "value": "7",
+              "hash": "0x00000037"
+            }
+          ],
+          [
+            {
+              "id": "k:8",
+              "key": "8",
+              "value": "8",
+              "hash": "0x00000038"
+            }
+          ],
+          [
+            {
+              "id": "k:9",
+              "key": "9",
+              "value": "9",
+              "hash": "0x00000039"
+            }
+          ],
+          [],
+          [],
+          [],
+          [],
+          [],
+          []
+        ],
+        "focus": {
+          "bucket": 25,
+          "node": "k:9"
+        },
+        "pipeline": null
+      }
+    },
+    {
+      "caption": "\"10\" moves from bucket 15 to bucket 31 (15 + 16).",
+      "source": {
+        "file": "ChainedHashMap.java",
+        "line": 231
+      },
+      "state": {
+        "capacity": 32,
+        "size": 13,
+        "threshold": 12,
+        "buckets": [
+          [
+            {
+              "id": "k:11",
+              "key": "11",
+              "value": "11",
+              "hash": "0x00000620"
+            }
+          ],
+          [
+            {
+              "id": "k:12",
+              "key": "12",
+              "value": "12",
+              "hash": "0x00000621"
+            }
+          ],
+          [
+            {
+              "id": "k:13",
+              "key": "13",
+              "value": "13",
+              "hash": "0x00000622"
+            }
+          ],
+          [],
+          [],
+          [],
+          [],
+          [],
+          [],
+          [],
+          [],
+          [],
+          [],
+          [],
+          [],
+          [],
+          [],
+          [
+            {
+              "id": "k:1",
+              "key": "1",
+              "value": "1",
+              "hash": "0x00000031"
+            }
+          ],
+          [
+            {
+              "id": "k:2",
+              "key": "2",
+              "value": "2",
+              "hash": "0x00000032"
+            }
+          ],
+          [
+            {
+              "id": "k:3",
+              "key": "3",
+              "value": "3",
+              "hash": "0x00000033"
+            }
+          ],
+          [
+            {
+              "id": "k:4",
+              "key": "4",
+              "value": "4",
+              "hash": "0x00000034"
+            }
+          ],
+          [
+            {
+              "id": "k:5",
+              "key": "5",
+              "value": "5",
+              "hash": "0x00000035"
+            }
+          ],
+          [
+            {
+              "id": "k:6",
+              "key": "6",
+              "value": "6",
+              "hash": "0x00000036"
+            }
+          ],
+          [
+            {
+              "id": "k:7",
+              "key": "7",
+              "value": "7",
+              "hash": "0x00000037"
+            }
+          ],
+          [
+            {
+              "id": "k:8",
+              "key": "8",
+              "value": "8",
+              "hash": "0x00000038"
+            }
+          ],
+          [
+            {
+              "id": "k:9",
+              "key": "9",
+              "value": "9",
+              "hash": "0x00000039"
+            }
+          ],
+          [],
+          [],
+          [],
+          [],
+          [],
+          [
+            {
+              "id": "k:10",
+              "key": "10",
+              "value": "10",
+              "hash": "0x0000061f"
+            }
+          ]
+        ],
+        "focus": {
+          "bucket": 31,
+          "node": "k:10"
+        },
+        "pipeline": null
+      }
+    },
+    {
+      "caption": "Every node is in its new bucket. The table now has 32 buckets and the next resize comes when the size passes 24.",
+      "source": {
+        "file": "ChainedHashMap.java",
+        "line": 237
+      },
+      "state": {
+        "capacity": 32,
+        "size": 13,
+        "threshold": 24,
+        "buckets": [
+          [
+            {
+              "id": "k:11",
+              "key": "11",
+              "value": "11",
+              "hash": "0x00000620"
+            }
+          ],
+          [
+            {
+              "id": "k:12",
+              "key": "12",
+              "value": "12",
+              "hash": "0x00000621"
+            }
+          ],
+          [
+            {
+              "id": "k:13",
+              "key": "13",
+              "value": "13",
+              "hash": "0x00000622"
+            }
+          ],
+          [],
+          [],
+          [],
+          [],
+          [],
+          [],
+          [],
+          [],
+          [],
+          [],
+          [],
+          [],
+          [],
+          [],
+          [
+            {
+              "id": "k:1",
+              "key": "1",
+              "value": "1",
+              "hash": "0x00000031"
+            }
+          ],
+          [
+            {
+              "id": "k:2",
+              "key": "2",
+              "value": "2",
+              "hash": "0x00000032"
+            }
+          ],
+          [
+            {
+              "id": "k:3",
+              "key": "3",
+              "value": "3",
+              "hash": "0x00000033"
+            }
+          ],
+          [
+            {
+              "id": "k:4",
+              "key": "4",
+              "value": "4",
+              "hash": "0x00000034"
+            }
+          ],
+          [
+            {
+              "id": "k:5",
+              "key": "5",
+              "value": "5",
+              "hash": "0x00000035"
+            }
+          ],
+          [
+            {
+              "id": "k:6",
+              "key": "6",
+              "value": "6",
+              "hash": "0x00000036"
+            }
+          ],
+          [
+            {
+              "id": "k:7",
+              "key": "7",
+              "value": "7",
+              "hash": "0x00000037"
+            }
+          ],
+          [
+            {
+              "id": "k:8",
+              "key": "8",
+              "value": "8",
+              "hash": "0x00000038"
+            }
+          ],
+          [
+            {
+              "id": "k:9",
+              "key": "9",
+              "value": "9",
+              "hash": "0x00000039"
+            }
+          ],
+          [],
+          [],
+          [],
+          [],
+          [],
+          [
+            {
+              "id": "k:10",
+              "key": "10",
+              "value": "10",
+              "hash": "0x0000061f"
+            }
+          ]
+        ],
+        "focus": null,
+        "pipeline": null
+      }
+    }
+  ]
+}

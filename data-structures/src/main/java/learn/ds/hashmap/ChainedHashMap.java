@@ -1,5 +1,8 @@
 package learn.ds.hashmap;
 
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 import java.util.Objects;
 
 /**
@@ -32,9 +35,13 @@ public final class ChainedHashMap<K, V> implements SimpleMap<K, V> {
     }
   }
 
+  /** What a test sees of one node: the key, the value and the cached hash. */
+  record NodeView(Object key, Object value, int hash) {}
+
   private Node<K, V>[] table;
   private int size;
   private int threshold;
+  private HashMapProbe probe = HashMapProbe.NONE;
 
   public ChainedHashMap() {
     this(DEFAULT_CAPACITY);
@@ -56,15 +63,25 @@ public final class ChainedHashMap<K, V> implements SimpleMap<K, V> {
   public V put(K key, V value) {
     int hash = spread(key);
     int index = indexFor(hash, table.length);
+    if (probe != HashMapProbe.NONE) {
+      // Only call hashCode() a second time when something is listening.
+      probe.hashed(key, key == null ? 0 : key.hashCode(), hash, index);
+    }
+    int position = 0;
     for (Node<K, V> node = table[index]; node != null; node = node.next) {
-      if (matches(node, hash, key)) {
+      boolean matched = matches(node, hash, key);
+      probe.visited(index, position++, matched);
+      if (matched) {
         V previous = node.value;
         node.value = value;
+        probe.replaced(key, index);
         return previous;
       }
     }
     table[index] = new Node<>(hash, key, value, table[index]);
-    if (++size > threshold) {
+    size++;
+    probe.linked(key, index);
+    if (size > threshold) {
       resize();
     }
     return null;
@@ -109,6 +126,29 @@ public final class ChainedHashMap<K, V> implements SimpleMap<K, V> {
   /** Number of buckets. Exposed for tests and for the article's experiments. */
   int capacity() {
     return table.length;
+  }
+
+  /** Size at which the next {@code put} grows the table. Exposed for tests and traces. */
+  int threshold() {
+    return threshold;
+  }
+
+  /** Listens to {@code put} and resizing. Exposed for tests that record animation traces. */
+  void probe(HashMapProbe probe) {
+    this.probe = Objects.requireNonNull(probe, "probe");
+  }
+
+  /** A copy of every bucket's chain, head first. O(n + capacity); exposed for tests and traces. */
+  List<List<NodeView>> buckets() {
+    List<List<NodeView>> buckets = new ArrayList<>(table.length);
+    for (Node<K, V> head : table) {
+      List<NodeView> chain = new ArrayList<>();
+      for (Node<K, V> node = head; node != null; node = node.next) {
+        chain.add(new NodeView(node.key, node.value, node.hash));
+      }
+      buckets.add(Collections.unmodifiableList(chain));
+    }
+    return Collections.unmodifiableList(buckets);
   }
 
   /** Length of the longest bucket chain. O(n); exposed for tests and experiments. */
@@ -179,6 +219,7 @@ public final class ChainedHashMap<K, V> implements SimpleMap<K, V> {
       return;
     }
     int newCapacity = old.length << 1;
+    probe.resizing(old.length, newCapacity);
     Node<K, V>[] grown = newTable(newCapacity);
     for (Node<K, V> head : old) {
       Node<K, V> node = head;
@@ -187,11 +228,13 @@ public final class ChainedHashMap<K, V> implements SimpleMap<K, V> {
         int index = indexFor(node.hash, newCapacity);
         node.next = grown[index];
         grown[index] = node;
+        probe.moved(node.key, indexFor(node.hash, old.length), index);
         node = next;
       }
     }
     table = grown;
     threshold = thresholdFor(newCapacity);
+    probe.resized(newCapacity);
   }
 
   @SuppressWarnings({"unchecked", "rawtypes"})

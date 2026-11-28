@@ -1,0 +1,656 @@
+{
+  "version": 1,
+  "id": "put",
+  "title": "Five puts into an eight-bucket table",
+  "kind": "hash-table",
+  "layout": "chains",
+  "steps": [
+    {
+      "caption": "put(\"alice\"): hashCode() is 0x05899680. Spreading mixes the high 16 bits into the low 16 to give 0x05899309, and its low 3 bits pick bucket 1 of 8.",
+      "source": {
+        "file": "ChainedHashMap.java",
+        "line": 68
+      },
+      "state": {
+        "capacity": 8,
+        "size": 0,
+        "threshold": 6,
+        "buckets": [
+          [],
+          [],
+          [],
+          [],
+          [],
+          [],
+          [],
+          []
+        ],
+        "focus": {
+          "bucket": 1,
+          "node": null
+        },
+        "pipeline": {
+          "key": "alice",
+          "hashCode": "0x05899680",
+          "spread": "0x05899309",
+          "index": 1
+        }
+      }
+    },
+    {
+      "caption": "Bucket 1 was empty, so \"alice\" becomes its only node. Size is now 1.",
+      "source": {
+        "file": "ChainedHashMap.java",
+        "line": 83
+      },
+      "state": {
+        "capacity": 8,
+        "size": 1,
+        "threshold": 6,
+        "buckets": [
+          [],
+          [
+            {
+              "id": "k:alice",
+              "key": "alice",
+              "value": "31",
+              "hash": "0x05899309"
+            }
+          ],
+          [],
+          [],
+          [],
+          [],
+          [],
+          []
+        ],
+        "focus": {
+          "bucket": 1,
+          "node": "k:alice"
+        },
+        "pipeline": {
+          "key": "alice",
+          "hashCode": "0x05899680",
+          "spread": "0x05899309",
+          "index": 1
+        }
+      }
+    },
+    {
+      "caption": "put(\"bob\"): hashCode() is 0x00017db5. Spreading mixes the high 16 bits into the low 16 to give 0x00017db4, and its low 3 bits pick bucket 4 of 8.",
+      "source": {
+        "file": "ChainedHashMap.java",
+        "line": 68
+      },
+      "state": {
+        "capacity": 8,
+        "size": 1,
+        "threshold": 6,
+        "buckets": [
+          [],
+          [
+            {
+              "id": "k:alice",
+              "key": "alice",
+              "value": "31",
+              "hash": "0x05899309"
+            }
+          ],
+          [],
+          [],
+          [],
+          [],
+          [],
+          []
+        ],
+        "focus": {
+          "bucket": 4,
+          "node": null
+        },
+        "pipeline": {
+          "key": "bob",
+          "hashCode": "0x00017db5",
+          "spread": "0x00017db4",
+          "index": 4
+        }
+      }
+    },
+    {
+      "caption": "Bucket 4 was empty, so \"bob\" becomes its only node. Size is now 2.",
+      "source": {
+        "file": "ChainedHashMap.java",
+        "line": 83
+      },
+      "state": {
+        "capacity": 8,
+        "size": 2,
+        "threshold": 6,
+        "buckets": [
+          [],
+          [
+            {
+              "id": "k:alice",
+              "key": "alice",
+              "value": "31",
+              "hash": "0x05899309"
+            }
+          ],
+          [],
+          [],
+          [
+            {
+              "id": "k:bob",
+              "key": "bob",
+              "value": "45",
+              "hash": "0x00017db4"
+            }
+          ],
+          [],
+          [],
+          []
+        ],
+        "focus": {
+          "bucket": 4,
+          "node": "k:bob"
+        },
+        "pipeline": {
+          "key": "bob",
+          "hashCode": "0x00017db5",
+          "spread": "0x00017db4",
+          "index": 4
+        }
+      }
+    },
+    {
+      "caption": "put(\"carol\"): hashCode() is 0x05a0e8b1. Spreading mixes the high 16 bits into the low 16 to give 0x05a0ed11, and its low 3 bits pick bucket 1 of 8.",
+      "source": {
+        "file": "ChainedHashMap.java",
+        "line": 68
+      },
+      "state": {
+        "capacity": 8,
+        "size": 2,
+        "threshold": 6,
+        "buckets": [
+          [],
+          [
+            {
+              "id": "k:alice",
+              "key": "alice",
+              "value": "31",
+              "hash": "0x05899309"
+            }
+          ],
+          [],
+          [],
+          [
+            {
+              "id": "k:bob",
+              "key": "bob",
+              "value": "45",
+              "hash": "0x00017db4"
+            }
+          ],
+          [],
+          [],
+          []
+        ],
+        "focus": {
+          "bucket": 1,
+          "node": null
+        },
+        "pipeline": {
+          "key": "carol",
+          "hashCode": "0x05a0e8b1",
+          "spread": "0x05a0ed11",
+          "index": 1
+        }
+      }
+    },
+    {
+      "caption": "Node 1 of bucket 1 holds \"alice\", not \"carol\".",
+      "source": {
+        "file": "ChainedHashMap.java",
+        "line": 73
+      },
+      "state": {
+        "capacity": 8,
+        "size": 2,
+        "threshold": 6,
+        "buckets": [
+          [],
+          [
+            {
+              "id": "k:alice",
+              "key": "alice",
+              "value": "31",
+              "hash": "0x05899309"
+            }
+          ],
+          [],
+          [],
+          [
+            {
+              "id": "k:bob",
+              "key": "bob",
+              "value": "45",
+              "hash": "0x00017db4"
+            }
+          ],
+          [],
+          [],
+          []
+        ],
+        "focus": {
+          "bucket": 1,
+          "node": "k:alice"
+        },
+        "pipeline": {
+          "key": "carol",
+          "hashCode": "0x05a0e8b1",
+          "spread": "0x05a0ed11",
+          "index": 1
+        }
+      }
+    },
+    {
+      "caption": "\"carol\" is not in bucket 1, so a new node goes at the head of the chain, in front of 1 other. Size is now 3.",
+      "source": {
+        "file": "ChainedHashMap.java",
+        "line": 83
+      },
+      "state": {
+        "capacity": 8,
+        "size": 3,
+        "threshold": 6,
+        "buckets": [
+          [],
+          [
+            {
+              "id": "k:carol",
+              "key": "carol",
+              "value": "27",
+              "hash": "0x05a0ed11"
+            },
+            {
+              "id": "k:alice",
+              "key": "alice",
+              "value": "31",
+              "hash": "0x05899309"
+            }
+          ],
+          [],
+          [],
+          [
+            {
+              "id": "k:bob",
+              "key": "bob",
+              "value": "45",
+              "hash": "0x00017db4"
+            }
+          ],
+          [],
+          [],
+          []
+        ],
+        "focus": {
+          "bucket": 1,
+          "node": "k:carol"
+        },
+        "pipeline": {
+          "key": "carol",
+          "hashCode": "0x05a0e8b1",
+          "spread": "0x05a0ed11",
+          "index": 1
+        }
+      }
+    },
+    {
+      "caption": "put(\"dave\"): hashCode() is 0x002eefec. Spreading mixes the high 16 bits into the low 16 to give 0x002eefc2, and its low 3 bits pick bucket 2 of 8.",
+      "source": {
+        "file": "ChainedHashMap.java",
+        "line": 68
+      },
+      "state": {
+        "capacity": 8,
+        "size": 3,
+        "threshold": 6,
+        "buckets": [
+          [],
+          [
+            {
+              "id": "k:carol",
+              "key": "carol",
+              "value": "27",
+              "hash": "0x05a0ed11"
+            },
+            {
+              "id": "k:alice",
+              "key": "alice",
+              "value": "31",
+              "hash": "0x05899309"
+            }
+          ],
+          [],
+          [],
+          [
+            {
+              "id": "k:bob",
+              "key": "bob",
+              "value": "45",
+              "hash": "0x00017db4"
+            }
+          ],
+          [],
+          [],
+          []
+        ],
+        "focus": {
+          "bucket": 2,
+          "node": null
+        },
+        "pipeline": {
+          "key": "dave",
+          "hashCode": "0x002eefec",
+          "spread": "0x002eefc2",
+          "index": 2
+        }
+      }
+    },
+    {
+      "caption": "Bucket 2 was empty, so \"dave\" becomes its only node. Size is now 4.",
+      "source": {
+        "file": "ChainedHashMap.java",
+        "line": 83
+      },
+      "state": {
+        "capacity": 8,
+        "size": 4,
+        "threshold": 6,
+        "buckets": [
+          [],
+          [
+            {
+              "id": "k:carol",
+              "key": "carol",
+              "value": "27",
+              "hash": "0x05a0ed11"
+            },
+            {
+              "id": "k:alice",
+              "key": "alice",
+              "value": "31",
+              "hash": "0x05899309"
+            }
+          ],
+          [
+            {
+              "id": "k:dave",
+              "key": "dave",
+              "value": "52",
+              "hash": "0x002eefc2"
+            }
+          ],
+          [],
+          [
+            {
+              "id": "k:bob",
+              "key": "bob",
+              "value": "45",
+              "hash": "0x00017db4"
+            }
+          ],
+          [],
+          [],
+          []
+        ],
+        "focus": {
+          "bucket": 2,
+          "node": "k:dave"
+        },
+        "pipeline": {
+          "key": "dave",
+          "hashCode": "0x002eefec",
+          "spread": "0x002eefc2",
+          "index": 2
+        }
+      }
+    },
+    {
+      "caption": "put(\"alice\"): hashCode() is 0x05899680. Spreading mixes the high 16 bits into the low 16 to give 0x05899309, and its low 3 bits pick bucket 1 of 8.",
+      "source": {
+        "file": "ChainedHashMap.java",
+        "line": 68
+      },
+      "state": {
+        "capacity": 8,
+        "size": 4,
+        "threshold": 6,
+        "buckets": [
+          [],
+          [
+            {
+              "id": "k:carol",
+              "key": "carol",
+              "value": "27",
+              "hash": "0x05a0ed11"
+            },
+            {
+              "id": "k:alice",
+              "key": "alice",
+              "value": "31",
+              "hash": "0x05899309"
+            }
+          ],
+          [
+            {
+              "id": "k:dave",
+              "key": "dave",
+              "value": "52",
+              "hash": "0x002eefc2"
+            }
+          ],
+          [],
+          [
+            {
+              "id": "k:bob",
+              "key": "bob",
+              "value": "45",
+              "hash": "0x00017db4"
+            }
+          ],
+          [],
+          [],
+          []
+        ],
+        "focus": {
+          "bucket": 1,
+          "node": null
+        },
+        "pipeline": {
+          "key": "alice",
+          "hashCode": "0x05899680",
+          "spread": "0x05899309",
+          "index": 1
+        }
+      }
+    },
+    {
+      "caption": "Node 1 of bucket 1 holds \"carol\", not \"alice\".",
+      "source": {
+        "file": "ChainedHashMap.java",
+        "line": 73
+      },
+      "state": {
+        "capacity": 8,
+        "size": 4,
+        "threshold": 6,
+        "buckets": [
+          [],
+          [
+            {
+              "id": "k:carol",
+              "key": "carol",
+              "value": "27",
+              "hash": "0x05a0ed11"
+            },
+            {
+              "id": "k:alice",
+              "key": "alice",
+              "value": "31",
+              "hash": "0x05899309"
+            }
+          ],
+          [
+            {
+              "id": "k:dave",
+              "key": "dave",
+              "value": "52",
+              "hash": "0x002eefc2"
+            }
+          ],
+          [],
+          [
+            {
+              "id": "k:bob",
+              "key": "bob",
+              "value": "45",
+              "hash": "0x00017db4"
+            }
+          ],
+          [],
+          [],
+          []
+        ],
+        "focus": {
+          "bucket": 1,
+          "node": "k:carol"
+        },
+        "pipeline": {
+          "key": "alice",
+          "hashCode": "0x05899680",
+          "spread": "0x05899309",
+          "index": 1
+        }
+      }
+    },
+    {
+      "caption": "Node 2 of bucket 1 holds \"alice\": a match.",
+      "source": {
+        "file": "ChainedHashMap.java",
+        "line": 73
+      },
+      "state": {
+        "capacity": 8,
+        "size": 4,
+        "threshold": 6,
+        "buckets": [
+          [],
+          [
+            {
+              "id": "k:carol",
+              "key": "carol",
+              "value": "27",
+              "hash": "0x05a0ed11"
+            },
+            {
+              "id": "k:alice",
+              "key": "alice",
+              "value": "31",
+              "hash": "0x05899309"
+            }
+          ],
+          [
+            {
+              "id": "k:dave",
+              "key": "dave",
+              "value": "52",
+              "hash": "0x002eefc2"
+            }
+          ],
+          [],
+          [
+            {
+              "id": "k:bob",
+              "key": "bob",
+              "value": "45",
+              "hash": "0x00017db4"
+            }
+          ],
+          [],
+          [],
+          []
+        ],
+        "focus": {
+          "bucket": 1,
+          "node": "k:alice"
+        },
+        "pipeline": {
+          "key": "alice",
+          "hashCode": "0x05899680",
+          "spread": "0x05899309",
+          "index": 1
+        }
+      }
+    },
+    {
+      "caption": "\"alice\" is already in bucket 1, so put() replaces its value and size stays at 4.",
+      "source": {
+        "file": "ChainedHashMap.java",
+        "line": 77
+      },
+      "state": {
+        "capacity": 8,
+        "size": 4,
+        "threshold": 6,
+        "buckets": [
+          [],
+          [
+            {
+              "id": "k:carol",
+              "key": "carol",
+              "value": "27",
+              "hash": "0x05a0ed11"
+            },
+            {
+              "id": "k:alice",
+              "key": "alice",
+              "value": "32",
+              "hash": "0x05899309"
+            }
+          ],
+          [
+            {
+              "id": "k:dave",
+              "key": "dave",
+              "value": "52",
+              "hash": "0x002eefc2"
+            }
+          ],
+          [],
+          [
+            {
+              "id": "k:bob",
+              "key": "bob",
+              "value": "45",
+              "hash": "0x00017db4"
+            }
+          ],
+          [],
+          [],
+          []
+        ],
+        "focus": {
+          "bucket": 1,
+          "node": "k:alice"
+        },
+        "pipeline": {
+          "key": "alice",
+          "hashCode": "0x05899680",
+          "spread": "0x05899309",
+          "index": 1
+        }
+      }
+    }
+  ]
+}

@@ -1,0 +1,373 @@
+// @vitest-environment jsdom
+import { act, cleanup, fireEvent, render, screen } from "@testing-library/react";
+import { renderToString } from "react-dom/server";
+import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
+import type { Step, Trace } from "../lib/trace/types";
+import { Player } from "./Player";
+
+function step(caption: string): Step {
+  return {
+    caption,
+    source: null,
+    state: {
+      capacity: 16,
+      size: 0,
+      threshold: 12,
+      buckets: [],
+      focus: null,
+      pipeline: null,
+    },
+  };
+}
+
+function traceOf(count: number): Trace {
+  return {
+    version: 1,
+    id: "t",
+    title: "T",
+    kind: "hash-table",
+    layout: "chains",
+    steps: Array.from({ length: count }, (_, i) => step(`caption ${i + 1}`)),
+  };
+}
+
+const renderStep = (s: Step, _p: Step | null, reduced: boolean) => (
+  <span data-testid="frame">{`${s.caption}|${reduced}`}</span>
+);
+
+afterEach(() => {
+  cleanup();
+  vi.useRealTimers();
+  vi.unstubAllGlobals();
+});
+
+const button = (name: string) => screen.getByRole("button", { name }) as HTMLButtonElement;
+
+describe("Player", () => {
+  it("Forward moves to step two", () => {
+    render(<Player trace={traceOf(3)} renderStep={renderStep} />);
+    expect(screen.getByText("step 1 of 3")).toBeTruthy();
+    fireEvent.click(screen.getByRole("button", { name: "Forward" }));
+    expect(screen.getByText("step 2 of 3")).toBeTruthy();
+    expect(screen.getByText("caption 2", { selector: "[aria-live]" })).toBeTruthy();
+  });
+
+  it("Right arrow does the same when focus is inside the player", () => {
+    render(<Player trace={traceOf(3)} renderStep={renderStep} />);
+    fireEvent.keyDown(screen.getByRole("button", { name: "Play" }), { key: "ArrowRight" });
+    expect(screen.getByText("step 2 of 3")).toBeTruthy();
+    fireEvent.keyDown(screen.getByRole("button", { name: "Back" }), { key: "ArrowLeft" });
+    expect(screen.getByText("step 1 of 3")).toBeTruthy();
+    fireEvent.keyDown(screen.getByRole("button", { name: "Back" }), { key: "End" });
+    expect(screen.getByText("step 3 of 3")).toBeTruthy();
+    fireEvent.keyDown(screen.getByRole("button", { name: "Back" }), { key: "Home" });
+    expect(screen.getByText("step 1 of 3")).toBeTruthy();
+  });
+
+  it("does not hijack keys typed into the speed select or scrubber", () => {
+    render(<Player trace={traceOf(3)} renderStep={renderStep} />);
+    fireEvent.keyDown(screen.getByLabelText("Speed"), { key: "ArrowRight" });
+    fireEvent.keyDown(screen.getByLabelText("Step"), { key: " " });
+    expect(screen.getByText("step 1 of 3")).toBeTruthy();
+    expect(screen.getByRole("button", { name: "Play" })).toBeTruthy();
+  });
+
+  it("Space on a focused button leaves activation to the button", () => {
+    render(<Player trace={traceOf(3)} renderStep={renderStep} />);
+    fireEvent.keyDown(screen.getByRole("button", { name: "Play" }), { key: " " });
+    expect(screen.getByRole("button", { name: "Play" })).toBeTruthy();
+  });
+
+  it("Space elsewhere in the player plays and pauses, and the keys it handles do nothing else", () => {
+    render(<Player trace={traceOf(3)} renderStep={renderStep} />);
+    const figure = screen.getByRole("figure");
+    expect(fireEvent.keyDown(figure, { key: " " })).toBe(false);
+    expect(button("Pause")).toBeTruthy();
+    expect(fireEvent.keyDown(figure, { key: " " })).toBe(false);
+    expect(button("Play")).toBeTruthy();
+    for (const key of ["ArrowRight", "ArrowLeft", "End", "Home"]) expect(fireEvent.keyDown(figure, { key })).toBe(false);
+  });
+
+  it("the Play button pauses while playing", () => {
+    render(<Player trace={traceOf(3)} renderStep={renderStep} />);
+    fireEvent.click(button("Play"));
+    fireEvent.click(button("Pause"));
+    expect(button("Play")).toBeTruthy();
+  });
+
+  it("leaves keys it does not handle, and Space on a button, to the browser", () => {
+    render(<Player trace={traceOf(3)} renderStep={renderStep} />);
+    expect(fireEvent.keyDown(screen.getByRole("figure"), { key: "a" })).toBe(true);
+    expect(fireEvent.keyDown(button("Play"), { key: " " })).toBe(true);
+    expect(screen.getByText("step 1 of 3")).toBeTruthy();
+  });
+
+  it.each(["altKey", "ctrlKey", "metaKey", "shiftKey"])("leaves a key pressed with %s to the browser", (modifier) => {
+    render(<Player trace={traceOf(3)} renderStep={renderStep} />);
+    expect(fireEvent.keyDown(screen.getByRole("figure"), { key: "ArrowRight", [modifier]: true })).toBe(true);
+    expect(screen.getByText("step 1 of 3")).toBeTruthy();
+  });
+
+  it("leaves keys typed into a text box in the footer to the text box", () => {
+    render(<Player trace={traceOf(3)} renderStep={renderStep} footer={() => <textarea aria-label="Notes" />} />);
+    expect(fireEvent.keyDown(screen.getByLabelText("Notes"), { key: "ArrowRight" })).toBe(true);
+    expect(screen.getByText("step 1 of 3")).toBeTruthy();
+  });
+
+  it("First and Back move from wherever the player is", () => {
+    render(<Player trace={traceOf(3)} renderStep={renderStep} />);
+    fireEvent.click(button("Last"));
+    fireEvent.click(button("Back"));
+    expect(screen.getByText("step 2 of 3")).toBeTruthy();
+    fireEvent.click(button("Last"));
+    fireEvent.click(button("First"));
+    expect(screen.getByText("step 1 of 3")).toBeTruthy();
+  });
+
+  it("offers half, normal and double speed, starting at normal", () => {
+    render(<Player trace={traceOf(3)} renderStep={renderStep} />);
+    const options = Array.from((screen.getByLabelText("Speed") as HTMLSelectElement).options);
+    expect(options.map((o) => [o.value, o.textContent])).toEqual([
+      ["0.5", "0.5x"],
+      ["1", "1x"],
+      ["2", "2x"],
+    ]);
+    expect((screen.getByLabelText("Speed") as HTMLSelectElement).value).toBe("1");
+  });
+
+  it("the scrubber spans the steps, and is disabled when there is nowhere to go", () => {
+    render(<Player trace={traceOf(3)} renderStep={renderStep} />);
+    const range = screen.getByLabelText("Step") as HTMLInputElement;
+    expect([range.min, range.max, range.step, range.value, range.disabled]).toEqual(["0", "2", "1", "0", false]);
+    cleanup();
+    render(<Player trace={traceOf(1)} renderStep={renderStep} />);
+    expect((screen.getByLabelText("Step") as HTMLInputElement).disabled).toBe(true);
+    cleanup();
+    render(<Player trace={traceOf(0)} renderStep={renderStep} />);
+    expect((screen.getByLabelText("Step") as HTMLInputElement).max).toBe("0");
+  });
+
+  it("scrubbing seeks and clamps string input", () => {
+    render(<Player trace={traceOf(3)} renderStep={renderStep} />);
+    fireEvent.change(screen.getByLabelText("Step"), { target: { value: "2" } });
+    expect(screen.getByText("step 3 of 3")).toBeTruthy();
+  });
+
+  const STEP_BUTTONS = ["First", "Back", "Forward", "Last"];
+
+  it("marks the step buttons at an end aria-disabled but keeps them focusable", () => {
+    render(<Player trace={traceOf(3)} renderStep={renderStep} />);
+    for (const name of STEP_BUTTONS) expect(button(name).disabled).toBe(false);
+    expect(STEP_BUTTONS.map((name) => button(name).getAttribute("aria-disabled"))).toEqual([
+      "true",
+      "true",
+      "false",
+      "false",
+    ]);
+    fireEvent.click(button("Back"));
+    expect(screen.getByText("step 1 of 3")).toBeTruthy();
+    fireEvent.click(button("Last"));
+    expect(STEP_BUTTONS.map((name) => button(name).getAttribute("aria-disabled"))).toEqual([
+      "false",
+      "false",
+      "true",
+      "true",
+    ]);
+    fireEvent.click(button("Forward"));
+    expect(screen.getByText("step 3 of 3")).toBeTruthy();
+  });
+
+  it("keeps focus on Forward after it reaches the last step, so the keys still work", () => {
+    render(<Player trace={traceOf(3)} renderStep={renderStep} />);
+    const forward = button("Forward");
+    forward.focus();
+    fireEvent.click(forward);
+    fireEvent.click(forward);
+    expect(screen.getByText("step 3 of 3")).toBeTruthy();
+    expect(forward.disabled).toBe(false);
+    expect(document.activeElement).toBe(forward);
+    fireEvent.keyDown(document.activeElement!, { key: "ArrowLeft" });
+    expect(screen.getByText("step 2 of 3")).toBeTruthy();
+  });
+
+  it("one step: renders the state with play disabled and the step buttons inert", () => {
+    render(<Player trace={traceOf(1)} renderStep={renderStep} />);
+    expect(screen.getByText("step 1 of 1")).toBeTruthy();
+    expect(screen.getByTestId("frame").textContent).toBe("caption 1|false");
+    expect(button("Play").disabled).toBe(true);
+    for (const name of STEP_BUTTONS) {
+      expect(button(name).getAttribute("aria-disabled")).toBe("true");
+      fireEvent.click(button(name));
+    }
+    expect(screen.getByText("step 1 of 1")).toBeTruthy();
+  });
+
+  it("zero steps: renders an empty frame without calling renderStep or footer", () => {
+    const render1 = vi.fn();
+    const footer = vi.fn();
+    render(<Player trace={traceOf(0)} renderStep={render1} footer={footer} />);
+    expect(screen.getByText("step 0 of 0")).toBeTruthy();
+    expect(render1).not.toHaveBeenCalled();
+    expect(footer).not.toHaveBeenCalled();
+    expect(button("Play").disabled).toBe(true);
+    for (const name of STEP_BUTTONS) {
+      expect(button(name).getAttribute("aria-disabled")).toBe("true");
+      fireEvent.click(button(name));
+    }
+    expect(screen.getByText("step 0 of 0")).toBeTruthy();
+    expect(render1).not.toHaveBeenCalled();
+    expect(screen.getByRole("figure").querySelector("[aria-live]")!.textContent).toBe("");
+  });
+
+  it("passes the previous step, null on the first, and renders the footer", () => {
+    const seen: (Step | null)[] = [];
+    render(
+      <Player
+        trace={traceOf(3)}
+        renderStep={(s, p) => {
+          seen.push(p);
+          return <span>{s.caption}</span>;
+        }}
+        footer={(s) => <p data-testid="footer">{`foot ${s.caption}`}</p>}
+      />,
+    );
+    expect(seen.at(-1)).toBeNull();
+    fireEvent.click(screen.getByRole("button", { name: "Forward" }));
+    expect(seen.at(-1)!.caption).toBe("caption 1");
+    expect(screen.getByTestId("footer").textContent).toBe("foot caption 2");
+  });
+
+  describe("autoplay", () => {
+    beforeEach(() => {
+      vi.useFakeTimers();
+    });
+
+    it("advances on the timer and stops itself at the last step", () => {
+      render(<Player trace={traceOf(3)} renderStep={renderStep} />);
+      fireEvent.click(screen.getByRole("button", { name: "Play" }));
+      expect(screen.getByRole("button", { name: "Pause" })).toBeTruthy();
+      act(() => {
+        vi.advanceTimersByTime(1800);
+      });
+      expect(screen.getByText("step 2 of 3")).toBeTruthy();
+      act(() => {
+        vi.advanceTimersByTime(1800);
+      });
+      expect(screen.getByText("step 3 of 3")).toBeTruthy();
+      expect(screen.getByRole("button", { name: "Play" })).toBeTruthy();
+      act(() => {
+        vi.advanceTimersByTime(10000);
+      });
+      expect(screen.getByText("step 3 of 3")).toBeTruthy();
+    });
+
+    it("divides the step duration by the speed", () => {
+      render(<Player trace={traceOf(3)} renderStep={renderStep} />);
+      fireEvent.change(screen.getByLabelText("Speed"), { target: { value: "2" } });
+      fireEvent.click(screen.getByRole("button", { name: "Play" }));
+      act(() => {
+        vi.advanceTimersByTime(900);
+      });
+      expect(screen.getByText("step 2 of 3")).toBeTruthy();
+    });
+
+    it("clears the timer on unmount", () => {
+      const { unmount } = render(<Player trace={traceOf(3)} renderStep={renderStep} />);
+      fireEvent.click(screen.getByRole("button", { name: "Play" }));
+      expect(vi.getTimerCount()).toBeGreaterThan(0);
+      unmount();
+      expect(vi.getTimerCount()).toBe(0);
+    });
+
+    it("keeps playing when the tab becomes visible again", () => {
+      render(<Player trace={traceOf(3)} renderStep={renderStep} />);
+      fireEvent.click(screen.getByRole("button", { name: "Play" }));
+      vi.spyOn(document, "visibilityState", "get").mockReturnValue("visible");
+      act(() => {
+        document.dispatchEvent(new Event("visibilitychange"));
+      });
+      expect(screen.getByRole("button", { name: "Pause" })).toBeTruthy();
+    });
+
+    it("stops listening for the tab's visibility on unmount", () => {
+      const remove = vi.spyOn(document, "removeEventListener");
+      const { unmount } = render(<Player trace={traceOf(3)} renderStep={renderStep} />);
+      unmount();
+      expect(remove).toHaveBeenCalledWith("visibilitychange", expect.any(Function));
+    });
+
+    it("pauses when the tab is hidden", () => {
+      render(<Player trace={traceOf(3)} renderStep={renderStep} />);
+      fireEvent.click(screen.getByRole("button", { name: "Play" }));
+      vi.spyOn(document, "visibilityState", "get").mockReturnValue("hidden");
+      act(() => {
+        document.dispatchEvent(new Event("visibilitychange"));
+      });
+      expect(screen.getByRole("button", { name: "Play" })).toBeTruthy();
+      expect(vi.getTimerCount()).toBe(0);
+    });
+  });
+
+  describe("reduced motion", () => {
+    /** A media query list the test can flip, like the browser's when the setting changes. */
+    function preference(matches: boolean) {
+      const listeners = new Set<() => void>();
+      const query = {
+        matches,
+        add: vi.fn((type: string, listener: () => void) => type === "change" && listeners.add(listener)),
+        remove: vi.fn((type: string, listener: () => void) => type === "change" && listeners.delete(listener)),
+        flip(to: boolean) {
+          query.matches = to;
+          for (const listener of listeners) listener();
+        },
+        listeners,
+      };
+      vi.stubGlobal("matchMedia", (text: string) => ({
+        get matches() {
+          return text === "(prefers-reduced-motion: reduce)" && query.matches;
+        },
+        addEventListener: query.add,
+        removeEventListener: query.remove,
+      }));
+      return query;
+    }
+
+    it("is off in a browser without matchMedia", () => {
+      render(<Player trace={traceOf(3)} renderStep={renderStep} />);
+      expect(screen.getByTestId("frame").textContent).toBe("caption 1|false");
+    });
+
+    it("follows the setting when it changes, and stops listening on unmount", () => {
+      const query = preference(false);
+      const { unmount } = render(<Player trace={traceOf(3)} renderStep={renderStep} />);
+      expect(screen.getByTestId("frame").textContent).toBe("caption 1|false");
+      act(() => query.flip(true));
+      expect(screen.getByTestId("frame").textContent).toBe("caption 1|true");
+      expect(query.listeners.size).toBe(1);
+      unmount();
+      expect(query.listeners.size).toBe(0);
+    });
+
+    it("renders on the server as off, so the first render in the browser matches", () => {
+      preference(true);
+      expect(renderToString(<Player trace={traceOf(3)} renderStep={renderStep} />)).toContain("caption 1|false");
+    });
+
+    it("tells renderStep and still autoplays", () => {
+      vi.useFakeTimers();
+      vi.stubGlobal("matchMedia", (query: string) => ({
+        matches: query.includes("prefers-reduced-motion"),
+        media: query,
+        addEventListener: () => {},
+        removeEventListener: () => {},
+      }));
+      render(<Player trace={traceOf(3)} renderStep={renderStep} />);
+      expect(screen.getByTestId("frame").textContent).toBe("caption 1|true");
+      fireEvent.click(screen.getByRole("button", { name: "Play" }));
+      act(() => {
+        vi.advanceTimersByTime(1800);
+      });
+      expect(screen.getByText("step 2 of 3")).toBeTruthy();
+    });
+  });
+});
